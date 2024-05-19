@@ -1,13 +1,13 @@
 export class PokemonManager {
-  constructor(pokemonDivList, FittedButtonsByType) {
+  constructor(pokemonDivList, fittedButtonsByType) {
     if (pokemonDivList === undefined) {
       throw new Error("Parameter 'pokemonDivList' is required");
     }
-    if (FittedButtonsByType === undefined) {
-      throw new Error("Parameter 'FittedButtonsByType' is required");
+    if (fittedButtonsByType === undefined) {
+      throw new Error("Parameter 'fittedButtonsByType' is required");
     }
     this.pokemonDivList = pokemonDivList;
-    this.FittedButtonsByType = FittedButtonsByType;
+    this.FittedButtonsByType = fittedButtonsByType;
     this.#addEventListeners();
   }
 
