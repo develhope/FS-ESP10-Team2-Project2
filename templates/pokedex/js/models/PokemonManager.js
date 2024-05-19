@@ -185,7 +185,7 @@ export class PokemonManager {
         </div>
         <div class="pokemon-stats">
           <p class="stat">${poke.statistics.height}m</p>
-          <p class="stat">${poke.statistics.weight}kg}</p>
+          <p class="stat">${poke.statistics.weight}kg</p>
         </div>
       </div>
     `;
@@ -199,22 +199,22 @@ export class PokemonManager {
       // Guarda el src original de la imagen
       const originalSrc = image.src;
 
-      // Cuando el mouse entra en el div con clase "pokemon", cambia el src de la imagen
+      // Cuando el mouse entra en el div con clase "pokemon", cambia el src de la imagen y la anima
       div.addEventListener("mouseenter", () => {
         image.classList.add("hidden");
         setTimeout(() => {
           image.src = poke.images.illustration[1];
           image.classList.remove("hidden");
-        }, 100); // Debe coincidir con la duración de la transición en el CSS
+        }, 200); // Debe coincidir con la duración de la transición en el CSS
       });
 
-      // Cuando el mouse sale del div con clase "pokemon", restaura el src original de la imagen
+      // Cuando el mouse sale del div con clase "pokemon", restaura el src original de la imagen y la anima
       div.addEventListener("mouseleave", () => {
-        image.classList.add("hidden");
+        image.classList.add("reverse");
         setTimeout(() => {
           image.src = originalSrc;
-          image.classList.remove("hidden");
-        }, 100); // Debe coincidir con la duración de la transición en el CSS
+          image.classList.remove("reverse");
+        }, 200); // Debe coincidir con la duración de la transición en el CSS
       });
     });
   }
