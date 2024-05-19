@@ -59,7 +59,6 @@
 .darkModeToggle {
     padding: 10px 20px;
     font-size: 16px;
-    cursor: pointer;
 }
 
 
@@ -101,7 +100,6 @@ header {
 }
 
 .btn-header {
-    background-color: var(--clr-white);
     padding: .5rem;
     border-radius: 100vmax;
     cursor: pointer;
@@ -114,6 +112,19 @@ header {
 .btn-header:hover {
     transform: scale(1.1);
     box-shadow: 0 0 2rem rgba(0, 0, 0, .25);
+}
+
+
+.btn-darkModeToggle {
+    background-color: var(--clr-black);
+    color: var(--clr-white);
+    padding: .5rem;
+    border-radius: 100vmax;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: 600;
+    box-shadow: 0 0 1rem rgba(0, 0, 0, .25);
+    transition: .2s;
 }
 
 main {
@@ -262,92 +273,97 @@ main {
 
 
 
+.see-all {
+    background-color: #ececec;
+    color: #1c1c1c;
+}
+
 .normal {
     background-color: var(--type-normal);
-    color: var(--clr-black);
+    color: #1c1c1c;
 }
 
 .fire {
     background-color: var(--type-fire);
-    color: var(--clr-black);
+    color: #1c1c1c;
 }
 
 .water {
     background-color: var(--type-water);
-    color: var(--clr-white);
+    color: #f7f7f7;
 }
 
 .grass {
     background-color: var(--type-grass);
-    color: var(--clr-black);
+    color: #1c1c1c;
 }
 
 .electric {
     background-color: var(--type-electric);
-    color: var(--clr-black);
+    color: #1c1c1c;
 }
 
 .ice {
     background-color: var(--type-ice);
-    color: var(--clr-black);
+    color: #1c1c1c;
 }
 
 .fighting {
     background-color: var(--type-fighting);
-    color: var(--clr-white);
+    color: #f7f7f7;
 }
 
 .poison {
     background-color: var(--type-poison);
-    color: var(--clr-white);
+    color: #f7f7f7;
 }
 
 .ground {
     background-color: var(--type-ground);
-    color: var(--clr-black);
+    color: #1c1c1c;
 }
 
 .flying {
     background-color: var(--type-flying);
-    color: var(--clr-black);
+    color: #1c1c1c;
 }
 
 .psychic {
     background-color: var(--type-psychic);
-    color: var(--clr-black);
+    color: #1c1c1c;
 }
 
 .bug {
     background-color: var(--type-bug);
-    color: var(--clr-black);
+    color: #1c1c1c;
 }
 
 .rock {
     background-color: var(--type-rock);
-    color: var(--clr-black);
+    color: #1c1c1c;
 }
 
 .ghost {
     background-color: var(--type-ghost);
-    color: var(--clr-white);
+    color: #f7f7f7;
 }
 
 .dark {
     background-color: var(--type-dark);
-    color: var(--clr-white);
+    color: #f7f7f7;
 }
 
 .dragon {
     background-color: var(--type-dragon);
-    color: var(--clr-white);
+    color: #f7f7f7;
 }
 
 .steel {
     background-color: var(--type-steel);
-    color: var(--clr-black);
+    color: #1c1c1c;
 }
 
 .fairy {
     background-color: var(--type-fairy);
-    color: var(--clr-black);
+    color: #1c1c1c;
 }
