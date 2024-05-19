@@ -223,18 +223,55 @@ export class PokemonManager {
    * Método para agregar event listeners a los botones del header.
    */
   #addEventListeners() {
-    this.FittedButtonsByType.forEach((button) =>
-      button.addEventListener("click", async (event) => {
-        const buttonId = event.currentTarget.id;
-        let typeFilters;
+    this.FittedButtonsByType.forEach((button) => {
+      let typeFilters;
+      let holdActivated = false; // Flag para determinar si el hold ha sido activado
 
-        if (buttonId === "see-all") {
-          typeFilters = ["all"];
-        } else {
-          typeFilters = [buttonId];
+      // Evento click
+      button.addEventListener("click", async (event) => {
+        if (!holdActivated) {
+          const buttonId = event.currentTarget.id;
+
+          if (buttonId === "see-all") {
+            typeFilters = ["all"];
+          } else {
+            typeFilters = [buttonId];
+          }
+          this.displayPokemon(this.getPokemonByTypes(typeFilters));
+          typeFilters = undefined;
         }
-        this.displayPokemon(this.getPokemonByTypes(typeFilters));
-      })
-    );
+        holdActivated = false; // Resetear el flag después del click
+      });
+
+      // Variables para manejar el evento de mantener pulsado
+      let holdTimeout;
+      const holdDuration = 500; // Duración en ms para considerar que el botón ha sido mantenido pulsado
+
+      // Evento mousedown para iniciar el temporizador
+      button.addEventListener("mousedown", (event) => {
+        if (!typeFilters) {
+          const button = event.currentTarget;
+          holdTimeout = setTimeout(() => {
+            const buttonId = button.id;
+
+            if (buttonId === "see-all") {
+              typeFilters = ["all"];
+            } else {
+              typeFilters = [buttonId];
+            }
+            this.displayPokemon(this.getPokemonByTypes(typeFilters, true));
+            holdActivated = true; // Marcar que el hold ha sido activado
+          }, holdDuration);
+        }
+      });
+
+      // Eventos mouseup y mouseleave para cancelar el temporizador
+      const cancelHold = () => {
+        clearTimeout(holdTimeout);
+      };
+
+      button.addEventListener("mouseup", cancelHold);
+      button.addEventListener("mouseleave", cancelHold);
+    });
   }
 }

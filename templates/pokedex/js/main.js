@@ -8,7 +8,7 @@ const FittedButtonsByType = document.querySelectorAll(".btn-header");
 const pokemon = new PokemonManager(pokemonDivList, FittedButtonsByType);
 // Iniciar la carga
 pokemon
-  .initialize(1025) // Numero de pokemon a cargar
+  .initialize(150) // Numero de pokemon a cargar
   .then(() => {
     try {
       console.log(`Pokemon Totales: ${pokemon.list.length}`);
