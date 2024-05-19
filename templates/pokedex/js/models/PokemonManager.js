@@ -1,21 +1,34 @@
+/**
+ * Clase que maneja la lista de Pokémon y las interacciones con los botones del header.
+ */
 export class PokemonManager {
-  constructor(pokemonDivList, FittedButtonsByType) {
-    if (pokemonDivList === undefined) {
+  /**
+   * Constructor de la clase PokemonManager.
+   * @param {HTMLElement} pokemonDivList - El contenedor en el DOM donde se mostrarán los Pokémon.
+   * @param {NodeListOf<HTMLElement>} fittedButtonsByType - La lista de botones del header para filtrar Pokémon por tipo.
+   * @throws {Error} - Si alguno de los parámetros requeridos no es proporcionado.
+   */
+  constructor(pokemonDivList, fittedButtonsByType) {
+    if (!pokemonDivList) {
       throw new Error("Parameter 'pokemonDivList' is required");
     }
-    if (FittedButtonsByType === undefined) {
-      throw new Error("Parameter 'FittedButtonsByType' is required");
+    if (!fittedButtonsByType) {
+      throw new Error("Parameter 'fittedButtonsByType' is required");
     }
     this.pokemonDivList = pokemonDivList;
-    this.FittedButtonsByType = FittedButtonsByType;
+    this.fittedButtonsByType = fittedButtonsByType;
     this.#addEventListeners();
   }
-
   #pokemonDataList = [];
   #pokemonIsLoaded = false;
 
   static #URL = "https://pokeapi.co/api/v2/pokemon/";
 
+  /**
+   * Método para inicializar la lista de Pokémon cargando datos desde la API.
+   * @param {number} count - La cantidad de Pokémon a cargar. Debe ser un número entero entre 1 y 1025.
+   * @throws {Error} - Si el parámetro `count` no es válido o si ocurre un error durante la carga de los datos.
+   */
   async initialize(count) {
     if (!Number.isInteger(count) || count < 1 || count > 1025) {
       throw new Error(
@@ -94,6 +107,12 @@ export class PokemonManager {
     return this.#pokemonDataList;
   }
 
+  /**
+   * Método para obtener una lista de Pokémon que coincidan con los tipos especificados.
+   * @param {string[]} typeFilters - Un array de tipos de Pokémon para filtrar.
+   * @param {boolean} [exactMatch=false] - Si es true, solo devolverá Pokémon que coincidan exactamente con los tipos especificados.
+   * @returns {object[]} - Un array de objetos de Pokémon que coinciden con los filtros especificados.
+   */
   getPokemonByTypes(typeFilters, exactMatch = false) {
     this.#checkDataLoaded();
     const filteredPokemon = [];
@@ -223,7 +242,7 @@ export class PokemonManager {
    * Método para agregar event listeners a los botones del header.
    */
   #addEventListeners() {
-    this.FittedButtonsByType.forEach((button) => {
+    this.fittedButtonsByType.forEach((button) => {
       let typeFilters;
       let holdActivated = false; // Flag para determinar si el hold ha sido activado
 

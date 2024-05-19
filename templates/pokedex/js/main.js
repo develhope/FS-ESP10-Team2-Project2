@@ -2,10 +2,10 @@ import { PokemonManager } from "./models/PokemonManager.js";
 
 // Selección de elementos del DOM
 const pokemonDivList = document.querySelector("#pokemon-div-list");
-const FittedButtonsByType = document.querySelectorAll(".btn-header");
+const fittedButtonsByType = document.querySelectorAll(".btn-header");
 
 // Creación de la instancia del gestor de Pokémon
-const pokemon = new PokemonManager(pokemonDivList, FittedButtonsByType);
+const pokemon = new PokemonManager(pokemonDivList, fittedButtonsByType);
 // Iniciar la carga
 pokemon
   .initialize(150) // Numero de pokemon a cargar
