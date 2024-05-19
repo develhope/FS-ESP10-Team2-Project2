@@ -17,6 +17,7 @@ export class PokemonManager {
     }
     this.pokemonDivList = pokemonDivList;
     this.fittedButtonsByType = fittedButtonsByType;
+    this.fittedButtonsByType = fittedButtonsByType;
     this.#addEventListeners();
   }
   #pokemonDataList = [];
@@ -242,6 +243,7 @@ export class PokemonManager {
    * Método para agregar event listeners a los botones del header.
    */
   #addEventListeners() {
+    this.fittedButtonsByType.forEach((button) => {
     this.fittedButtonsByType.forEach((button) => {
       let typeFilters;
       let holdActivated = false; // Flag para determinar si el hold ha sido activado
