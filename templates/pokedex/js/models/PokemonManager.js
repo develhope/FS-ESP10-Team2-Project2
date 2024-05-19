@@ -223,7 +223,7 @@ export class PokemonManager {
    * Método para agregar event listeners a los botones del header.
    */
   #addEventListeners() {
-    this.FittedButtonsByType.forEach((button) => {
+    this.fittedButtonsByType.forEach((button) => {
       let typeFilters;
       let holdActivated = false; // Flag para determinar si el hold ha sido activado
 
