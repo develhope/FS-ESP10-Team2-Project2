@@ -19,6 +19,7 @@ export class PokemonManager {
     this.fittedButtonsByType = fittedButtonsByType;
     this.#addEventListeners();
   }
+
   #pokemonDataList = [];
   #pokemonIsLoaded = false;
 
@@ -48,6 +49,12 @@ export class PokemonManager {
     this.displayPokemon(this.#pokemonDataList);
   }
 
+  /**
+   * Método privado para cargar la lista de Pokémon desde la API.
+   * @param {number} count - La cantidad de Pokémon a cargar.
+   * @returns {Promise<void>}
+   * @private
+   */
   async #loadPokemonList(count) {
     const promises = Array.from({ length: count }, (_, index) =>
       this.#fetchPokemon(index + 1)
@@ -61,6 +68,13 @@ export class PokemonManager {
     this.#pokemonIsLoaded = true;
   }
 
+  /**
+   * Método privado para obtener los datos de un Pokémon desde la API.
+   * @param {number} id - El ID del Pokémon.
+   * @returns {Promise<object>} - Los datos del Pokémon.
+   * @throws {Error} - Si ocurre un error al obtener los datos del Pokémon.
+   * @private
+   */
   async #fetchPokemon(id) {
     const response = await fetch(`${PokemonManager.#URL}${id}`);
     if (!response.ok) {
@@ -71,6 +85,12 @@ export class PokemonManager {
     return response.json();
   }
 
+  /**
+   * Método privado para transformar los datos del Pokémon en el formato deseado.
+   * @param {object} poke - Los datos originales del Pokémon.
+   * @returns {object} - Los datos transformados del Pokémon.
+   * @private
+   */
   #transformPokemon(poke) {
     return {
       pokeId: poke.id,
@@ -93,6 +113,11 @@ export class PokemonManager {
     };
   }
 
+  /**
+   * Método privado para verificar si los datos de los Pokémon han sido cargados.
+   * @throws {Error} - Si los datos de los Pokémon no han sido cargados aún.
+   * @private
+   */
   #checkDataLoaded() {
     if (!this.#pokemonIsLoaded) {
       console.error(
@@ -102,6 +127,10 @@ export class PokemonManager {
     }
   }
 
+  /**
+   * Getter para obtener la lista de Pokémon.
+   * @returns {object[]} - La lista de Pokémon.
+   */
   get list() {
     this.#checkDataLoaded();
     return this.#pokemonDataList;
@@ -157,6 +186,12 @@ export class PokemonManager {
     return filteredPokemon;
   }
 
+  /**
+   * Método para obtener los datos de un Pokémon por su ID.
+   * @param {number} id - El ID del Pokémon.
+   * @returns {object} - Los datos del Pokémon.
+   * @throws {Error} - Si no se encuentra un Pokémon con el ID especificado.
+   */
   getPokemon(id) {
     this.#checkDataLoaded();
     const pokemon = this.#pokemonDataList.find((poke) => poke.pokeId === id);
@@ -240,6 +275,10 @@ export class PokemonManager {
 
   /**
    * Método para agregar event listeners a los botones del header.
+   * Añade eventos para 'click' y 'mousedown' en cada botón.
+   * - El evento 'click' filtra y muestra Pokémon según el tipo seleccionado.
+   * - El evento 'mousedown' inicia un temporizador que, si se cumple, filtra y muestra Pokémon con un filtrado exacto.
+   * @private
    */
   #addEventListeners() {
     this.fittedButtonsByType.forEach((button) => {
