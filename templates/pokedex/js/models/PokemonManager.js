@@ -7,7 +7,7 @@ export class PokemonManager {
       throw new Error("Parameter 'fittedButtonsByType' is required");
     }
     this.pokemonDivList = pokemonDivList;
-    this.FittedButtonsByType = fittedButtonsByType;
+    this.fittedButtonsByType = fittedButtonsByType;
     this.#addEventListeners();
   }
 
