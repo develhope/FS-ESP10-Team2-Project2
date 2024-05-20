@@ -187,6 +187,65 @@ export class PokemonManager {
   }
 
   /**
+   * Método para obtener una lista de Pokémon ordenados por una propiedad específica.
+   * @param {string} property - La propiedad por la cual ordenar. Puede ser "pokeId", "name", "type", "statistics.height", "statistics.weight".
+   * @param {string} [order='asc'] - El orden de la ordenación. Puede ser "asc" para ascendente o "desc" para descendente.
+   * @returns {object[]} - Un array de objetos de Pokémon ordenados según la propiedad y el orden especificados.
+   */
+  getPokemonByProperty(property, order = "asc") {
+    this.#checkDataLoaded();
+
+    const sortedPokemon = [...this.#pokemonDataList];
+    sortedPokemon.sort(this.#getSortFunction(property, order));
+
+    return sortedPokemon;
+  }
+
+  /**
+   * Método privado para obtener la función de ordenación basada en la propiedad y el orden.
+   * @param {string} property - La propiedad por la cual ordenar.
+   * @param {string} order - El orden de la ordenación. Puede ser "asc" para ascendente o "desc" para descendente.
+   * @returns {function} - La función de ordenación.
+   * @private
+   */
+  #getSortFunction(property, order) {
+    const isAscending = order === "asc";
+
+    return (a, b) => {
+      const [aValue, bValue] = this.#getPropertyValues(a, b, property);
+
+      if (aValue < bValue) return isAscending ? -1 : 1;
+      if (aValue > bValue) return isAscending ? 1 : -1;
+      return 0;
+    };
+  }
+
+  /**
+   * Método privado para obtener los valores de las propiedades de los Pokémon.
+   * @param {object} a - El primer objeto Pokémon.
+   * @param {object} b - El segundo objeto Pokémon.
+   * @param {string} property - La propiedad por la cual ordenar.
+   * @returns {Array} - Un array con los valores de las propiedades de los dos Pokémon.
+   * @private
+   */
+  #getPropertyValues(a, b, property) {
+    switch (property) {
+      case "pokeId":
+        return [a.pokeId, b.pokeId];
+      case "name":
+        return [a.name.toLowerCase(), b.name.toLowerCase()];
+      case "type":
+        return [a.type[0].toLowerCase(), b.type[0].toLowerCase()]; // Ordenar por el primer tipo
+      case "statistics.height":
+        return [a.statistics.height, b.statistics.height];
+      case "statistics.weight":
+        return [a.statistics.weight, b.statistics.weight];
+      default:
+        throw new Error(`Propiedad de ordenación desconocida: ${property}`);
+    }
+  }
+
+  /**
    * Método para obtener los datos de un Pokémon por su ID.
    * @param {number} id - El ID del Pokémon.
    * @returns {object} - Los datos del Pokémon.
@@ -210,21 +269,29 @@ export class PokemonManager {
   displayPokemon(listPokemon) {
     this.pokemonDivList.innerHTML = "";
     console.log(listPokemon.length);
-    // Iteramos sobre cada objeto de Pokémon en la lista
     listPokemon.forEach((poke) => {
-      // Creamos la representación HTML para los tipos del Pokémon
-      let types = poke.type
-        .map((type) => `<p class="${type} type">${type}</p>`)
-        .join("");
+      const div = this.#createPokemonElement(poke);
+      this.pokemonDivList.append(div);
+      this.#addImageHoverEffect(div, poke);
+    });
+  }
 
-      // Formateamos el ID del Pokémon con ceros a la izquierda si es necesario
-      let pokeId = poke.pokeId.toString().padStart(3, "0");
+  /**
+   * Método privado para crear el elemento HTML de un Pokémon.
+   * @param {object} poke - El objeto Pokémon.
+   * @returns {HTMLElement} - El elemento div creado para el Pokémon.
+   * @private
+   */
+  #createPokemonElement(poke) {
+    const types = poke.type
+      .map((type) => `<p class="${type} type">${type}</p>`)
+      .join("");
 
-      // Creamos el elemento div para mostrar el Pokémon
-      const div = document.createElement("div");
+    const pokeId = poke.pokeId.toString().padStart(3, "0");
 
-      div.classList.add("pokemon");
-      div.innerHTML = `
+    const div = document.createElement("div");
+    div.classList.add("pokemon");
+    div.innerHTML = `
       <p class="pokemon-id-back">#${pokeId}</p>
       <div class="pokemon-image">
         <img src="${poke.images.illustration[0]}" alt="${poke.name}">
@@ -243,33 +310,33 @@ export class PokemonManager {
         </div>
       </div>
     `;
+    return div;
+  }
 
-      // Agregamos el elemento div al contenedor de la lista de Pokémon
-      this.pokemonDivList.append(div);
+  /**
+   * Método privado para agregar el efecto de hover a la imagen de un Pokémon.
+   * @param {HTMLElement} div - El elemento div del Pokémon.
+   * @param {object} poke - El objeto Pokémon.
+   * @private
+   */
+  #addImageHoverEffect(div, poke) {
+    const image = div.querySelector(".pokemon-image img");
+    const originalSrc = image.src;
 
-      // Obtén la imagen de este Pokémon
-      const image = div.querySelector(".pokemon-image img");
+    div.addEventListener("mouseenter", () => {
+      image.classList.add("hidden");
+      setTimeout(() => {
+        image.src = poke.images.illustration[1];
+        image.classList.remove("hidden");
+      }, 200); // Debe coincidir con la duración de la transición en el CSS
+    });
 
-      // Guarda el src original de la imagen
-      const originalSrc = image.src;
-
-      // Cuando el mouse entra en el div con clase "pokemon", cambia el src de la imagen y la anima
-      div.addEventListener("mouseenter", () => {
-        image.classList.add("hidden");
-        setTimeout(() => {
-          image.src = poke.images.illustration[1];
-          image.classList.remove("hidden");
-        }, 200); // Debe coincidir con la duración de la transición en el CSS
-      });
-
-      // Cuando el mouse sale del div con clase "pokemon", restaura el src original de la imagen y la anima
-      div.addEventListener("mouseleave", () => {
-        image.classList.add("reverse");
-        setTimeout(() => {
-          image.src = originalSrc;
-          image.classList.remove("reverse");
-        }, 200); // Debe coincidir con la duración de la transición en el CSS
-      });
+    div.addEventListener("mouseleave", () => {
+      image.classList.add("reverse");
+      setTimeout(() => {
+        image.src = originalSrc;
+        image.classList.remove("reverse");
+      }, 200); // Debe coincidir con la duración de la transición en el CSS
     });
   }
 

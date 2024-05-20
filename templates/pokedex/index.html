@@ -44,7 +44,31 @@
         </nav>
     </header>
     <main>
-
+        <div style="margin-bottom: 10px;">
+            <label for="pokemon-filter">Filter Pokemon by:</label>
+            <select id="pokemon-filter">
+                <optgroup label="PokeID">
+                    <option value="pokeId-asc">ID (Ascending)</option>
+                    <option value="pokeId-desc">ID (Descending)</option>
+                </optgroup>
+                <optgroup label="Name">
+                    <option value="name-asc">Nombre (A-Z)</option>
+                    <option value="name-desc">Nombre (Z-A)</option>
+                </optgroup>
+                <optgroup label="Type">
+                    <option value="type-asc">Tipo (A-Z)</option>
+                    <option value="type-desc">Tipo (Z-A)</option>
+                </optgroup>
+                <optgroup label="Height">
+                    <option value="statistics.height-asc">Altura (Ascending)</option>
+                    <option value="statistics.height-desc">Altura (Descending)</option>
+                </optgroup>
+                <optgroup label="Weight">
+                    <option value="statistics.weight-asc">Peso (Ascending)</option>
+                    <option value="statistics.weight-desc">Peso (Descending)</option>
+                </optgroup>
+            </select>
+        </div>
         <div class="pokemon-div">
             <div class="pokemon-all" id="pokemon-div-list">
                 <!-- <div class="pokemon">

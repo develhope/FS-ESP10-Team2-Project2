@@ -1,25 +1,30 @@
 import { PokemonManager } from "./models/PokemonManager.js";
 
-// Selección de elementos del DOM
+// Referencias a elementos del DOM
+const darkModeToggle = document.querySelector("#darkModeToggle");
+const body = document.body;
 const pokemonDivList = document.querySelector("#pokemon-div-list");
 const fittedButtonsByType = document.querySelectorAll(".btn-header");
+const pokemonFilter = document.querySelector("#pokemon-filter");
+
+// Configuración del modo oscuro
+darkModeToggle.addEventListener("click", () => {
+  body.classList.toggle("dark-mode");
+});
+
+// Cambia a modo oscuro inicialmente (puedes quitar esto si no deseas el modo oscuro por defecto)
+// body.classList.toggle("dark-mode");
 
 // Creación de la instancia del gestor de Pokémon
-const pokemon = new PokemonManager(pokemonDivList, fittedButtonsByType);
-// Iniciar la carga
-pokemon
-  .initialize(150) // Numero de pokemon a cargar
+const pokemonManager = new PokemonManager(pokemonDivList, fittedButtonsByType);
+
+// Inicia la carga de los Pokémon
+pokemonManager
+  .initialize(150) // Número de Pokémon a cargar
   .then(() => {
     try {
-      console.log(`Pokemon Totales: ${pokemon.list.length}`);
+      console.log(`Pokémon Totales: ${pokemonManager.list.length}`);
       console.log("#---------------#");
-
-      // // Test 1: Filtrar por tipo "bug" o "poison" (sin coincidencia exacta)
-      // let poke = pokemon.getPokemonByTypes(["bug", "poison"]);
-      // console.log(`Pokemon con tipo bug o poison Totales: ${poke.length}`);
-      // //   console.log(poke);
-
-      // console.log("------------------------------");
     } catch (error) {
       console.error("Error durante el uso del PokemonManager:", error);
     }
@@ -28,9 +33,19 @@ pokemon
     console.error("Error al inicializar el PokemonManager:", error);
   });
 
-const darkModeToggle = document.getElementById("darkModeToggle");
-const body = document.body;
+// Manejo del filtrado de Pokémon por propiedades
+pokemonFilter.addEventListener("change", function () {
+  const selectedOption = this.value;
+  const [property, order] = selectedOption.split("-");
 
-darkModeToggle.addEventListener("click", () => {
-  body.classList.toggle("dark-mode");
+  try {
+    const filteredPokemon = pokemonManager.getPokemonByProperty(
+      property,
+      order
+    );
+    // console.log(filteredPokemon.length);
+    pokemonManager.displayPokemon(filteredPokemon);
+  } catch (error) {
+    console.error("Error al filtrar los Pokémon:", error);
+  }
 });
