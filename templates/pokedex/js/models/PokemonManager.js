@@ -57,6 +57,7 @@ export class PokemonManager {
     }
 
     try {
+      this.#toggleLoading(true);
       await this.#loadPokemonList(count);
     } catch (error) {
       console.error("Error al inicializar la lista de Pokémon:", error);
@@ -66,6 +67,7 @@ export class PokemonManager {
     }
 
     this.#data.dom.pokemonDivDataList = [...this.#data.pokemonDataList];
+    this.#toggleLoading(false);
     this.#updateViewPokemonTypeFilter(
       this.getPokemonByProperty("pokeId", "asc")
     );
@@ -348,6 +350,51 @@ export class PokemonManager {
         "Error updating and displaying filtered Pokémon data:",
         error
       );
+    }
+  }
+
+  /**
+   * Método privado para agregar o eliminar un div de carga.
+   * @param {boolean} show - Booleano que indica si se debe mostrar (true) o eliminar (false) el div de carga.
+   * @private
+   */
+  #toggleLoading(show) {
+    const loadingDiv = document.querySelector(".loading");
+
+    if (show) {
+      // Si show es true y el div de carga no existe, lo creamos y lo añadimos al cuerpo del documento
+      if (!loadingDiv) {
+        const div = document.createElement("div");
+        div.classList.add("loading");
+        document.body.appendChild(div);
+
+        // Agregar estilos CSS para el bloque de carga
+        const style = document.createElement("style");
+        style.textContent = `
+        .loading {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 40px;
+          height: 40px;
+          border: 4px solid #f3f3f3; /* Gris claro */
+          border-top: 4px solid #3498db; /* Azul */
+          border-radius: 50%;
+          animation: spin 1s linear infinite; /* Animación de rotación */
+        }
+        @keyframes spin {
+          0% {transform: rotate(0deg);}
+          100% {transform: rotate(360deg);}
+        }
+      `;
+        document.head.appendChild(style);
+      }
+    } else {
+      // Si show es false y el div de carga existe, lo eliminamos
+      if (loadingDiv) {
+        loadingDiv.remove();
+      }
     }
   }
 
