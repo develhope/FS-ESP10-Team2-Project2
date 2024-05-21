@@ -134,8 +134,8 @@ export class PokemonManager {
         ],
       },
       statistics: {
-        height: (poke.height / 10).toFixed(2), // Convertir decímetros a metros y redondear a 2 decimales
-        weight: (poke.weight / 10).toFixed(2), // Convertir hectogramos a kilogramos y redondear a 2 decimales
+        height: [poke.height, (poke.height / 10).toFixed(2)], // Convertir decímetros a metros y redondear a 2 decimales
+        weight: [poke.weight, (poke.weight / 10).toFixed(2)], // Convertir hectogramos a kilogramos y redondear a 2 decimales
       },
     };
   }
@@ -289,9 +289,9 @@ export class PokemonManager {
       case "type":
         return [a.type[0].toLowerCase(), b.type[0].toLowerCase()]; // Ordenar por el primer tipo
       case "statistics.height":
-        return [a.statistics.height, b.statistics.height];
+        return [a.statistics.height[0], b.statistics.height[0]];
       case "statistics.weight":
-        return [a.statistics.weight, b.statistics.weight];
+        return [a.statistics.weight[0], b.statistics.weight[0]];
       default:
         throw new Error(`Propiedad de ordenación desconocida: ${property}`);
     }
@@ -394,8 +394,8 @@ export class PokemonManager {
           ${types}
         </div>
         <div class="pokemon-stats">
-          <p class="stat">${poke.statistics.height}m</p>
-          <p class="stat">${poke.statistics.weight}kg</p>
+          <p class="stat">${poke.statistics.height[1]}m</p>
+          <p class="stat">${poke.statistics.weight[1]}kg</p>
         </div>
       </div>
     `;
