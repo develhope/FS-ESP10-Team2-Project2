@@ -113,6 +113,7 @@ export class PokemonManager {
 
   /**
    * Método privado para transformar los datos del Pokémon en el formato deseado.
+   * Convierte la altura de decímetros a metros y el peso de hectogramos a kilogramos.
    * @param {object} poke - Los datos originales del Pokémon.
    * @returns {object} - Los datos transformados del Pokémon.
    * @private
@@ -133,8 +134,8 @@ export class PokemonManager {
         ],
       },
       statistics: {
-        height: poke.height,
-        weight: poke.weight,
+        height: (poke.height / 10).toFixed(2), // Convertir decímetros a metros y redondear a 2 decimales
+        weight: (poke.weight / 10).toFixed(2), // Convertir hectogramos a kilogramos y redondear a 2 decimales
       },
     };
   }
