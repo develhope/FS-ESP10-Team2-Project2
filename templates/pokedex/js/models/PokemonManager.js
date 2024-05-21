@@ -8,20 +8,39 @@ export class PokemonManager {
    * @param {NodeListOf<HTMLElement>} fittedButtonsByType - La lista de botones del header para filtrar Pokémon por tipo.
    * @throws {Error} - Si alguno de los parámetros requeridos no es proporcionado.
    */
-  constructor(pokemonDivList, fittedButtonsByType) {
+  constructor(pokemonDivList, fittedButtonsByType, fittedSelectByProperty) {
     if (!pokemonDivList) {
       throw new Error("Parameter 'pokemonDivList' is required");
     }
     if (!fittedButtonsByType) {
       throw new Error("Parameter 'fittedButtonsByType' is required");
     }
-    this.pokemonDivList = pokemonDivList;
-    this.fittedButtonsByType = fittedButtonsByType;
+    if (!fittedSelectByProperty) {
+      throw new Error("Parameter 'fittedSelectByProperty' is required");
+    }
+    this.#data.dom.elements.divList = pokemonDivList;
+    this.#data.dom.elements.fittedButtonsType = fittedButtonsByType;
+    this.#data.dom.elements.fittedSelectProperty = fittedSelectByProperty;
     this.#addEventListeners();
   }
 
-  #pokemonDataList = [];
-  #pokemonIsLoaded = false;
+  #data = {
+    dom: {
+      elements: {
+        divList: undefined,
+        fittedButtonsType: undefined,
+        fittedSelectProperty: undefined,
+      },
+      filters: {
+        byTypes: [],
+        byProperty: [],
+      },
+
+      pokemonDivDataList: [],
+    },
+    pokemonDataList: [],
+    pokemonIsLoaded: false,
+  };
 
   static #URL = "https://pokeapi.co/api/v2/pokemon/";
 
@@ -30,7 +49,7 @@ export class PokemonManager {
    * @param {number} count - La cantidad de Pokémon a cargar. Debe ser un número entero entre 1 y 1025.
    * @throws {Error} - Si el parámetro `count` no es válido o si ocurre un error durante la carga de los datos.
    */
-  async initialize(count) {
+  async init(count) {
     if (!Number.isInteger(count) || count < 1 || count > 1025) {
       throw new Error(
         "La cantidad de Pokémon debe ser un número entero entre 1 y 1025."
@@ -46,7 +65,14 @@ export class PokemonManager {
       );
     }
 
-    this.displayPokemon(this.#pokemonDataList);
+    this.#data.dom.pokemonDivDataList = [...this.#data.pokemonDataList];
+    this.#updateViewPokemonTypeFilter(
+      this.getPokemonByProperty("pokeId", "asc")
+    );
+    // this.#updateViewPokemonTypeFilter  (this.#data.pokemonDataList);
+
+    // this.#saveListOfTempPokemon(this.#data.pokemonDataList);
+    // this.displayPokemon(this.#data.dom.pokemonDivDataList);
   }
 
   /**
@@ -61,11 +87,11 @@ export class PokemonManager {
     );
     const results = await Promise.allSettled(promises);
 
-    this.#pokemonDataList = results
+    this.#data.pokemonDataList = results
       .filter((result) => result.status === "fulfilled")
       .map((result) => this.#transformPokemon(result.value));
 
-    this.#pokemonIsLoaded = true;
+    this.#data.pokemonIsLoaded = true;
   }
 
   /**
@@ -119,7 +145,7 @@ export class PokemonManager {
    * @private
    */
   #checkDataLoaded() {
-    if (!this.#pokemonIsLoaded) {
+    if (!this.#data.pokemonIsLoaded) {
       console.error(
         "Error: Los datos de los Pokémon no han sido cargados aún."
       );
@@ -129,11 +155,22 @@ export class PokemonManager {
 
   /**
    * Getter para obtener la lista de Pokémon.
+   * @throws {Error} - Si los datos de Pokémon no han sido cargados.
    * @returns {object[]} - La lista de Pokémon.
    */
-  get list() {
+  get pokemon() {
     this.#checkDataLoaded();
-    return this.#pokemonDataList;
+    return this.#data.pokemonDataList;
+  }
+
+  /**
+   * Getter para obtener la lista de Pokémon Temporal.
+   * @throws {Error} - Si los datos de Pokémon no han sido cargados.
+   * @returns {object[]} - La lista de Pokémon.
+   */
+  get pokemonInView() {
+    this.#checkDataLoaded();
+    return this.#data.dom.pokemonDivDataList;
   }
 
   /**
@@ -144,17 +181,22 @@ export class PokemonManager {
    */
   getPokemonByTypes(typeFilters, exactMatch = false) {
     this.#checkDataLoaded();
+
     const filteredPokemon = [];
+    const pokemonData = this.#data.pokemonDataList;
 
     // Convertir los tipos a minúsculas para comparación insensible a mayúsculas/minúsculas
     const normalizedTypeFilters = typeFilters.map((type) => type.toLowerCase());
 
+    // Almacenamos el nuevo filtro en la data de la clase
+    this.#data.dom.filters.byTypes = [normalizedTypeFilters, exactMatch];
+
     // Si "all" está presente en los filtros, devolver todos los Pokémon
     if (normalizedTypeFilters.includes("all")) {
-      return this.#pokemonDataList;
+      return pokemonData;
     }
 
-    this.#pokemonDataList.forEach((poke) => {
+    pokemonData.forEach((poke) => {
       const normalizedPokeTypes = poke.type.map((type) => type.toLowerCase());
 
       if (exactMatch) {
@@ -195,8 +237,17 @@ export class PokemonManager {
   getPokemonByProperty(property, order = "asc") {
     this.#checkDataLoaded();
 
-    const sortedPokemon = [...this.#pokemonDataList];
-    sortedPokemon.sort(this.#getSortFunction(property, order));
+    // Convertir los valores a minúsculas para comparación insensible a mayúsculas/minúsculas
+    const normalizedProperty = property.toLowerCase();
+    const normalizedOrder = order.toLowerCase();
+
+    // Almacenamos el nuevo filtro en la data de la clase
+    this.#data.dom.filters.byProperty = [normalizedProperty, normalizedOrder];
+
+    const sortedPokemon = this.#data.dom.pokemonDivDataList;
+    sortedPokemon.sort(
+      this.#getSortFunction(normalizedProperty, normalizedOrder)
+    );
 
     return sortedPokemon;
   }
@@ -230,7 +281,7 @@ export class PokemonManager {
    */
   #getPropertyValues(a, b, property) {
     switch (property) {
-      case "pokeId":
+      case "pokeid":
         return [a.pokeId, b.pokeId];
       case "name":
         return [a.name.toLowerCase(), b.name.toLowerCase()];
@@ -253,7 +304,9 @@ export class PokemonManager {
    */
   getPokemon(id) {
     this.#checkDataLoaded();
-    const pokemon = this.#pokemonDataList.find((poke) => poke.pokeId === id);
+    const pokemon = this.#data.pokemonDataList.find(
+      (poke) => poke.pokeId === id
+    );
     if (!pokemon) {
       console.error(`No se encontró el Pokémon con ID ${id}`);
       throw new Error(`No se encontró el Pokémon con ID ${id}`);
@@ -262,16 +315,51 @@ export class PokemonManager {
   }
 
   //todo|--- DOM ---|
+
+  /**
+   * Método privado para actualizar la lista temporal de Pokémon según un filtro de tipo y mostrarla en el DOM.
+   * Actualiza `pokemonDivDataList` con la lista proporcionada y luego muestra los Pokémon ordenados por la propiedad seleccionada.
+   * @param {object[]} pokemonData - La lista de Pokémon a mostrar, filtrada por tipo.
+   * @private
+   */
+  #updateViewPokemonTypeFilter(pokemonData) {
+    try {
+      // Actualizar la lista temporal de Pokémon en el DOM
+      this.#data.dom.pokemonDivDataList = [...pokemonData];
+
+      // Mostrar los Pokémon filtrados y ordenados por la propiedad seleccionada
+      this.displayPokemon(
+        this.getPokemonByProperty(
+          this.#data.dom.filters.byProperty[0], // Propiedad por la cual ordenar
+          this.#data.dom.filters.byProperty[1] // Orden de la ordenación (asc/desc)
+        )
+      );
+
+      // Log para depuración
+      console.log("pokemonDataList", this.#data.pokemonDataList.length);
+      console.log(
+        "pokemonTempDataList",
+        this.#data.dom.pokemonDivDataList.length
+      );
+      console.log(this.#data);
+    } catch (error) {
+      console.error(
+        "Error updating and displaying filtered Pokémon data:",
+        error
+      );
+    }
+  }
+
   /**
    * Método para mostrar uno o varios Pokémon en el DOM.
    * @param {object[]} listPokemon - Un array de objetos de Pokémon.
    */
   displayPokemon(listPokemon) {
-    this.pokemonDivList.innerHTML = "";
-    console.log(listPokemon.length);
+    this.#data.dom.elements.divList.innerHTML = "";
+    // console.log(listPokemon.length);
     listPokemon.forEach((poke) => {
       const div = this.#createPokemonElement(poke);
-      this.pokemonDivList.append(div);
+      this.#data.dom.elements.divList.append(div);
       this.#addImageHoverEffect(div, poke);
     });
   }
@@ -345,58 +433,110 @@ export class PokemonManager {
    * Añade eventos para 'click' y 'mousedown' en cada botón.
    * - El evento 'click' filtra y muestra Pokémon según el tipo seleccionado.
    * - El evento 'mousedown' inicia un temporizador que, si se cumple, filtra y muestra Pokémon con un filtrado exacto.
+   * - El evento 'change' en el filtro de propiedades filtra y muestra Pokémon según la propiedad seleccionada.
    * @private
    */
   #addEventListeners() {
-    this.fittedButtonsByType.forEach((button) => {
-      let typeFilters;
-      let holdActivated = false; // Flag para determinar si el hold ha sido activado
+    try {
+      this.#data.dom.elements.fittedButtonsType.forEach((button) => {
+        let typeFilters;
+        let holdActivated = false; // Flag para determinar si el hold ha sido activado
 
-      // Evento click
-      button.addEventListener("click", async (event) => {
-        if (!holdActivated) {
-          const buttonId = event.currentTarget.id;
+        // Evento click
+        button.addEventListener("click", async (event) => {
+          try {
+            if (!holdActivated) {
+              const buttonId = event.currentTarget.id;
 
-          if (buttonId === "see-all") {
-            typeFilters = ["all"];
-          } else {
-            typeFilters = [buttonId];
-          }
-          this.displayPokemon(this.getPokemonByTypes(typeFilters));
-          typeFilters = undefined;
-        }
-        holdActivated = false; // Resetear el flag después del click
-      });
+              if (buttonId === "see-all") {
+                typeFilters = ["all"];
+              } else {
+                typeFilters = [buttonId];
+              }
 
-      // Variables para manejar el evento de mantener pulsado
-      let holdTimeout;
-      const holdDuration = 500; // Duración en ms para considerar que el botón ha sido mantenido pulsado
-
-      // Evento mousedown para iniciar el temporizador
-      button.addEventListener("mousedown", (event) => {
-        if (!typeFilters) {
-          const button = event.currentTarget;
-          holdTimeout = setTimeout(() => {
-            const buttonId = button.id;
-
-            if (buttonId === "see-all") {
-              typeFilters = ["all"];
-            } else {
-              typeFilters = [buttonId];
+              // Guardar temporalmente los Pokémon filtrados y mostrarlos
+              this.#updateViewPokemonTypeFilter(
+                this.getPokemonByTypes(typeFilters)
+              );
+              typeFilters = undefined;
             }
-            this.displayPokemon(this.getPokemonByTypes(typeFilters, true));
-            holdActivated = true; // Marcar que el hold ha sido activado
-          }, holdDuration);
-        }
+            holdActivated = false; // Resetear el flag después del click
+          } catch (error) {
+            console.error(
+              `Error handling click event on button ${button.id}:`,
+              error
+            );
+          }
+        });
+
+        // Variables para manejar el evento de mantener pulsado
+        let holdTimeout;
+        const holdDuration = 500; // Duración en ms para considerar que el botón ha sido mantenido pulsado
+
+        // Evento mousedown para iniciar el temporizador
+        button.addEventListener("mousedown", (event) => {
+          try {
+            if (!typeFilters) {
+              const button = event.currentTarget;
+              holdTimeout = setTimeout(() => {
+                try {
+                  const buttonId = button.id;
+
+                  if (buttonId === "see-all") {
+                    typeFilters = ["all"];
+                  } else {
+                    typeFilters = [buttonId];
+                  }
+
+                  // Guardar temporalmente los Pokémon filtrados y mostrarlos
+                  this.#updateViewPokemonTypeFilter(
+                    this.getPokemonByTypes(typeFilters, true)
+                  );
+                  holdActivated = true; // Marcar que el hold ha sido activado
+                } catch (error) {
+                  console.error(
+                    `Error handling hold event on button ${button.id}:`,
+                    error
+                  );
+                }
+              }, holdDuration);
+            }
+          } catch (error) {
+            console.error(
+              `Error initiating hold on button ${button.id}:`,
+              error
+            );
+          }
+        });
+
+        // Eventos mouseup y mouseleave para cancelar el temporizador
+        const cancelHold = () => {
+          clearTimeout(holdTimeout);
+        };
+
+        button.addEventListener("mouseup", cancelHold);
+        button.addEventListener("mouseleave", cancelHold);
       });
 
-      // Eventos mouseup y mouseleave para cancelar el temporizador
-      const cancelHold = () => {
-        clearTimeout(holdTimeout);
-      };
+      // Manejo del filtrado de Pokémon por propiedades
+      this.#data.dom.elements.fittedSelectProperty.addEventListener(
+        "change",
+        (event) => {
+          try {
+            const selectedOption = event.target.value;
+            const [property, order] = selectedOption.split("-");
 
-      button.addEventListener("mouseup", cancelHold);
-      button.addEventListener("mouseleave", cancelHold);
-    });
+            const filteredPokemon = this.getPokemonByProperty(property, order);
+
+            // Mostrar los Pokémon filtrados
+            this.displayPokemon(filteredPokemon);
+          } catch (error) {
+            console.error("Error al filtrar los Pokémon:", error);
+          }
+        }
+      );
+    } catch (error) {
+      console.error("Error adding event listeners:", error);
+    }
   }
 }
