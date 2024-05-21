@@ -44,28 +44,28 @@
         </nav>
     </header>
     <main>
-        <div style="margin-bottom: 10px;">
-            <label for="pokemon-filter">Filter Pokemon by:</label>
-            <select id="pokemon-filter">
-                <optgroup label="PokeID">
-                    <option value="pokeId-asc">ID (Menor)</option>
-                    <option value="pokeId-desc">ID (Mayor)</option>
+        <div class="filter-container">
+            <label class="filter-label" for="pokemon-filter">Filtrar Pokémon por:</label>
+            <select id="pokemon-filter" class="filter-select">
+                <optgroup label="PokeID" class="filter-optgroup">
+                    <option value="pokeId-asc" class="filter-option">ID (Menor)</option>
+                    <option value="pokeId-desc" class="filter-option">ID (Mayor)</option>
                 </optgroup>
-                <optgroup label="Name">
-                    <option value="name-asc">Nombre (A-Z)</option>
-                    <option value="name-desc">Nombre (Z-A)</option>
+                <optgroup label="Name" class="filter-optgroup">
+                    <option value="name-asc" class="filter-option">Nombre (A-Z)</option>
+                    <option value="name-desc" class="filter-option">Nombre (Z-A)</option>
                 </optgroup>
-                <optgroup label="Type">
-                    <option value="type-asc">Tipo (A-Z)</option>
-                    <option value="type-desc">Tipo (Z-A)</option>
+                <optgroup label="Type" class="filter-optgroup">
+                    <option value="type-asc" class="filter-option">Tipo (A-Z)</option>
+                    <option value="type-desc" class="filter-option">Tipo (Z-A)</option>
                 </optgroup>
-                <optgroup label="Height (M)">
-                    <option value="statistics.height-asc">Altura (Menor)</option>
-                    <option value="statistics.height-desc">Altura (Mayor)</option>
+                <optgroup label="Height (M)" class="filter-optgroup">
+                    <option value="statistics.height-asc" class="filter-option">Altura (Menor)</option>
+                    <option value="statistics.height-desc" class="filter-option">Altura (Mayor)</option>
                 </optgroup>
-                <optgroup label="Weight (KG)">
-                    <option value="statistics.weight-asc">Peso (Menor)</option>
-                    <option value="statistics.weight-desc">Peso (Mayor)</option>
+                <optgroup label="Weight (KG)" class="filter-optgroup">
+                    <option value="statistics.weight-asc" class="filter-option">Peso (Menor)</option>
+                    <option value="statistics.weight-desc" class="filter-option">Peso (Mayor)</option>
                 </optgroup>
             </select>
         </div>

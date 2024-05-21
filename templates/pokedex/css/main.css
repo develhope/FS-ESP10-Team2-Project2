@@ -30,7 +30,6 @@
     --type-dragon: #7038F8;
     --type-steel: #B8B8D0;
     --type-fairy: #F0B6BC;
-
 }
 
 .dark-mode {
@@ -145,9 +144,58 @@ main {
     margin: 0 auto;
 }
 
-select {
-    background-color: var(--clr-white);
+
+/*? General Styles for the Select Element */
+/* Estilos para el Contenedor del Filtro */
+.filter-container {
+    margin-bottom: 10px;
 }
+
+/* Estilos para la Etiqueta del Filtro */
+.filter-label {
+    font-size: 14px;
+    display: block;
+    margin-bottom: 5px;
+    transition: color 0.3s;
+    font-weight: 400;
+}
+
+/* Estilos para el Select del Filtro */
+.filter-select {
+    width: 100%;
+    padding: 10px 15px;
+    margin-top: 5px;
+    border-radius: 5px;
+    border: 1px solid var(--clr-gray);
+    background-color: var(--clr-white);
+    font-size: 16px;
+    color: var(--clr-black);
+    /* appearance: none; */
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+}
+
+.filter-select:hover {
+    border-color: var(--clr-black);
+}
+
+.filter-select:focus {
+    border-color: var(--clr-black);
+    box-shadow: 0 0 5px rgba(28, 28, 28, 0.5);
+}
+
+/* Estilos para las Opciones del Filtro */
+.filter-option {
+    padding: 5px 10px;
+}
+
+/* Estilos para los Grupos de Opciones del Filtro */
+.filter-optgroup {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+
 
 .pokemon-all {
     display: grid;
