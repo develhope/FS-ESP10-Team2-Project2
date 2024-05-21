@@ -145,6 +145,10 @@ main {
     margin: 0 auto;
 }
 
+select {
+    background-color: var(--clr-white);
+}
+
 .pokemon-all {
     display: grid;
     grid-template-columns: 1fr;
