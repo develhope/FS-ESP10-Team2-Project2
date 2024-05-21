@@ -62,6 +62,8 @@ button {
 body {
     min-height: 100vh;
     background-color: var(--clr-gray);
+    transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+
 }
 
 
@@ -156,7 +158,6 @@ main {
     font-size: 14px;
     display: block;
     margin-bottom: 5px;
-    transition: color 0.3s;
     font-weight: 400;
 }
 
@@ -172,7 +173,6 @@ main {
     color: var(--clr-black);
     /* appearance: none; */
     outline: none;
-    transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
 }
 
 .filter-select:hover {
