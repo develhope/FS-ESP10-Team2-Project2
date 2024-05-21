@@ -50,6 +50,7 @@ export class PokemonManager {
    * @throws {Error} - Si el parámetro `count` no es válido o si ocurre un error durante la carga de los datos.
    */
   async init(count) {
+    // Validar el parámetro count
     if (!Number.isInteger(count) || count < 1 || count > 1025) {
       throw new Error(
         "La cantidad de Pokémon debe ser un número entero entre 1 y 1025."
@@ -57,24 +58,30 @@ export class PokemonManager {
     }
 
     try {
+      // Mostrar el bloque de carga
       this.#toggleLoading(true);
+
+      // Cargar los datos de los Pokémon
       await this.#loadPokemonList(count);
     } catch (error) {
+      // Manejar errores durante la carga de los datos
       console.error("Error al inicializar la lista de Pokémon:", error);
       throw new Error(
         "Error al inicializar la lista de Pokémon. Por favor, inténtelo de nuevo."
       );
+    } finally {
+      // Ocultar el bloque de carga independientemente del resultado de la carga
+      this.#toggleLoading(false);
     }
 
+    // Establecer la lista de Pokémon como lista temporal y marcar que los datos están cargados
     this.#data.dom.pokemonDivDataList = [...this.#data.pokemonDataList];
-    this.#toggleLoading(false);
+    this.#data.pokemonIsLoaded = true;
+
+    // Actualizar la vista de los Pokémon filtrados por número de Pokédex de manera ascendente
     this.#updateViewPokemonTypeFilter(
       this.getPokemonByProperty("pokeId", "asc")
     );
-    // this.#updateViewPokemonTypeFilter  (this.#data.pokemonDataList);
-
-    // this.#saveListOfTempPokemon(this.#data.pokemonDataList);
-    // this.displayPokemon(this.#data.dom.pokemonDivDataList);
   }
 
   /**
@@ -92,8 +99,6 @@ export class PokemonManager {
     this.#data.pokemonDataList = results
       .filter((result) => result.status === "fulfilled")
       .map((result) => this.#transformPokemon(result.value));
-
-    this.#data.pokemonIsLoaded = true;
   }
 
   /**
