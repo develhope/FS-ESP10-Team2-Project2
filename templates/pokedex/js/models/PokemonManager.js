@@ -6,6 +6,7 @@ export class PokemonManager {
    * Constructor de la clase PokemonManager.
    * @param {HTMLElement} pokemonDivList - El contenedor en el DOM donde se mostrarán los Pokémon.
    * @param {NodeListOf<HTMLElement>} fittedButtonsByType - La lista de botones del header para filtrar Pokémon por tipo.
+   * @param {HTMLElement} fittedSelectByProperty - El elemento select para filtrar Pokémon por propiedad.
    * @throws {Error} - Si alguno de los parámetros requeridos no es proporcionado.
    */
   constructor(pokemonDivList, fittedButtonsByType, fittedSelectByProperty) {
@@ -35,14 +36,17 @@ export class PokemonManager {
         byTypes: [],
         byProperty: [],
       },
-
       pokemonDivDataList: [],
     },
     pokemonDataList: [],
     pokemonIsLoaded: false,
   };
 
-  static #URL = "https://pokeapi.co/api/v2/pokemon/";
+  static #addresses = {
+    pokemon: "https://pokeapi.co/api/v2/pokemon/",
+    species: "https://pokeapi.co/api/v2/pokemon-species/",
+    habitat: "https://pokeapi.co/api/v2/pokemon-habitat/",
+  };
 
   /**
    * Método para inicializar la lista de Pokémon cargando datos desde la API.
@@ -50,7 +54,6 @@ export class PokemonManager {
    * @throws {Error} - Si el parámetro `count` no es válido o si ocurre un error durante la carga de los datos.
    */
   async init(count) {
-    // Validar el parámetro count
     if (!Number.isInteger(count) || count < 1 || count > 1025) {
       throw new Error(
         "La cantidad de Pokémon debe ser un número entero entre 1 y 1025."
@@ -58,27 +61,19 @@ export class PokemonManager {
     }
 
     try {
-      // Mostrar el bloque de carga
       this.#toggleLoading(true);
-
-      // Cargar los datos de los Pokémon
       await this.#loadPokemonList(count);
     } catch (error) {
-      // Manejar errores durante la carga de los datos
       console.error("Error al inicializar la lista de Pokémon:", error);
       throw new Error(
         "Error al inicializar la lista de Pokémon. Por favor, inténtelo de nuevo."
       );
     } finally {
-      // Ocultar el bloque de carga independientemente del resultado de la carga
       this.#toggleLoading(false);
     }
 
-    // Establecer la lista de Pokémon como lista temporal y marcar que los datos están cargados
     this.#data.dom.pokemonDivDataList = [...this.#data.pokemonDataList];
     this.#data.pokemonIsLoaded = true;
-
-    // Actualizar la vista de los Pokémon filtrados por número de Pokédex de manera ascendente
     this.#updateViewPokemonTypeFilter(
       this.getPokemonByProperty("pokeId", "asc")
     );
@@ -94,11 +89,12 @@ export class PokemonManager {
     const promises = Array.from({ length: count }, (_, index) =>
       this.#fetchPokemon(index + 1)
     );
+
     const results = await Promise.allSettled(promises);
 
     this.#data.pokemonDataList = results
       .filter((result) => result.status === "fulfilled")
-      .map((result) => this.#transformPokemon(result.value));
+      .map((result) => result.value);
   }
 
   /**
@@ -109,23 +105,38 @@ export class PokemonManager {
    * @private
    */
   async #fetchPokemon(id) {
-    const response = await fetch(`${PokemonManager.#URL}${id}`);
-    if (!response.ok) {
+    const pokemonResponse = await fetch(
+      `${PokemonManager.#addresses.pokemon}${id}`
+    );
+    if (!pokemonResponse.ok) {
       throw new Error(
-        `Error al obtener los datos del Pokémon con ID ${id}: ${response.statusText}`
+        `Error al obtener los datos del Pokémon con ID ${id}: ${pokemonResponse.statusText}`
       );
     }
-    return response.json();
+    const pokemonData = await pokemonResponse.json();
+
+    const speciesResponse = await fetch(
+      `${PokemonManager.#addresses.species}${id}`
+    );
+    if (!speciesResponse.ok) {
+      throw new Error(
+        `Error al obtener los datos de la especie del Pokémon con ID ${id}: ${speciesResponse.statusText}`
+      );
+    }
+    const speciesData = await speciesResponse.json();
+
+    return this.#transformPokemon(pokemonData, speciesData);
   }
 
   /**
    * Método privado para transformar los datos del Pokémon en el formato deseado.
    * Convierte la altura de decímetros a metros y el peso de hectogramos a kilogramos.
    * @param {object} poke - Los datos originales del Pokémon.
+   * @param {object} species - Los datos de la especie del Pokémon.
    * @returns {object} - Los datos transformados del Pokémon.
    * @private
    */
-  #transformPokemon(poke) {
+  #transformPokemon(poke, species) {
     return {
       pokeId: poke.id,
       name: poke.name,
@@ -141,8 +152,31 @@ export class PokemonManager {
         ],
       },
       statistics: {
-        height: [poke.height, (poke.height / 10).toFixed(2)], // Convertir decímetros a metros y redondear a 2 decimales
-        weight: [poke.weight, (poke.weight / 10).toFixed(2)], // Convertir hectogramos a kilogramos y redondear a 2 decimales
+        height: {
+          unitOfMeasure: {
+            decimeters: poke.height,
+            meters: (poke.height / 10).toFixed(2),
+          },
+        },
+        weight: {
+          unitOfMeasure: {
+            hectograms: poke.weight,
+            kilograms: (poke.weight / 10).toFixed(2),
+          },
+        },
+        hp: poke.stats[0].base_stat,
+        attack: poke.stats[1].base_stat,
+        defense: poke.stats[2].base_stat,
+        special_attack: poke.stats[3].base_stat,
+        special_defense: poke.stats[4].base_stat,
+        speed: poke.stats[5].base_stat,
+      },
+      value: {
+        base_experience: poke.base_experience,
+        movements: poke.moves.length,
+        capture_rate_percent: Math.round((species.capture_rate * 100) / 255),
+        isLegendary: species.is_legendary,
+        isMythical: species.is_mythical,
       },
     };
   }
@@ -296,9 +330,15 @@ export class PokemonManager {
       case "type":
         return [a.type[0].toLowerCase(), b.type[0].toLowerCase()]; // Ordenar por el primer tipo
       case "statistics.height":
-        return [a.statistics.height[0], b.statistics.height[0]];
+        return [
+          a.statistics.height.unitOfMeasure.decimeters,
+          b.statistics.height.unitOfMeasure.decimeters,
+        ];
       case "statistics.weight":
-        return [a.statistics.weight[0], b.statistics.weight[0]];
+        return [
+          a.statistics.weight.unitOfMeasure.hectograms,
+          b.statistics.weight.unitOfMeasure.hectograms,
+        ];
       default:
         throw new Error(`Propiedad de ordenación desconocida: ${property}`);
     }
@@ -344,12 +384,12 @@ export class PokemonManager {
       );
 
       // Log para depuración
-      console.log("pokemonDataList", this.#data.pokemonDataList.length);
+      // console.log("pokemonDataList", this.#data.pokemonDataList.length);
       console.log(
         "pokemonTempDataList",
         this.#data.dom.pokemonDivDataList.length
       );
-      console.log(this.#data);
+      // console.log(this.#data);
     } catch (error) {
       console.error(
         "Error updating and displaying filtered Pokémon data:",
@@ -446,8 +486,8 @@ export class PokemonManager {
           ${types}
         </div>
         <div class="pokemon-stats">
-          <p class="stat">${poke.statistics.height[1]}m</p>
-          <p class="stat">${poke.statistics.weight[1]}kg</p>
+          <p class="stat">${poke.statistics.height.unitOfMeasure.meters}m</p>
+          <p class="stat">${poke.statistics.weight.unitOfMeasure.kilograms}kg</p>
         </div>
       </div>
     `;

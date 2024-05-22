@@ -13,8 +13,8 @@ darkModeToggle.addEventListener("click", () => {
   body.classList.toggle("dark-mode");
 });
 
-// Cambia a modo oscuro inicialmente (puedes quitar esto si no deseas el modo oscuro por defecto)
-// body.classList.toggle("dark-mode");
+//! Cambia a modo oscuro inicialmente (puedes quitar esto si no deseas el modo oscuro por defecto)
+body.classList.toggle("dark-mode");
 
 // Creación de la instancia del gestor de Pokémon
 const pokemonManager = new PokemonManager(
@@ -25,7 +25,7 @@ const pokemonManager = new PokemonManager(
 
 // Inicia la carga de los Pokémon
 pokemonManager
-  .init(1025) // Número de Pokémon a cargar
+  .init(1025) //! Número de Pokémon a descargar
   .then(() => {
     try {
       // console.log(`Pokémon Totales: ${pokemonManager.pokemon.length}`);
