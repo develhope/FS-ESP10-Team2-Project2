@@ -142,14 +142,20 @@ export class PokemonManager {
       name: poke.name,
       type: poke.types.map((type) => type.type.name),
       images: {
-        illustration: [
-          poke.sprites.other["official-artwork"].front_default,
-          poke.sprites.other["official-artwork"].front_shiny,
-        ],
-        rendering: [
-          poke.sprites.other.home.front_default,
-          poke.sprites.other.home.front_shiny,
-        ],
+        illustration: {
+          default: poke.sprites.other["official-artwork"].front_default,
+          shiny: poke.sprites.other["official-artwork"].front_shiny,
+        },
+        rendering: {
+          default: poke.sprites.other.home.front_default,
+          shiny: poke.sprites.other.home.front_shiny,
+        },
+        gif: {
+          back_default: poke.sprites.other.showdown.back_default,
+          back_shiny: poke.sprites.other.showdown.back_shiny,
+          front_default: poke.sprites.other.showdown.front_default,
+          front_shiny: poke.sprites.other.showdown.front_shiny,
+        },
       },
       statistics: {
         height: {
@@ -475,7 +481,7 @@ export class PokemonManager {
     div.innerHTML = `
       <p class="pokemon-id-back">#${pokeId}</p>
       <div class="pokemon-image">
-        <img src="${poke.images.illustration[0]}" alt="${poke.name}">
+        <img src="${poke.images.illustration.default}" alt="${poke.name}">
       </div>
       <div class="pokemon-info">
         <div class="name-container">
@@ -507,7 +513,7 @@ export class PokemonManager {
     div.addEventListener("mouseenter", () => {
       image.classList.add("hidden");
       setTimeout(() => {
-        image.src = poke.images.illustration[1];
+        image.src = poke.images.illustration.shiny;
         image.classList.remove("hidden");
       }, 200); // Debe coincidir con la duración de la transición en el CSS
     });
