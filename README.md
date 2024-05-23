@@ -1,8 +1,6 @@
 # @codevaried Reserved Space
 
-## Notas
-
-### Actualizaciones Pendientes
+## Actualizaciones Pendientes
 
 1. **Traspasar el ".filter-container" (div) del HTML al JS**:
 
@@ -14,9 +12,9 @@
    ?>
    ```
 
-### Template Pokedex
+## Template Pokedex
 
-#### Ideas a Implementar
+### Ideas a Implementar
 
 1. Implementar un sistema automático de evaluación de precio en monedas para cada Pokémon basado en sus propiedades más relevantes.
 
