@@ -1,4 +1,4 @@
-# @codevaried Reserved Space
+# Template Pokedex
 
 ## Actualizaciones Pendientes
 
@@ -11,8 +11,6 @@
    <div class="filter-container">
    ?>
    ```
-
-## Template Pokedex
 
 ### Ideas a Implementar
 
