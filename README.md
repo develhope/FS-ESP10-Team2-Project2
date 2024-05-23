@@ -4,9 +4,9 @@
 
 1. **Traspasar el ".filter-container" (div) del HTML al JS**:
 
-   - **Más información**: Si es posible, implementar esta actualización en el módulo `PokemonDOMHandler.js`.
+   - **Más información**: Si es posible, implementar esta actualización en el módulo _PokemonDOMHandler.js_.
 
-   ```
+   ```HTML
    <?html
    <div class="filter-container">
    ?>
