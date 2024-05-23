@@ -25,7 +25,7 @@ const pokemonManager = new PokemonManager(
 
 // Inicia la carga de los Pokémon
 pokemonManager
-  .init(1025) //! Número de Pokémon a descargar
+  .init(151) //! Número de Pokémon a descargar
   .then(() => {
     try {
       // console.log(`Pokémon Totales: ${pokemonManager.pokemon.length}`);
