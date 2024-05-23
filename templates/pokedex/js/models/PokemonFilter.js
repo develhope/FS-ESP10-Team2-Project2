@@ -130,15 +130,9 @@ export class PokemonFilter {
       case "type":
         return [a.type[0].toLowerCase(), b.type[0].toLowerCase()]; // Ordenar por el primer tipo
       case "statistics.height":
-        return [
-          a.statistics.height.unitOfMeasure.decimeters,
-          b.statistics.height.unitOfMeasure.decimeters,
-        ];
+        return [a.statistics.height.decimeters, b.statistics.height.decimeters];
       case "statistics.weight":
-        return [
-          a.statistics.weight.unitOfMeasure.hectograms,
-          b.statistics.weight.unitOfMeasure.hectograms,
-        ];
+        return [a.statistics.weight.hectograms, b.statistics.weight.hectograms];
       default:
         throw new Error(`Propiedad de ordenación desconocida: ${property}`);
     }
