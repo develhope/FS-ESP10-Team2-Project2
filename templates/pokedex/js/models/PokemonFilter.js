@@ -61,11 +61,26 @@ export class PokemonFilter {
 
   /**
    * Método para obtener una lista de Pokémon ordenados por una propiedad específica.
+   * @param {object[]} pokemonDataList - La lista de datos de Pokémon a ordenar.
    * @param {string} property - La propiedad por la cual ordenar. Puede ser "pokeId", "name", "type", "statistics.height", "statistics.weight".
    * @param {string} [order='asc'] - El orden de la ordenación. Puede ser "asc" para ascendente o "desc" para descendente.
    * @returns {object[]} - Un array de objetos de Pokémon ordenados según la propiedad y el orden especificados.
+   * @throws {Error} - Si la propiedad de ordenación es desconocida.
    */
   getPokemonByProperty(pokemonDataList, property, order = "asc") {
+    // Validación de los parámetros
+    if (!Array.isArray(pokemonDataList)) {
+      throw new TypeError(
+        "pokemonDataList debe ser un array de objetos Pokémon."
+      );
+    }
+    if (typeof property !== "string") {
+      throw new TypeError("property debe ser una cadena de caracteres.");
+    }
+    if (typeof order !== "string") {
+      throw new TypeError("order debe ser una cadena de caracteres.");
+    }
+
     // Convertir los valores a minúsculas para comparación insensible a mayúsculas/minúsculas
     const normalizedProperty = property.toLowerCase();
     const normalizedOrder = order.toLowerCase();

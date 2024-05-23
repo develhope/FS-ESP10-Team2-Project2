@@ -1,8 +1,8 @@
 export class PokemonDOMHandler {
   /**
    * Constructor de la clase PokemonDOMHandler.
-   * @param {HTMLElement} elements.divList - El contenedor en el DOM donde se mostrarán los Pokémon.
-   * @throws {Error} - Si alguno de los parámetros requeridos no es proporcionado.
+   * @param {HTMLElement} divList - El contenedor en el DOM donde se mostrarán los Pokémon.
+   * @throws {Error} - Si el parámetro requerido no es proporcionado.
    */
   constructor(divList) {
     if (!divList) {
@@ -11,49 +11,51 @@ export class PokemonDOMHandler {
 
     this.divList = divList;
   }
-  
+
   /**
-   * Método privado para agregar o eliminar un div de carga.
+   * Método para agregar o eliminar un div de carga.
    * @param {boolean} show - Booleano que indica si se debe mostrar (true) o eliminar (false) el div de carga.
    */
   toggleLoading(show) {
     const loadingDiv = document.querySelector(".loading");
 
-    if (show) {
-      // Si show es true y el div de carga no existe, lo creamos y lo añadimos al cuerpo del documento
-      if (!loadingDiv) {
-        const div = document.createElement("div");
-        div.classList.add("loading");
-        document.body.appendChild(div);
-
-        // Agregar estilos CSS para el bloque de carga
-        const style = document.createElement("style");
-        style.textContent = `
-        .loading {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 40px;
-          height: 40px;
-          border: 4px solid #f3f3f3; /* Gris claro */
-          border-top: 4px solid #3498db; /* Azul */
-          border-radius: 50%;
-          animation: spin 1s linear infinite; /* Animación de rotación */
-        }
-        @keyframes spin {
-          0% {transform: rotate(0deg);}
-          100% {transform: rotate(360deg);}
-        }
-      `;
-        document.head.appendChild(style);
-      }
-    } else {
-      // Si show es false y el div de carga existe, lo eliminamos
-      if (loadingDiv) {
-        loadingDiv.remove();
-      }
+    if (show && !loadingDiv) {
+      this.#createLoadingDiv();
+    } else if (!show && loadingDiv) {
+      loadingDiv.remove();
     }
+  }
+
+  /**
+   * Método privado para crear el div de carga y añadirlo al DOM.
+   * @private
+   */
+  #createLoadingDiv() {
+    const div = document.createElement("div");
+    div.classList.add("loading");
+    document.body.appendChild(div);
+
+    // Agregar estilos CSS para el bloque de carga
+    const style = document.createElement("style");
+    style.textContent = `
+      .loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 40px;
+        height: 40px;
+        border: 4px solid #f3f3f3; /* Gris claro */
+        border-top: 4px solid #3498db; /* Azul */
+        border-radius: 50%;
+        animation: spin 1s linear infinite; /* Animación de rotación */
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    `;
+    document.head.appendChild(style);
   }
 
   /**
@@ -62,7 +64,7 @@ export class PokemonDOMHandler {
    */
   displayPokemon(pokemonDataList) {
     this.divList.innerHTML = "";
-    // console.log(pokemonDataList.length);
+
     pokemonDataList.forEach((poke) => {
       const div = this.#createPokemonElement(poke);
       this.divList.append(div);
@@ -99,8 +101,8 @@ export class PokemonDOMHandler {
           ${types}
         </div>
         <div class="pokemon-stats">
-          <p class="stat">${poke.statistics.height.unitOfMeasure.meters}m</p>
-          <p class="stat">${poke.statistics.weight.unitOfMeasure.kilograms}kg</p>
+          <p class="stat">${poke.statistics.height.meters}m</p>
+          <p class="stat">${poke.statistics.weight.kilograms}kg</p>
         </div>
       </div>
     `;

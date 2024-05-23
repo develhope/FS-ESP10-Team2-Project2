@@ -1,16 +1,22 @@
 export class PokemonDataHandler {
-  static addresses = {
-    pokemon: "https://pokeapi.co/api/v2/pokemon/",
-    species: "https://pokeapi.co/api/v2/pokemon-species/",
-    habitat: "https://pokeapi.co/api/v2/pokemon-habitat/",
+  static API_URLS = {
+    POKEMON: "https://pokeapi.co/api/v2/pokemon/",
+    SPECIES: "https://pokeapi.co/api/v2/pokemon-species/",
+    HABITAT: "https://pokeapi.co/api/v2/pokemon-habitat/",
   };
 
   /**
-   * Método privado para cargar la lista de Pokémon desde la API.
+   * Método para cargar la lista de Pokémon desde la API.
    * @param {number} count - La cantidad de Pokémon a cargar.
-   * @returns {Promise<void>}
+   * @returns {Promise<object[]>} - Una promesa que resuelve con la lista de datos de Pokémon.
    */
   async loadPokemonList(count) {
+    if (!Number.isInteger(count) || count < 1 || count > 1025) {
+      throw new Error(
+        "La cantidad de Pokémon debe ser un número entero entre 1 y 1025."
+      );
+    }
+
     const promises = Array.from({ length: count }, (_, index) =>
       this.#fetchPokemon(index + 1)
     );
@@ -30,28 +36,34 @@ export class PokemonDataHandler {
    * @private
    */
   async #fetchPokemon(id) {
-    const pokemonResponse = await fetch(
-      `${PokemonDataHandler.addresses.pokemon}${id}`
-    );
-    if (!pokemonResponse.ok) {
-      throw new Error(
-        `Error al obtener los datos del Pokémon con ID ${id}: ${pokemonResponse.statusText}`
-      );
+    try {
+      const [pokemonResponse, speciesResponse] = await Promise.all([
+        fetch(`${PokemonDataHandler.API_URLS.POKEMON}${id}`),
+        fetch(`${PokemonDataHandler.API_URLS.SPECIES}${id}`),
+      ]);
+
+      if (!pokemonResponse.ok) {
+        throw new Error(
+          `Error al obtener los datos del Pokémon con ID ${id}: ${pokemonResponse.statusText}`
+        );
+      }
+
+      if (!speciesResponse.ok) {
+        throw new Error(
+          `Error al obtener los datos de la especie del Pokémon con ID ${id}: ${speciesResponse.statusText}`
+        );
+      }
+
+      const [pokemonData, speciesData] = await Promise.all([
+        pokemonResponse.json(),
+        speciesResponse.json(),
+      ]);
+
+      return this.#transformPokemon(pokemonData, speciesData);
+    } catch (error) {
+      console.error(`Error al obtener datos con ID de Pokémon ${id}:`, error);
+      throw error;
     }
-
-    const pokemonData = await pokemonResponse.json();
-
-    const speciesResponse = await fetch(
-      `${PokemonDataHandler.addresses.species}${id}`
-    );
-    if (!speciesResponse.ok) {
-      throw new Error(
-        `Error al obtener los datos de la especie del Pokémon con ID ${id}: ${speciesResponse.statusText}`
-      );
-    }
-    const speciesData = await speciesResponse.json();
-
-    return this.#transformPokemon(pokemonData, speciesData);
   }
 
   /**
@@ -85,16 +97,12 @@ export class PokemonDataHandler {
       },
       statistics: {
         height: {
-          unitOfMeasure: {
-            decimeters: poke.height,
-            meters: (poke.height / 10).toFixed(2),
-          },
+          decimeters: poke.height,
+          meters: (poke.height / 10).toFixed(2),
         },
         weight: {
-          unitOfMeasure: {
-            hectograms: poke.weight,
-            kilograms: (poke.weight / 10).toFixed(2),
-          },
+          hectograms: poke.weight,
+          kilograms: (poke.weight / 10).toFixed(2),
         },
         hp: poke.stats[0].base_stat,
         attack: poke.stats[1].base_stat,
