@@ -2,13 +2,13 @@
 
 ## Actualizaciones Pendientes
 
-1. [] **Traspasar el **div** `.filter-container` del HTML al JS**:
+- [] **Traspasar el **div** `.filter-container` del HTML al JS**:
 
-   - **Más información**: Si es posible, implementar esta actualización en el módulo [`PokemonDOMHandler.js`](templates/pokedex/js/models/PokemonDataHandler.js).
+  - **Más información**: Si es posible, implementar esta actualización en el módulo [`PokemonDOMHandler.js`](templates/pokedex/js/models/PokemonDataHandler.js).
 
-   ```HTML
-   <div class="filter-container">
-   ```
+  ```HTML
+  <div class="filter-container">
+  ```
 
 ### Ideas a Implementar
 
