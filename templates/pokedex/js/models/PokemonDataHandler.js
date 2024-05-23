@@ -7,25 +7,45 @@ export class PokemonDataHandler {
 
   /**
    * Método para cargar la lista de Pokémon desde la API.
-   * @param {number} count - La cantidad de Pokémon a cargar.
+   * @param {number} count - La cantidad de Pokémon a cargar. Debe ser un número entero entre 1 y 1025.
    * @returns {Promise<object[]>} - Una promesa que resuelve con la lista de datos de Pokémon.
    */
   async loadPokemonList(count) {
+    // Validar que count es un número entero entre 1 y 1025
     if (!Number.isInteger(count) || count < 1 || count > 1025) {
       throw new Error(
         "La cantidad de Pokémon debe ser un número entero entre 1 y 1025."
       );
     }
 
-    const promises = Array.from({ length: count }, (_, index) =>
-      this.#fetchPokemon(index + 1)
-    );
+    //! Bloque para evitar el error "ERR_INSUFFICIENT_RESOURCES"
 
-    const results = await Promise.allSettled(promises);
+    const batchSize = 100; // Tamaño del lote de solicitudes simultáneas
+    const batches = Math.ceil(count / batchSize); // Calcular la cantidad de lotes necesarios
+    let results = []; // Inicializar el array para almacenar los resultados
 
-    return results
-      .filter((result) => result.status === "fulfilled")
-      .map((result) => result.value);
+    // Procesar cada lote de solicitudes
+    for (let i = 0; i < batches; i++) {
+      // Crear las promesas para el lote actual
+      const batchPromises = Array.from(
+        { length: batchSize },
+        (_, index) => i * batchSize + index + 1
+      )
+        .filter((id) => id <= count) // Filtrar IDs que estén dentro del rango de count
+        .map((id) => this.#fetchPokemon(id)); // Mapear IDs a promesas de fetch
+
+      // Esperar a que se resuelvan todas las promesas del lote actual
+      const batchResults = await Promise.allSettled(batchPromises);
+
+      // Filtrar resultados exitosos y agregar sus valores al array results
+      results = results.concat(
+        batchResults
+          .filter((result) => result.status === "fulfilled") // Filtrar promesas cumplidas
+          .map((result) => result.value) // Extraer el valor de las promesas cumplidas
+      );
+    }
+
+    return results; // Devolver el array de resultados
   }
 
   /**

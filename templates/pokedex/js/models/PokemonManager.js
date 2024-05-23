@@ -46,17 +46,11 @@ export class PokemonManager {
 
   /**
    * Inicializa la lista de Pokémon cargando datos desde la API.
-   * @param {number} count - La cantidad de Pokémon a cargar. Debe ser un número entero entre 1 y 1025.
+   * @param {number} count - La cantidad de Pokémon a cargar.
    * @returns {Promise<void>} - Una promesa que se resuelve cuando los datos están cargados y la vista actualizada.
    * @throws {Error} - Si el parámetro `count` no es válido o si ocurre un error durante la carga de los datos.
    */
   async init(count) {
-    if (!Number.isInteger(count) || count < 1 || count > 1025) {
-      throw new Error(
-        "La cantidad de Pokémon debe ser un número entero entre 1 y 1025."
-      );
-    }
-
     this.PokemonDOMHandler.toggleLoading(true);
 
     try {
@@ -68,7 +62,6 @@ export class PokemonManager {
         this.#data.dom.filters.byProperty[1]
       );
     } catch (error) {
-      console.error("Error al inicializar la lista de Pokémon:", error);
       throw new Error(
         "Error al inicializar la lista de Pokémon. Por favor, inténtelo de nuevo."
       );
