@@ -1,42 +1,42 @@
 /**
  * @typedef {Object} Pokemon
- * @property {number} pokeId - The ID of the Pokémon.
- * @property {string} name - The name of the Pokémon.
- * @property {string[]} type - An array of the Pokémon's types.
- * @property {Object} images - An object containing image URLs of the Pokémon.
- * @property {Object} images.illustration - An object containing illustration URLs.
- * @property {string} images.illustration.default - The default illustration URL.
- * @property {string} images.illustration.shiny - The shiny illustration URL.
- * @property {Object} images.rendering - An object containing rendering URLs.
- * @property {string} images.rendering.default - The default rendering URL.
- * @property {string} images.rendering.shiny - The shiny rendering URL.
- * @property {Object} images.gif - An object containing GIF URLs.
- * @property {string} images.gif.back_default - The back default GIF URL.
- * @property {string} images.gif.back_shiny - The back shiny GIF URL.
- * @property {string} images.gif.front_default - The front default GIF URL.
- * @property {string} images.gif.front_shiny - The front shiny GIF URL.
- * @property {Object} statistics - An object containing the Pokémon's statistics.
- * @property {Object} statistics.height - An object containing height measurements.
- * @property {number} statistics.height.centimeter - Height in centimeters.
- * @property {number} statistics.height.decimeters - Height in decimeters.
- * @property {number} statistics.height.meters - Height in meters.
- * @property {Object} statistics.weight - An object containing weight measurements.
- * @property {number} statistics.weight.gram - Weight in grams.
- * @property {number} statistics.weight.hectograms - Weight in hectograms.
- * @property {number} statistics.weight.kilograms - Weight in kilograms.
- * @property {number} statistics.weight.tons - Weight in tons.
- * @property {number} statistics.hp - The hit points of the Pokémon.
- * @property {number} statistics.attack - The attack stat of the Pokémon.
- * @property {number} statistics.defense - The defense stat of the Pokémon.
- * @property {number} statistics.special_attack - The special attack stat of the Pokémon.
- * @property {number} statistics.special_defense - The special defense stat of the Pokémon.
- * @property {number} statistics.speed - The speed stat of the Pokémon.
- * @property {Object} value - An object containing the Pokémon's value attributes.
- * @property {number} value.base_experience - The base experience of the Pokémon.
- * @property {number} value.movements - The number of movements the Pokémon has.
- * @property {number} value.capture_rate_percent - The capture rate percentage of the Pokémon.
- * @property {boolean} value.isLegendary - Whether the Pokémon is legendary.
- * @property {boolean} value.isMythical - Whether the Pokémon is mythical.
+ * @property {number} pokeId - El ID del Pokémon.
+ * @property {string} name - El nombre del Pokémon.
+ * @property {string[]} type - Un array de tipos de Pokémon.
+ * @property {Object} images - Un objeto que contiene URL de imágenes del Pokémon.
+ * @property {Object} images.illustration - Un objeto que contiene URL de imagen de ilustración.
+ * @property {string} images.illustration.default - La URL de ilustración predeterminada.
+ * @property {string} images.illustration.shiny - La URL de la ilustración brillante.
+ * @property {Object} images.rendering - Un objeto que contiene URL de una imagen tipo renderizado 3d.
+ * @property {string} images.rendering.default - La URL de renderizado 3d predeterminada.
+ * @property {string} images.rendering.shiny - La URL de renderizado 3d brillante.
+ * @property {Object} images.gif - Un objeto que contiene URL de GIF.
+ * @property {string} images.gif.back_default - La URL GIF predeterminada posterior.
+ * @property {string} images.gif.back_shiny - La URL GIF brillante posterior.
+ * @property {string} images.gif.front_default - La URL GIF predeterminada frontal.
+ * @property {string} images.gif.front_shiny - La URL del GIF brillante frontal.
+ * @property {Object} statistics - Un objeto que contiene las estadísticas del Pokémon.
+ * @property {Object} statistics.height - Un objeto que contiene medidas de altura.
+ * @property {number} statistics.height.centimeter - Altura en centímetros.
+ * @property {number} statistics.height.decimeters - Altura en decímetros.
+ * @property {number} statistics.height.meters - Altura en metros.
+ * @property {Object} statistics.weight - Un objeto que contiene medidas de peso.
+ * @property {number} statistics.weight.gram - Peso en gramos.
+ * @property {number} statistics.weight.hectograms - Peso en hectogramos.
+ * @property {number} statistics.weight.kilograms - Peso en kilogramos.
+ * @property {number} statistics.weight.tons - Peso en toneladas.
+ * @property {number} statistics.hp - Los puntos de vida de los Pokémon.
+ * @property {number} statistics.attack - La estadística de ataque del Pokémon.
+ * @property {number} statistics.defense - La estadística de defensa del Pokémon.
+ * @property {number} statistics.special_attack - La estadística de ataque especial del Pokémon.
+ * @property {number} statistics.special_defense - La estadística de defensa especial de los Pokémon.
+ * @property {number} statistics.speed - La estadística de velocidad del Pokémon.
+ * @property {Object} value - Un objeto que contiene los atributos de valor del Pokémon.
+ * @property {number} value.base_experience - La experiencia base de los Pokémon.
+ * @property {number} value.movements - La cantidad de movimientos que tiene el Pokémon.
+ * @property {number} value.capture_rate_percent - El porcentaje de tasa de captura del Pokémon.
+ * @property {boolean} value.isLegendary - Si el Pokémon es legendario.
+ * @property {boolean} value.isMythical - Si el Pokémon es mítico.
  */
 
 /** @type {Pokemon} */
