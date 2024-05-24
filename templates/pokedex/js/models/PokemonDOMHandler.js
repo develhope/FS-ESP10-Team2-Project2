@@ -79,11 +79,22 @@ export class PokemonDOMHandler {
    * @private
    */
   #createPokemonElement(poke) {
+    const pokeId = poke.pokeId.toString().padStart(3, "0");
+    const name = poke.name.toUpperCase();
+
     const types = poke.type
       .map((type) => `<p class="${type} type">${type}</p>`)
       .join("");
 
-    const pokeId = poke.pokeId.toString().padStart(3, "0");
+    const height =
+      poke.statistics.height.meters < 1
+        ? poke.statistics.height.centimeter + "cm"
+        : poke.statistics.height.meters + "M";
+
+    const weight =
+      poke.statistics.weight.kilograms < 1
+        ? poke.statistics.weight.gram + "g"
+        : poke.statistics.weight.kilograms + "kg";
 
     const div = document.createElement("div");
     div.classList.add("pokemon");
@@ -95,14 +106,14 @@ export class PokemonDOMHandler {
       <div class="pokemon-info">
         <div class="name-container">
           <p class="pokemon-id">#${pokeId}</p>
-          <h2 class="pokemon-name">${poke.name}</h2>
+          <h2 class="pokemon-name">${name}</h2>
         </div>
         <div class="pokemon-types">
           ${types}
         </div>
         <div class="pokemon-stats">
-          <p class="stat">${poke.statistics.height.meters}m</p>
-          <p class="stat">${poke.statistics.weight.kilograms}kg</p>
+          <p class="stat">${height}</p>
+          <p class="stat">${weight}</p>
         </div>
       </div>
     `;

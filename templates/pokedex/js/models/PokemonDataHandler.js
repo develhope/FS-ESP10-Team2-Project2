@@ -88,7 +88,6 @@ export class PokemonDataHandler {
 
   /**
    * Método privado para transformar los datos del Pokémon en el formato deseado.
-   * Convierte la altura de decímetros a metros y el peso de hectogramos a kilogramos.
    * @param {object} poke - Los datos originales del Pokémon.
    * @param {object} species - Los datos de la especie del Pokémon.
    * @returns {object} - Los datos transformados del Pokémon.
@@ -117,12 +116,15 @@ export class PokemonDataHandler {
       },
       statistics: {
         height: {
+          centimeter: this.#formatNumber(poke.height * 10),
           decimeters: poke.height,
-          meters: (poke.height / 10).toFixed(2),
+          meters: this.#formatNumber(poke.height / 10),
         },
         weight: {
+          gram: this.#formatNumber(poke.weight * 100),
           hectograms: poke.weight,
-          kilograms: (poke.weight / 10).toFixed(2),
+          kilograms: this.#formatNumber(poke.weight / 10),
+          tons: this.#formatNumber(poke.weight / 10000),
         },
         hp: poke.stats[0].base_stat,
         attack: poke.stats[1].base_stat,
@@ -139,5 +141,23 @@ export class PokemonDataHandler {
         isMythical: species.is_mythical,
       },
     };
+  }
+
+  /**
+   * Formatea un número asegurándose de tener exactamente dos decimales, eliminando los ceros adicionales si son dos o más.
+   * @param {number} number - El número a formatear.
+   * @returns {number} - El número formateado.
+   */
+  #formatNumber(number) {
+    const formattedNumber = parseFloat(number).toFixed(2); // Asegura que siempre tenga dos decimales
+    const decimalPart = formattedNumber.split(".")[1]; // Obtiene la parte decimal
+
+    if (/^0+$/.test(decimalPart)) {
+      // Si la parte decimal son dos ceros o más, se elimina
+      return parseInt(number);
+    } else {
+      // Si no, se mantiene tal cual
+      return parseFloat(formattedNumber);
+    }
   }
 }
