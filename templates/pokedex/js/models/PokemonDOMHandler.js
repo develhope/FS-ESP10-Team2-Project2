@@ -119,20 +119,21 @@ export class PokemonDOMHandler {
     const image = div.querySelector(".pokemon-image img");
     const originalSrc = image.src;
 
+    //! No estoy muy convencido de las transicionnes
     div.addEventListener("mouseenter", () => {
       image.classList.add("hidden");
-      setTimeout(() => {
-        image.src = poke.images.illustration.shiny;
-        image.classList.remove("hidden");
-      }, 200); // Debe coincidir con la duración de la transición en el CSS
+      // setTimeout(() => {
+      image.src = poke.images.illustration.shiny;
+      image.classList.remove("hidden");
+      // }, 100); // Debe coincidir con la duración de la transición en el CSS
     });
 
     div.addEventListener("mouseleave", () => {
       image.classList.add("reverse");
-      setTimeout(() => {
-        image.src = originalSrc;
-        image.classList.remove("reverse");
-      }, 200); // Debe coincidir con la duración de la transición en el CSS
+      // setTimeout(() => {
+      image.src = originalSrc;
+      image.classList.remove("reverse");
+      // }, 100); // Debe coincidir con la duración de la transición en el CSS
     });
   }
 }
