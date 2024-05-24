@@ -1,6 +1,6 @@
 # [Template Pokedex](templates/pokedex)
 
-## Actualizaciones Pendientes
+## Actualizaciones
 
 - [ ] **1.** Traspasar el **div** `.filter-container` del HTML al JS:
 
@@ -10,8 +10,8 @@
   <div class="filter-container">
   ```
 
-### Ideas a Implementar
+### Ideas
 
 - [ ] **1.** Implementar un sistema automático de evaluación de precio en monedas para cada Pokémon basado en sus propiedades más relevantes.
 
-- [ ] **2.** Implementar ofertas aleatorias en los Pokémon.
+  - [ ] **1.1** Sistema al inicializar [`PokemonManager`](templates/pokedex/js/models/PokemonManager.js). para mostrar ofertas aleatorias en los precios de algunos Pokémon.
