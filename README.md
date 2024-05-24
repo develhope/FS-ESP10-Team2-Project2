@@ -10,7 +10,7 @@
   <div class="filter-container">
   ```
 
-### Ideas
+## Ideas
 
 - [ ] **1.** Implementar un sistema automático de evaluación de precio en monedas para cada Pokémon basado en sus propiedades más relevantes.
 
