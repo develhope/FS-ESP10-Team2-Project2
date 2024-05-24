@@ -14,4 +14,4 @@
 
 - [ ] **1.** Implementar un sistema automático de evaluación de precio en monedas para cada Pokémon basado en sus propiedades más relevantes.
 
-  - [ ] **1.1** Sistema al inicializar [`PokemonManager`](templates/pokedex/js/models/PokemonManager.js). para mostrar ofertas aleatorias en los precios de algunos Pokémon.
+  - [ ] **1.1** Sistema al inicializar [`PokemonManager`](templates/pokedex/js/models/PokemonManager.js) para mostrar ofertas aleatorias en los precios de algunos Pokémon.
