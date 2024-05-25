@@ -77,21 +77,37 @@ export class PokemonManager {
    * @throws {Error} - Si el parámetro `count` no es válido o si ocurre un error durante la carga de los datos.
    */
   async init(count) {
+    // Muestra el div de carga mientras se procesan los datos
     this.PokemonDOMHandler.toggleLoading(true);
 
     try {
+      // Carga la lista de Pokémon utilizando el manejador de datos
       this.#data.pokemonDataList =
         await this.PokemonDataHandler.loadPokemonList(count);
+
+      // Clona la lista de Pokémon cargados para su manipulación en el DOM
       this.#data.dom.pokemonDivDataList = [...this.#data.pokemonDataList];
-      this.filtersByProperty(
+
+      // Obtiene las configuraciones del filtro de propiedades desde el estado interno
+      const propertyFilterSettings = [
         this.#data.dom.filters.byProperty[0],
-        this.#data.dom.filters.byProperty[1]
+        this.#data.dom.filters.byProperty[1],
+      ];
+
+      // Aplica los filtros a los Pokémon cargados según las configuraciones predeterminadas
+      this.filtersByProperty(
+        propertyFilterSettings[0],
+        propertyFilterSettings[1]
       );
+      // Si el valor del filtro existe, lo establece en el select
+      this.PokemonDOMHandler.setFilterValue(propertyFilterSettings.join("-"));
     } catch (error) {
+      // Lanza un error si ocurre algún problema durante la carga de los datos
       throw new Error(
         "Error al inicializar la lista de Pokémon. Por favor, inténtelo de nuevo."
       );
     } finally {
+      // Oculta el div de carga después de que los datos han sido procesados
       this.PokemonDOMHandler.toggleLoading(false);
     }
   }

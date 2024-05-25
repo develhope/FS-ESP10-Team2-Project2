@@ -161,35 +161,55 @@ export class PokemonDOMHandler {
     filterContainer.classList.add("filter-container");
 
     filterContainer.innerHTML = `
-      <label class="filter-label" for="pokemon-filter">Filtrar Pokémon por:</label>
-      <select class="filter-select" id="pokemon-filter">
-        <optgroup label="PokeID" class="filter-optgroup">
-          <option value="pokeId-asc" class="filter-option">ID (Menor)</option>
-          <option value="pokeId-desc" class="filter-option">ID (Mayor)</option>
-        </optgroup>
-        <optgroup label="Name" class="filter-optgroup">
-          <option value="name-asc" class="filter-option">Nombre (A-Z)</option>
-          <option value="name-desc" class="filter-option">Nombre (Z-A)</option>
-        </optgroup>
-        <optgroup label="Type" class="filter-optgroup">
-          <option value="type-asc" class="filter-option">Tipo (A-Z)</option>
-          <option value="type-desc" class="filter-option">Tipo (Z-A)</option>
-        </optgroup>
-        <optgroup label="Height (M)" class="filter-optgroup">
-          <option value="statistics.height-asc" class="filter-option">Altura (Menor)</option>
-          <option value="statistics.height-desc" class="filter-option">Altura (Mayor)</option>
-        </optgroup>
-        <optgroup label="Weight (KG)" class="filter-optgroup">
-          <option value="statistics.weight-asc" class="filter-option">Peso (Menor)</option>
-          <option value="statistics.weight-desc" class="filter-option">Peso (Mayor)</option>
-        </optgroup>
-      </select>
-    `;
+        <label class="filter-label" for="pokemon-filter">Filtrar Pokémon por:</label>
+        <select class="filter-select" id="pokemon-filter">
+          <optgroup label="PokeID" class="filter-optgroup">
+            <option value="pokeId-asc" class="filter-option">ID (Menor)</option>
+            <option value="pokeId-desc" class="filter-option">ID (Mayor)</option>
+          </optgroup>
+          <optgroup label="Name" class="filter-optgroup">
+            <option value="name-asc" class="filter-option">Nombre (A-Z)</option>
+            <option value="name-desc" class="filter-option">Nombre (Z-A)</option>
+          </optgroup>
+          <optgroup label="Type" class="filter-optgroup">
+            <option value="type-asc" class="filter-option">Tipo (A-Z)</option>
+            <option value="type-desc" class="filter-option">Tipo (Z-A)</option>
+          </optgroup>
+          <optgroup label="Height (M)" class="filter-optgroup">
+            <option value="statistics.height-asc" class="filter-option">Altura (Menor)</option>
+            <option value="statistics.height-desc" class="filter-option">Altura (Mayor)</option>
+          </optgroup>
+          <optgroup label="Weight (KG)" class="filter-optgroup">
+            <option value="statistics.weight-asc" class="filter-option">Peso (Menor)</option>
+            <option value="statistics.weight-desc" class="filter-option">Peso (Mayor)</option>
+          </optgroup>
+        </select>
+      `;
 
     container.prepend(filterContainer);
+  }
 
-    // Establecer la opción predeterminada
-    const filterSelect = filterContainer.querySelector("#pokemon-filter");
-    filterSelect.value = "pokeId-asc"; // Establece el valor predeterminado aquí
+  /**
+   * Método para cambiar el valor seleccionado del filtro.
+   * @param {string} newValue - El nuevo valor que se debe seleccionar.
+   */
+  setFilterValue(newValue) {
+    const filterSelect = document.querySelector("#pokemon-filter");
+
+    if (!filterSelect) {
+      throw new Error("Error: No se encontró el elemento select.");
+    }
+
+    if (filterSelect.value !== newValue) {
+      if (
+        [...filterSelect.options].some((option) => option.value === newValue)
+      ) {
+        filterSelect.value = newValue;
+      } else {
+        throw new Error(
+          `Error: El valor ${newValue} no es válido para el select.`
+        );
+      }
+    }
   }
 }
