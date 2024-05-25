@@ -3,6 +3,7 @@ export class PokemonDataHandler {
     POKEMON: "https://pokeapi.co/api/v2/pokemon/",
     SPECIES: "https://pokeapi.co/api/v2/pokemon-species/",
     HABITAT: "https://pokeapi.co/api/v2/pokemon-habitat/",
+    EVOLUTION: "https://pokeapi.co/api/v2/evolution-chain//",
   };
 
   /**
@@ -57,10 +58,12 @@ export class PokemonDataHandler {
    */
   async #fetchPokemon(id) {
     try {
-      const [pokemonResponse, speciesResponse] = await Promise.all([
-        fetch(`${PokemonDataHandler.API_URLS.POKEMON}${id}`),
-        fetch(`${PokemonDataHandler.API_URLS.SPECIES}${id}`),
-      ]);
+      const [pokemonResponse, speciesResponse, evolutionResponse] =
+        await Promise.all([
+          fetch(`${PokemonDataHandler.API_URLS.POKEMON}${id}`),
+          fetch(`${PokemonDataHandler.API_URLS.SPECIES}${id}`),
+          // fetch(`${PokemonDataHandler.API_URLS.EVOLUTION}${id}`),
+        ]);
 
       if (!pokemonResponse.ok) {
         throw new Error(
@@ -74,12 +77,26 @@ export class PokemonDataHandler {
         );
       }
 
-      const [pokemonData, speciesData] = await Promise.all([
+      // if (!evolutionResponse.ok) {
+      //   throw new Error(
+      //     `Error al obtener los datos de la especie del Pokémon con ID ${id}: ${speciesResponse.statusText}`
+      //   );
+      // }
+
+      const [pokemonData, speciesData, evolutionData] = await Promise.all([
         pokemonResponse.json(),
         speciesResponse.json(),
+        // evolutionResponse.json(),
       ]);
 
-      return this.#transformPokemon(pokemonData, speciesData);
+      const pokemon = this.#transformPokemon(
+        pokemonData,
+        speciesData
+        // evolutionData
+      );
+      pokemon.price = this.#calculatePokemonValue(pokemon);
+
+      return pokemon;
     } catch (error) {
       console.error(`Error al obtener datos con ID de Pokémon ${id}:`, error);
       throw error;
@@ -93,7 +110,7 @@ export class PokemonDataHandler {
    * @returns {object} - Los datos transformados del Pokémon.
    * @private
    */
-  #transformPokemon(poke, species) {
+  #transformPokemon(poke, species, evolution) {
     return {
       pokeId: poke.id,
       name: poke.name,
@@ -159,5 +176,78 @@ export class PokemonDataHandler {
       // Si no, se mantiene tal cual
       return parseFloat(formattedNumber);
     }
+  }
+
+  /**
+   * Calcula el valor de un Pokémon basado en sus estadísticas y propiedades.
+   * @param {object} pokemon - El objeto Pokémon con las estadísticas y propiedades.
+   * @returns {number} - El valor calculado del Pokémon.
+   */
+  #calculatePokemonValue(pokemon) {
+    const {
+      hp,
+      attack,
+      defense,
+      special_attack,
+      special_defense,
+      speed,
+      height,
+      weight,
+    } = pokemon.statistics;
+
+    const {
+      base_experience,
+      movements,
+      capture_rate_percent,
+      isLegendary,
+      isMythical,
+    } = pokemon.value;
+
+    // Definición de ponderaciones para cada propiedad
+    const weights = {
+      height: 0.05,
+      weight: 0.1,
+      hp: 0.1,
+      attack: 0.1,
+      defense: 0.1,
+      special_attack: 0.2,
+      special_defense: 0.2,
+      speed: 0.1,
+      base_experience: 3,
+      movements: 0.05,
+
+      capture_rate_percent: 1,
+
+      isLegendary: 3.0,
+      isMythical: 2.0,
+    };
+
+    // Cálculo del valor base basado en estadísticas
+    let value =
+      height.decimeters * weights.height +
+      weight.hectograms * weights.weight +
+      hp * weights.hp +
+      attack * weights.attack +
+      defense * weights.defense +
+      special_attack * weights.special_attack +
+      special_defense * weights.special_defense +
+      speed * weights.speed +
+      base_experience * weights.base_experience +
+      movements * weights.movements;
+
+    // Ajuste por rareza
+    if (isLegendary) {
+      value *= weights.isLegendary;
+    }
+
+    if (isMythical) {
+      value *= weights.isMythical;
+    }
+
+    // Ajuste por capture_rate_percent
+    value -= capture_rate_percent * weights.capture_rate_percent;
+
+    value = value < 0 ? 1 : value;
+    return this.#formatNumber(value);
   }
 }

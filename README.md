@@ -12,7 +12,7 @@
 
 ### Ideas
 
-- [ ] **1.** Implementar un sistema automático de evaluación de precio en monedas para cada Pokémon basado en sus propiedades más relevantes.
+- [x] **1.** Implementar un sistema automático de evaluación de precio en monedas para cada Pokémon basado en sus propiedades más relevantes.
 
   - [ ] **1.1** Al inicializar la clase [`PokemonManager`](templates/pokedex/js/models/PokemonManager.js) mostrar ofertas aleatorias en los precios de algunos Pokémon.
 

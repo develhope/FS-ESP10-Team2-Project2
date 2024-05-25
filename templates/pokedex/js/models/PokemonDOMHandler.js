@@ -103,24 +103,29 @@ export class PokemonDOMHandler {
     const div = document.createElement("div");
     div.classList.add("pokemon");
     div.innerHTML = `
-      <p class="pokemon-id-back">#${pokeId}</p>
-      <div class="pokemon-image">
+    <p class="pokemon-id-back">#${pokeId}</p>
+    <div class="pokemon-image">
         <img src="${poke.images.illustration.default}" alt="${poke.name}">
-      </div>
-      <div class="pokemon-info">
+    </div>
+    <div class="pokemon-info">
         <div class="name-container">
-          <p class="pokemon-id">#${pokeId}</p>
-          <h2 class="pokemon-name">${name}</h2>
+            <p class="pokemon-id">#${pokeId}</p>
+            <h2 class="pokemon-name">${name}</h2>
         </div>
         <div class="pokemon-types">
-          ${types}
+            ${types}
         </div>
         <div class="pokemon-stats">
-          <p class="stat">${height}</p>
-          <p class="stat">${weight}</p>
+            <p class="stat">${height}</p>
+            <p class="stat">${weight}</p>
         </div>
-      </div>
-    `;
+        <div class="pokemon-price">
+            <p class="price">${poke.price}€</p>
+            <!-- <p class="offer">15€</p> -->
+            <!-- <p class="price">${poke.value.capture_rate_percent}%</p> -->
+        </div>
+    </div>
+  `;
     return div;
   }
 
