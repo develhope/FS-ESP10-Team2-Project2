@@ -5,26 +5,52 @@ import { PokemonFilter } from "./PokemonFilter.js";
 export class PokemonManager {
   /**
    * Constructor de la clase PokemonManager.
-   * @param {HTMLElement} pokemonDivList - El contenedor en el DOM donde se mostrarán los Pokémon.
-   * @param {NodeListOf<HTMLElement>} fittedButtonsByType - La lista de botones del header para filtrar Pokémon por tipo.
-   * @param {HTMLElement} fittedSelectByProperty - El elemento select para filtrar Pokémon por propiedad.
-   * @throws {Error} - Si alguno de los parámetros requeridos no es proporcionado.
+   * @throws {Error} - Si ocurre algún error durante la inicialización.
    */
-  constructor(pokemonDivList, fittedButtonsByType, fittedSelectByProperty) {
-    if (!pokemonDivList || !fittedButtonsByType || !fittedSelectByProperty) {
+  constructor() {
+    // Obtener referencias a elementos del DOM
+    const mainContainer = document.querySelector("main");
+    const pokemonDivList = document.querySelector("#pokemon-div-list");
+    const fittedButtonsByType = document.querySelectorAll(".btn-header");
+
+    // Verificar que los elementos del DOM necesarios existan
+    if (!mainContainer) {
       throw new Error(
-        "Todos los parámetros (pokemonDivList, fittedButtonsByType, fittedSelectByProperty) son requeridos"
+        "Error: No se pudo encontrar el elemento 'mainContainer' en el DOM."
+      );
+    }
+    if (!pokemonDivList) {
+      throw new Error(
+        "Error: No se pudo encontrar el elemento 'pokemonDivList' en el DOM."
+      );
+    }
+    if (fittedButtonsByType.length === 0) {
+      console.warn(
+        "Advertencia: No se encontraron elementos con la clase 'btn-header' en el DOM."
       );
     }
 
+    // Inicializar las instancias de las clases manejadoras
     this.PokemonDataHandler = new PokemonDataHandler();
     this.PokemonFilter = new PokemonFilter();
-    this.PokemonDOMHandler = new PokemonDOMHandler(pokemonDivList);
+    this.PokemonDOMHandler = new PokemonDOMHandler({
+      mainContainer: mainContainer,
+      pokemonDivList: pokemonDivList,
+    });
+
+    const fittedSelectByProperty = document.querySelector("#pokemon-filter");
+
+    if (!fittedSelectByProperty) {
+      console.warn(
+        "Advertencia: No se pudo encontrar el elemento 'pokemon-filter' en el DOM."
+      );
+    }
 
     this.#data.dom.elements.divList = pokemonDivList;
     this.#data.dom.elements.fittedButtonsType = fittedButtonsByType;
     this.#data.dom.elements.fittedSelectProperty = fittedSelectByProperty;
 
+    // Añadir los event listeners
     this.#addEventListeners();
   }
 

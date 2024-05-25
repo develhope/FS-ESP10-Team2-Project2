@@ -1,15 +1,14 @@
 export class PokemonDOMHandler {
   /**
    * Constructor de la clase PokemonDOMHandler.
-   * @param {HTMLElement} divList - El contenedor en el DOM donde se mostrarán los Pokémon.
-   * @throws {Error} - Si el parámetro requerido no es proporcionado.
+   * @param {object} options - Objeto de opciones con las propiedades necesarias.
+   * @param {HTMLElement} options.mainContainer - El contenedor principal en el DOM.
+   * @param {HTMLElement} options.pokemonDivList - El contenedor en el DOM donde se mostrarán los Pokémon.
    */
-  constructor(divList) {
-    if (!divList) {
-      throw new Error("Parameter 'divList' is required");
-    }
-
-    this.divList = divList;
+  constructor({ pokemonDivList, mainContainer }) {
+    this.mainContainer = mainContainer;
+    this.pokemonDivList = pokemonDivList;
+    this.#createFilterContainer(mainContainer);
   }
 
   /**
@@ -63,11 +62,11 @@ export class PokemonDOMHandler {
    * @param {object[]} pokemonDataList - Un array de objetos de Pokémon.
    */
   displayPokemon(pokemonDataList) {
-    this.divList.innerHTML = "";
+    this.pokemonDivList.innerHTML = "";
 
     pokemonDataList.forEach((poke) => {
       const div = this.#createPokemonElement(poke);
-      this.divList.append(div);
+      this.pokemonDivList.append(div);
       this.#addImageHoverEffect(div, poke);
     });
   }
@@ -83,7 +82,12 @@ export class PokemonDOMHandler {
     const name = poke.name.toUpperCase();
 
     const types = poke.type
-      .map((type) => `<p class="${type} type">${type}</p>`)
+      .map(
+        (type) =>
+          `<p class="${type} type">${
+            type.charAt(0).toUpperCase() + type.slice(1)
+          }</p>`
+      )
       .join("");
 
     const height =
@@ -146,5 +150,46 @@ export class PokemonDOMHandler {
       image.classList.remove("reverse");
       // }, 100); // Debe coincidir con la duración de la transición en el CSS
     });
+  }
+
+  /**
+   * Método para crear el contenedor de filtros y añadirlo al DOM.
+   * @param {HTMLElement} container - El elemento donde se agregará el contenedor de filtros.
+   */
+  #createFilterContainer(container) {
+    const filterContainer = document.createElement("div");
+    filterContainer.classList.add("filter-container");
+
+    filterContainer.innerHTML = `
+      <label class="filter-label" for="pokemon-filter">Filtrar Pokémon por:</label>
+      <select class="filter-select" id="pokemon-filter">
+        <optgroup label="PokeID" class="filter-optgroup">
+          <option value="pokeId-asc" class="filter-option">ID (Menor)</option>
+          <option value="pokeId-desc" class="filter-option">ID (Mayor)</option>
+        </optgroup>
+        <optgroup label="Name" class="filter-optgroup">
+          <option value="name-asc" class="filter-option">Nombre (A-Z)</option>
+          <option value="name-desc" class="filter-option">Nombre (Z-A)</option>
+        </optgroup>
+        <optgroup label="Type" class="filter-optgroup">
+          <option value="type-asc" class="filter-option">Tipo (A-Z)</option>
+          <option value="type-desc" class="filter-option">Tipo (Z-A)</option>
+        </optgroup>
+        <optgroup label="Height (M)" class="filter-optgroup">
+          <option value="statistics.height-asc" class="filter-option">Altura (Menor)</option>
+          <option value="statistics.height-desc" class="filter-option">Altura (Mayor)</option>
+        </optgroup>
+        <optgroup label="Weight (KG)" class="filter-optgroup">
+          <option value="statistics.weight-asc" class="filter-option">Peso (Menor)</option>
+          <option value="statistics.weight-desc" class="filter-option">Peso (Mayor)</option>
+        </optgroup>
+      </select>
+    `;
+
+    container.prepend(filterContainer);
+
+    // Establecer la opción predeterminada
+    const filterSelect = filterContainer.querySelector("#pokemon-filter");
+    filterSelect.value = "pokeId-asc"; // Establece el valor predeterminado aquí
   }
 }

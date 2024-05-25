@@ -2,7 +2,7 @@
 
 ## Actualizaciones
 
-- [ ] **1.** Traspasar el **div** `.filter-container` del codigo HTML al JS:
+- [x] **1.** Traspasar el **div** `.filter-container` del codigo HTML al JS:
 
   - **Más información**: Si es posible, implementar esta actualización en el módulo [`PokemonDOMHandler.js`](templates/pokedex/js/models/PokemonDataHandler.js).
 
