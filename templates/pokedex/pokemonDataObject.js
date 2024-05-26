@@ -37,6 +37,10 @@
  * @property {number} value.capture_rate_percent - El porcentaje de tasa de captura del Pokémon.
  * @property {boolean} value.isLegendary - Si el Pokémon es legendario.
  * @property {boolean} value.isMythical - Si el Pokémon es mítico.
+ * @property {Object} market - Un objeto que contiene datos del mercado actual.
+ * @property {number} market.price - La cantidad de dinero actual que vale el Pokémon si no hay un descuento vigente.
+ * @property {number|undefined} market.discount - La cantidad de dinero vigente que vale el Pokémon con el descuento de la oferta, si se encuentra "undefined" no habrá  oferta disponible.
+ *
  */
 
 /** @type {Pokemon} */
@@ -85,5 +89,9 @@ const pokemon = {
     capture_rate_percent: 45, // Porcentaje de tasa de captura
     isLegendary: false, // Si es legendario
     isMythical: false, // Si es mítico
+  },
+  market: {
+    price: 100, // Precio
+    discount: 69, // Precio con el descuento por oferta
   },
 };
