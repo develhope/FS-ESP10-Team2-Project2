@@ -39,7 +39,7 @@
  * @property {boolean} value.isMythical - Si el Pokémon es mítico.
  * @property {Object} market - Un objeto que contiene datos del mercado actual.
  * @property {number} market.price - La cantidad de dinero actual que vale el Pokémon si no hay un descuento vigente.
- * @property {number|undefined} market.discount - La cantidad de dinero vigente que vale el Pokémon con el descuento de la oferta, si se encuentra "undefined" no habrá  oferta disponible.
+ * @property {number|undefined} market.discount - La cantidad de dinero vigente que vale el Pokémon con el descuento de la oferta, si se encuentra "undefined" no habrá oferta disponible.
  *
  */
 
