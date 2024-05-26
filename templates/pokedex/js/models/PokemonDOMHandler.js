@@ -78,9 +78,12 @@ export class PokemonDOMHandler {
    * @private
    */
   #createPokemonElement(poke) {
+    // Formatear el ID del Pokémon con ceros a la izquierda
     const pokeId = poke.pokeId.toString().padStart(3, "0");
+    // Convertir el nombre del Pokémon a mayúsculas
     const name = poke.name.toUpperCase();
 
+    // Generar el HTML para los tipos del Pokémon
     const types = poke.type
       .map(
         (type) =>
@@ -90,42 +93,69 @@ export class PokemonDOMHandler {
       )
       .join("");
 
+    // Determinar la altura del Pokémon en la unidad apropiada
     const height =
       poke.statistics.height.meters < 1
-        ? poke.statistics.height.centimeter + "cm"
-        : poke.statistics.height.meters + "M";
+        ? `${poke.statistics.height.centimeter}cm`
+        : `${poke.statistics.height.meters}M`;
 
+    // Determinar el peso del Pokémon en la unidad apropiada
     const weight =
       poke.statistics.weight.kilograms < 1
-        ? poke.statistics.weight.gram + "g"
-        : poke.statistics.weight.kilograms + "kg";
+        ? `${poke.statistics.weight.gram}g`
+        : `${poke.statistics.weight.kilograms}kg`;
 
+    let market;
+
+    const basePrice = poke.market.price;
+
+    // Si hay un descuento, calcular el precio de oferta y el porcentaje de descuento
+    if (poke.market.discount) {
+      const offerPrice = poke.market.discount;
+
+      // Calcular el porcentaje de descuento
+      const offerPercentage = this.#calculateOfferPercentage(
+        basePrice,
+        offerPrice
+      );
+
+      // Crear el HTML para el precio con descuento
+      market = `
+      <p class="price">${offerPrice}€</p>
+      <p class="offer">${basePrice}€</p>
+      <p class="offerPercentage">${offerPercentage}%</p>
+    `;
+    } else {
+      // Crear el HTML para el precio sin descuento
+      market = `<p class="price">${basePrice}€</p>`;
+    }
+
+    // Crear el elemento div para el Pokémon
     const div = document.createElement("div");
     div.classList.add("pokemon");
     div.innerHTML = `
     <p class="pokemon-id-back">#${pokeId}</p>
     <div class="pokemon-image">
-        <img src="${poke.images.illustration.default}" alt="${poke.name}">
+      <img src="${poke.images.illustration.default}" alt="${poke.name}">
     </div>
     <div class="pokemon-info">
-        <div class="name-container">
-            <p class="pokemon-id">#${pokeId}</p>
-            <h2 class="pokemon-name">${name}</h2>
-        </div>
-        <div class="pokemon-types">
-            ${types}
-        </div>
-        <div class="pokemon-stats">
-            <p class="stat">${height}</p>
-            <p class="stat">${weight}</p>
-        </div>
-        <div class="pokemon-price">
-            <p class="price">${poke.price}€</p>
-            <!-- <p class="offer">15€</p> -->
-            <!-- <p class="price">${poke.value.capture_rate_percent}%</p> -->
-        </div>
+      <div class="name-container">
+        <p class="pokemon-id">#${pokeId}</p>
+        <h2 class="pokemon-name">${name}</h2>
+      </div>
+      <div class="pokemon-types">
+        ${types}
+      </div>
+      <div class="pokemon-stats">
+        <p class="stat">${height}</p>
+        <p class="stat">${weight}</p>
+      </div>
+      <div class="pokemon-price">
+        ${market}
+      </div>
     </div>
   `;
+
     return div;
   }
 
@@ -216,5 +246,22 @@ export class PokemonDOMHandler {
         );
       }
     }
+  }
+
+  /**
+   * Calcula el porcentaje de descuento aplicado a un Pokémon.
+   * @param {number} basePrice - El precio base del Pokémon.
+   * @param {number} offerPrice - El precio de oferta del Pokémon.
+   * @returns {number} - El porcentaje de descuento aplicado.
+   */
+  #calculateOfferPercentage(basePrice, offerPrice) {
+    // Calcula la diferencia entre el precio base y el precio de oferta
+    const discount = basePrice - offerPrice;
+
+    // Calcula el porcentaje de descuento aplicado
+    const offerPercentage = (discount / basePrice) * 100;
+
+    // Redondea el porcentaje de descuento a dos decimales
+    return Math.round(offerPercentage * 100) / 100;
   }
 }

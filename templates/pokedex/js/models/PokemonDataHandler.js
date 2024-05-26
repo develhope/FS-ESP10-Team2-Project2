@@ -46,6 +46,12 @@ export class PokemonDataHandler {
       );
     }
 
+    // Calcular el 5% de count y generar un número aleatorio entre 1 y ese valor
+    const offerCount = this.getRandomInt(1, Math.floor(count * 0.05));
+
+    // Añadir ofertas aleatorias a algunos Pokémon
+    this.#addRandomOffers(results, offerCount, 60);
+
     return results; // Devolver el array de resultados
   }
 
@@ -94,8 +100,19 @@ export class PokemonDataHandler {
         speciesData
         // evolutionData
       );
-      pokemon.price = this.#calculatePokemonValue(pokemon);
+      pokemon.market.price = this.#calculatePokemonValue(pokemon);
+      // pokemon.market.discount = this.#calculatePriceDiscount(pokemon, 1);
 
+      // pokemon.market.discount = this.#generateRandomPriceOffer(
+      //   pokemon.market.price,
+      //   60
+      // );
+
+      // console.log(
+      //   `${pokemon.market.discount} Descuento\n${
+      //     pokemon.market.price
+      //   } Precio\n${pokemon.market.price - pokemon.market.discount}`
+      // );
       return pokemon;
     } catch (error) {
       console.error(`Error al obtener datos con ID de Pokémon ${id}:`, error);
@@ -157,6 +174,7 @@ export class PokemonDataHandler {
         isLegendary: species.is_legendary,
         isMythical: species.is_mythical,
       },
+      market: { price: undefined, discount: undefined },
     };
   }
 
@@ -249,5 +267,99 @@ export class PokemonDataHandler {
 
     value = value < 0 ? 1 : value;
     return this.#formatNumber(value);
+  }
+
+  /**
+   * Método privado para añadir ofertas a una cantidad específica de Pokémon de forma aleatoria.
+   * @param {object[]} pokemonArray - El array de Pokémon.
+   * @param {number} quantity - La cantidad de Pokémon a los que se les añadirá una oferta.
+   * @param {number} percentage - El porcentaje de descuento para las ofertas.
+   * @private
+   */
+  #addRandomOffers(pokemonArray, quantity, percentage) {
+    // Verificar que pokemonArray sea un array y no esté vacío
+    if (!Array.isArray(pokemonArray) || pokemonArray.length === 0) {
+      throw new Error("pokemonArray debe ser un array no vacío.");
+    }
+
+    // Verificar que la cantidad no exceda el número total de Pokémon
+    if (quantity > pokemonArray.length) {
+      quantity = pokemonArray.length;
+    }
+
+    // Seleccionar aleatoriamente los índices de los Pokémon que recibirán ofertas
+    const selectedIndices = [];
+    while (selectedIndices.length < quantity) {
+      const randomIndex = Math.floor(Math.random() * pokemonArray.length);
+      if (!selectedIndices.includes(randomIndex)) {
+        selectedIndices.push(randomIndex);
+      }
+    }
+
+    // Asignar descuentos a los Pokémon seleccionados
+    selectedIndices.forEach((index) => {
+      const poke = pokemonArray[index];
+      poke.market.discount = this.#generateRandomPriceOffer(
+        poke.market.price,
+        percentage
+      );
+    });
+
+    // console.log(quantity);
+  }
+
+  /**
+   * Genera una variacion de precio aleatoria para un Pokémon.
+   * La variacion de precio estará dentro de un rango definido por el precio base y un factor de variación.
+   * @param {number} basePrice - El precio base del Pokémon.
+   * @param {number} variationFactor - El factor de variación que determina el rango de la oferta (en porcentaje).
+   * @returns {number} - La variacion de precio generada.
+   */
+  #generateRandomPriceVariation(basePrice, variationFactor) {
+    // Calcula el rango de variación del precio basado en el factor de variación
+    const priceRange = basePrice * (variationFactor / 100);
+
+    // Genera un precio aleatorio dentro del rango definido por el precio base y el rango de variación
+    const randomVariation = basePrice + (Math.random() * 2 - 1) * priceRange;
+
+    // Redondea el precio aleatorio a dos decimales
+    const roundedVariation = Math.round(randomVariation * 100) / 100;
+
+    return roundedVariation;
+  }
+
+  /**
+   * Genera una oferta de precio aleatoria para un Pokémon.
+   * La oferta de precio estará dentro de un rango definido por el precio base y un factor de variación.
+   * @param {number} basePrice - El precio base del Pokémon.
+   * @param {number} variationFactor - El factor de variación que determina el rango de la oferta (en porcentaje).
+   * @returns {number} - La oferta de precio generada.
+   */
+  #generateRandomPriceOffer(basePrice, variationFactor) {
+    // Calcula el rango de variación del precio basado en el factor de variación
+    const priceRange = basePrice * (variationFactor / 100);
+
+    // Genera un descuento aleatorio dentro del rango definido por el precio base y el rango de variación
+    const discount = Math.random() * priceRange;
+
+    // Calcula el precio de oferta restando el descuento al precio base
+    const offerPrice = basePrice - discount;
+
+    // Redondea el precio de oferta a dos decimales
+    const roundedOffer = Math.round(offerPrice * 100) / 100;
+
+    return roundedOffer;
+  }
+
+  /**
+   * Genera un número entero aleatorio entre min (incluido) y max (incluido).
+   * @param {number} min - El valor mínimo.
+   * @param {number} max - El valor máximo.
+   * @returns {number} - Un número entero aleatorio entre min y max.
+   */
+  getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min);
   }
 }

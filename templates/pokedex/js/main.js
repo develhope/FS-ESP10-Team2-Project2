@@ -32,4 +32,4 @@ async function initializePokemonManager(count) {
 }
 
 //! Inicia la carga de los Pokémon (puedes cambiar el número por el numero de Pokémon que desees descargar)
-initializePokemonManager(50);
+initializePokemonManager(1025);

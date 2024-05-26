@@ -12,7 +12,7 @@
     --dark-mode-background: var(--clr-black);
     --dark-mode-text: var(--clr-gray);
 
-    /* Define los colores de los tipos de Pokemon*/
+    /* Define los colores de los tipos de Pokemon */
     --type-normal: #A8A878;
     --type-fire: #F08030;
     --type-water: #6890F0;
@@ -31,6 +31,11 @@
     --type-dragon: #7038F8;
     --type-steel: #B8B8D0;
     --type-fairy: #F0B6BC;
+
+    /* Define los colores de la oferta */
+    --clr-offerBG: #f2ff80;
+    --clr-offer: #914600;
+
 }
 
 .dark-mode {
@@ -325,10 +330,9 @@ main {
     display: flex;
     gap: 1rem;
     width: 100%;
-    justify-content: left;
+    justify-content: center;
     align-items: center;
     margin-top: 5px;
-    margin-left: 10px;
 }
 
 .price {
@@ -337,8 +341,6 @@ main {
     /* border-radius: 100vmax; */
     font-size: 1.3rem;
 }
-
-
 
 .offer {
     /* background-color: var(--clr-gray); */
@@ -350,6 +352,18 @@ main {
     /* letter-spacing: normal; */
     color: var(--clr-gray2);
     text-decoration: line-through;
+}
+
+.offerPercentage {
+    background-color: var(--clr-offerBG);
+    padding: .25rem .5rem;
+    border-radius: 5px;
+
+    font-weight: 500;
+    font-size: 1rem;
+    /* font-weight: 400; */
+    /* letter-spacing: normal; */
+    color: var(--clr-offer);
 }
 
 

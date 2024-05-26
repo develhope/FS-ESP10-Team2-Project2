@@ -103,6 +103,7 @@ export class PokemonManager {
       this.PokemonDOMHandler.setFilterValue(propertyFilterSettings.join("-"));
     } catch (error) {
       // Lanza un error si ocurre algún problema durante la carga de los datos
+      console.error("Error al inicializar la lista de Pokémon:", error);
       throw new Error("Error al inicializar la lista de Pokémon.");
     } finally {
       // Oculta el div de carga después de que los datos han sido procesados
