@@ -305,7 +305,7 @@ export class PokemonDataHandler {
       );
     });
 
-    // console.log(quantity);
+    console.log(`Pokémon en oferta: ${quantity}`);
   }
 
   /**
