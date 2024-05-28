@@ -21,3 +21,5 @@
   - [ ] **1.3** Implementar un filtro de búsqueda por nombre.
 
   - [ ] **1.4** Implementar insignias especiales por cada Pokémon por ejemplo -> Evolución máxima (MaxEvo), Legendario (Legendary), Mítico (Mythical).
+
+- [ ] **2.** Implementar un sistema automático de paginación para la lista de todos los Pokémon.
