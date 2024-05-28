@@ -293,7 +293,7 @@ export class PokemonDataHandler {
       speed: 0.1,
       base_experience: 3,
       movements: 0.05,
-      isFinalEvolution: 0.1,
+      isFinalEvolution: 0.05,
 
       capture_rate_percent: 1,
 

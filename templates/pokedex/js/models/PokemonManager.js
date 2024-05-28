@@ -210,6 +210,7 @@ export class PokemonManager {
   #addEventListeners() {
     // Definir la variable holdTimeout fuera de los listeners para evitar errores de referencia
     let holdTimeout;
+    let selectedButton = null;
 
     this.#data.dom.elements.fittedButtonsType.forEach((button) => {
       let holdActivated = false;
@@ -219,6 +220,13 @@ export class PokemonManager {
           const buttonId = event.currentTarget.id;
           const typeFilters = buttonId === "see-all" ? ["all"] : [buttonId];
           this.filtersByTypes(typeFilters, false);
+
+          // Actualizar clases de botones
+          if (selectedButton) {
+            selectedButton.classList.remove("btn-select");
+          }
+          event.currentTarget.classList.add("btn-select");
+          selectedButton = event.currentTarget;
         }
         holdActivated = false;
       };
@@ -230,6 +238,13 @@ export class PokemonManager {
           const typeFilters = buttonId === "see-all" ? ["all"] : [buttonId];
           this.filtersByTypes(typeFilters, true);
           holdActivated = true;
+
+          // Actualizar clases de botones
+          if (selectedButton) {
+            selectedButton.classList.remove("btn-select");
+          }
+          button.classList.add("btn-select");
+          selectedButton = button;
         }, 500);
       };
 
