@@ -130,6 +130,13 @@ export class PokemonDOMHandler {
       market = `<p class="price">${basePrice}€</p>`;
     }
 
+    let quality;
+    if (poke.value.isMythical) {
+      quality = "pokemon-name-mythical";
+    } else if (poke.value.isLegendary) {
+      quality = "pokemon-name-lejendary";
+    }
+
     // Crear el elemento div para el Pokémon
     const div = document.createElement("div");
     div.classList.add("pokemon");
@@ -141,7 +148,8 @@ export class PokemonDOMHandler {
     <div class="pokemon-info">
       <div class="name-container">
         <p class="pokemon-id">#${pokeId}</p>
-        <h2 class="pokemon-name">${name}</h2>
+        <h2 class="pokemon-name" id="${quality}">${name}</h2>
+        <!-- <img class="pokemon-img_maxEvo" src="assets/images/pokeballMaxEvo.png" alt="pokeballMaxEvo}"> -->
       </div>
       <div class="pokemon-types">
         ${types}
@@ -206,9 +214,9 @@ export class PokemonDOMHandler {
             <option value="name-asc" class="filter-option">Nombre (A-Z)</option>
             <option value="name-desc" class="filter-option">Nombre (Z-A)</option>
           </optgroup>
-          <optgroup label="Type" class="filter-optgroup">
+          <!-- <optgroup label="Type" class="filter-optgroup">
             <option value="type-asc" class="filter-option">Tipo (A-Z)</option>
-            <option value="type-desc" class="filter-option">Tipo (Z-A)</option>
+            <option value="type-desc" class="filter-option">Tipo (Z-A)</option> -->
           </optgroup>
           <optgroup label="Height (M)" class="filter-optgroup">
             <option value="statistics.height-asc" class="filter-option">Altura (Menor)</option>

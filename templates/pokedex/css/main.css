@@ -300,6 +300,74 @@ main {
     font-size: 1.4rem;
 }
 
+/* Animación de transición de color de izquierda a derecha para MaxEvo */
+#pokemon-name-MaxEvo {
+    position: relative;
+    background: linear-gradient(to right, #574596b2, #8a6fc9, #574596b2, #8a6fc9);
+    background-size: 400% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: colorTransitionMaxEvo 3s linear infinite;
+}
+
+@keyframes colorTransitionMaxEvo {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    100% {
+        background-position: 100% 0%;
+    }
+}
+
+/* Animación de transición de color de izquierda a derecha para Mythical */
+#pokemon-name-mythical {
+    position: relative;
+    background: linear-gradient(to right, #cc2900, #ff7c5f, #cc2900, #ff5733);
+    background-size: 400% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: colorTransitionMythical 3s linear infinite;
+}
+
+@keyframes colorTransitionMythical {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    100% {
+        background-position: 100% 0%;
+    }
+}
+
+/* Animación de transición de color de izquierda a derecha para Legendary */
+#pokemon-name-lejendary {
+    position: relative;
+    background: linear-gradient(to right, #F8D030, #fff19f, #F8D030, #FFEA70);
+    background-size: 400% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: colorTransitionLejendary 3s linear infinite;
+}
+
+@keyframes colorTransitionLejendary {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    100% {
+        background-position: 100% 0%;
+    }
+}
+
+.pokemon-img_maxEvo {
+    width: 40px;
+}
+
+
 .pokemon-types {
     display: flex;
     gap: .5rem;

@@ -3,7 +3,8 @@ export class PokemonDataHandler {
     POKEMON: "https://pokeapi.co/api/v2/pokemon/",
     SPECIES: "https://pokeapi.co/api/v2/pokemon-species/",
     HABITAT: "https://pokeapi.co/api/v2/pokemon-habitat/",
-    EVOLUTION: "https://pokeapi.co/api/v2/evolution-chain//",
+    EVOLUTION_SPECIES: "https://pokeapi.co/api/v2/evolution-species/",
+    EVOLUTION_CHAIN: "https://pokeapi.co/api/v2/evolution-chain/",
   };
 
   /**
@@ -19,6 +20,7 @@ export class PokemonDataHandler {
       );
     }
 
+    // Procesar cada lote de solicitudes
     //! Bloque para evitar el error "ERR_INSUFFICIENT_RESOURCES"
 
     const batchSize = 100; // Tamaño del lote de solicitudes simultáneas
@@ -32,8 +34,8 @@ export class PokemonDataHandler {
         { length: batchSize },
         (_, index) => i * batchSize + index + 1
       )
-        .filter((id) => id <= count) // Filtrar IDs que estén dentro del rango de count
-        .map((id) => this.#fetchPokemon(id)); // Mapear IDs a promesas de fetch
+        .filter((id) => id <= count)
+        .map((id) => this.#fetchPokemon(id));
 
       // Esperar a que se resuelvan todas las promesas del lote actual
       const batchResults = await Promise.allSettled(batchPromises);
@@ -41,8 +43,8 @@ export class PokemonDataHandler {
       // Filtrar resultados exitosos y agregar sus valores al array results
       results = results.concat(
         batchResults
-          .filter((result) => result.status === "fulfilled") // Filtrar promesas cumplidas
-          .map((result) => result.value) // Extraer el valor de las promesas cumplidas
+          .filter((result) => result.status === "fulfilled")
+          .map((result) => result.value)
       );
     }
 
@@ -52,7 +54,7 @@ export class PokemonDataHandler {
     // Añadir ofertas aleatorias a algunos Pokémon
     this.#addRandomOffers(results, offerCount, 60);
 
-    return results; // Devolver el array de resultados
+    return results;
   }
 
   /**
@@ -64,12 +66,10 @@ export class PokemonDataHandler {
    */
   async #fetchPokemon(id) {
     try {
-      const [pokemonResponse, speciesResponse, evolutionResponse] =
-        await Promise.all([
-          fetch(`${PokemonDataHandler.API_URLS.POKEMON}${id}`),
-          fetch(`${PokemonDataHandler.API_URLS.SPECIES}${id}`),
-          // fetch(`${PokemonDataHandler.API_URLS.EVOLUTION}${id}`),
-        ]);
+      const [pokemonResponse, speciesResponse] = await Promise.all([
+        fetch(`${PokemonDataHandler.API_URLS.POKEMON}${id}`),
+        fetch(`${PokemonDataHandler.API_URLS.SPECIES}${id}`),
+      ]);
 
       if (!pokemonResponse.ok) {
         throw new Error(
@@ -83,24 +83,31 @@ export class PokemonDataHandler {
         );
       }
 
-      // if (!evolutionResponse.ok) {
-      //   throw new Error(
-      //     `Error al obtener los datos de la especie del Pokémon con ID ${id}: ${speciesResponse.statusText}`
-      //   );
-      // }
-
-      const [pokemonData, speciesData, evolutionData] = await Promise.all([
+      const [pokemonData, speciesData] = await Promise.all([
         pokemonResponse.json(),
         speciesResponse.json(),
-        // evolutionResponse.json(),
       ]);
+
+      // Obtener la cadena evolutiva
+      const evolutionChainResponse = await fetch(
+        speciesData.evolution_chain.url
+      );
+
+      if (!evolutionChainResponse.ok) {
+        throw new Error(
+          `Error al obtener los datos de la cadena evolutiva del Pokémon con ID ${id}: ${evolutionChainResponse.statusText}`
+        );
+      }
+
+      const evolutionChainData = await evolutionChainResponse.json();
 
       const pokemon = this.#transformPokemon(
         pokemonData,
-        speciesData
-        // evolutionData
+        speciesData,
+        evolutionChainData
       );
       pokemon.market.price = this.#calculatePokemonValue(pokemon);
+
       // pokemon.market.discount = this.#calculatePriceDiscount(pokemon, 1);
 
       // pokemon.market.discount = this.#generateRandomPriceOffer(
@@ -113,6 +120,10 @@ export class PokemonDataHandler {
       //     pokemon.market.price
       //   } Precio\n${pokemon.market.price - pokemon.market.discount}`
       // );
+
+      // console.log(pokemon.evolutions);
+      // console.log(pokemon.value.isFinalEvolution);
+
       return pokemon;
     } catch (error) {
       console.error(`Error al obtener datos con ID de Pokémon ${id}:`, error);
@@ -173,9 +184,57 @@ export class PokemonDataHandler {
         capture_rate_percent: Math.round((species.capture_rate * 100) / 255),
         isLegendary: species.is_legendary,
         isMythical: species.is_mythical,
+        isFinalEvolution: this.#isFinalEvolution(poke.name, evolution.chain),
       },
+      evolutions: this.#getEvolutions(evolution.chain),
       market: { price: undefined, discount: undefined },
     };
+  }
+
+  /**
+   * Método privado para obtener las evoluciones de un Pokémon a partir de la cadena evolutiva.
+   * Este método recorre la cadena evolutiva proporcionada y construye una lista de evoluciones.
+   *
+   * @param {object} chain - La cadena evolutiva del Pokémon, obtenida de la API.
+   * @returns {Array} - Una lista de objetos que representan las evoluciones del Pokémon.
+   *                    Cada objeto contiene el nombre del Pokémon y una lista de nombres de los Pokémon
+   *                    a los que puede evolucionar.
+   */
+  #getEvolutions(chain) {
+    const evolutions = [];
+    let currentEvolution = chain;
+
+    // Recorrer la cadena evolutiva
+    do {
+      const species = currentEvolution.species.name;
+      evolutions.push({
+        name: species,
+        evolves_to: currentEvolution.evolves_to.map((evo) => evo.species.name),
+      });
+      // Avanzar al siguiente eslabón en la cadena evolutiva
+      currentEvolution = currentEvolution.evolves_to[0];
+    } while (currentEvolution && currentEvolution.evolves_to);
+
+    return evolutions;
+  }
+
+  /**
+   * Método privado para verificar si un Pokémon está en su última fase de evolución.
+   * @param {string} pokemonName - El nombre del Pokémon.
+   * @param {object} chain - La cadena de evolución del Pokémon.
+   * @returns {boolean} - Verdadero si el Pokémon está en su última fase de evolución, falso en caso contrario.
+   * @private
+   */
+  #isFinalEvolution(pokemonName, chain) {
+    const findFinalEvolution = (evolutionChain) => {
+      if (!evolutionChain.evolves_to.length) {
+        return evolutionChain.species.name;
+      }
+      return findFinalEvolution(evolutionChain.evolves_to[0]);
+    };
+
+    const finalEvolution = findFinalEvolution(chain);
+    return pokemonName === finalEvolution;
   }
 
   /**
@@ -217,6 +276,7 @@ export class PokemonDataHandler {
       base_experience,
       movements,
       capture_rate_percent,
+      isFinalEvolution,
       isLegendary,
       isMythical,
     } = pokemon.value;
@@ -233,11 +293,12 @@ export class PokemonDataHandler {
       speed: 0.1,
       base_experience: 3,
       movements: 0.05,
+      isFinalEvolution: 0.1,
 
       capture_rate_percent: 1,
 
       isLegendary: 3.0,
-      isMythical: 2.0,
+      isMythical: 2.5,
     };
 
     // Cálculo del valor base basado en estadísticas
@@ -254,10 +315,15 @@ export class PokemonDataHandler {
       movements * weights.movements;
 
     // Ajuste por rareza
+    if (isFinalEvolution) {
+      value += value * weights.isFinalEvolution;
+    }
+
+    // Ajuste por rareza
     if (isLegendary) {
       value *= weights.isLegendary;
     }
-
+    // Ajuste por rareza
     if (isMythical) {
       value *= weights.isMythical;
     }
@@ -265,7 +331,7 @@ export class PokemonDataHandler {
     // Ajuste por capture_rate_percent
     value -= capture_rate_percent * weights.capture_rate_percent;
 
-    value = value < 0 ? 1 : value;
+    value = value < 0 ? 10 : value;
     return this.#formatNumber(value);
   }
 
