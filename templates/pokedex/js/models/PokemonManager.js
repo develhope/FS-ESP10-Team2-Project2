@@ -54,6 +54,7 @@ export class PokemonManager {
     this.#addEventListeners();
   }
 
+  // Datos y configuraciones internas del Pokémon Manager
   #data = {
     dom: {
       elements: {
@@ -69,6 +70,26 @@ export class PokemonManager {
     },
     pokemonDataList: [],
   };
+
+  /**
+   * Obtiene la lista completa de Pokémon cargada en el manager.
+   * @returns {object[]} - Una copia profunda (deep copy) de la lista de datos de Pokémon.
+   * @example
+   * const allPokemon = pokemonManager.pokemon;
+   */
+  get pokemon() {
+    return JSON.parse(JSON.stringify(this.#data.pokemonDataList));
+  }
+
+  /**
+   * Obtiene la lista de Pokémon filtrada que se muestra actualmente en el DOM.
+   * @returns {object[]} - Una copia profunda (deep copy) de la lista de datos de Pokémon filtrados.
+   * @example
+   * const filteredPokemon = pokemonManager.pokemonFiltered;
+   */
+  get pokemonFiltered() {
+    return JSON.parse(JSON.stringify(this.#data.dom.pokemonDivDataList));
+  }
 
   /**
    * Inicializa la lista de Pokémon cargando datos desde la API.
