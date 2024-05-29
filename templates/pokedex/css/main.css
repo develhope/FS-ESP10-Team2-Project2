@@ -5,13 +5,14 @@
     /* Define los colores para el modo claro */
     --clr-black: #1c1c1c;
     --clr-gray: #ececec;
+    --clr-gray2: #727272;
     --clr-white: #f7f7f7;
 
     /* Define los colores para el modo oscuro */
     --dark-mode-background: var(--clr-black);
     --dark-mode-text: var(--clr-gray);
 
-    /* Define los colores de los tipos de Pokemon*/
+    /* Define los colores de los tipos de Pokemon */
     --type-normal: #A8A878;
     --type-fire: #F08030;
     --type-water: #6890F0;
@@ -30,12 +31,18 @@
     --type-dragon: #7038F8;
     --type-steel: #B8B8D0;
     --type-fairy: #F0B6BC;
+
+    /* Define los colores de la oferta */
+    --clr-offerBG: #f2ff80;
+    --clr-offer: #914600;
+
 }
 
 .dark-mode {
     /* Cambia los colores para el modo oscuro */
     --clr-white: #2b2b2b;
     --clr-gray: #666666;
+    --clr-gray2: #a1a1a1;
     --clr-black: #f7f7f7;
 }
 
@@ -293,6 +300,74 @@ main {
     font-size: 1.4rem;
 }
 
+/* Animación de transición de color de izquierda a derecha para MaxEvo */
+#pokemon-name-MaxEvo {
+    position: relative;
+    background: linear-gradient(to right, #574596b2, #8a6fc9, #574596b2, #8a6fc9);
+    background-size: 400% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: colorTransitionMaxEvo 3s linear infinite;
+}
+
+@keyframes colorTransitionMaxEvo {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    100% {
+        background-position: 100% 0%;
+    }
+}
+
+/* Animación de transición de color de izquierda a derecha para Mythical */
+#pokemon-name-mythical {
+    position: relative;
+    background: linear-gradient(to right, #cc2900, #ff7c5f, #cc2900, #ff5733);
+    background-size: 400% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: colorTransitionMythical 3s linear infinite;
+}
+
+@keyframes colorTransitionMythical {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    100% {
+        background-position: 100% 0%;
+    }
+}
+
+/* Animación de transición de color de izquierda a derecha para Legendary */
+#pokemon-name-lejendary {
+    position: relative;
+    background: linear-gradient(to right, #F8D030, #fff19f, #F8D030, #FFEA70);
+    background-size: 400% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: colorTransitionLejendary 3s linear infinite;
+}
+
+@keyframes colorTransitionLejendary {
+    0% {
+        background-position: 0% 0%;
+    }
+
+    100% {
+        background-position: 100% 0%;
+    }
+}
+
+.pokemon-img_maxEvo {
+    width: 40px;
+}
+
+
 .pokemon-types {
     display: flex;
     gap: .5rem;
@@ -318,6 +393,47 @@ main {
     padding: .25rem .5rem;
     border-radius: 100vmax;
 }
+
+.pokemon-price {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5px;
+}
+
+.price {
+    /* background-color: var(--clr-gray); */
+    /* padding: .25rem .5rem; */
+    /* border-radius: 100vmax; */
+    font-size: 1.3rem;
+}
+
+.offer {
+    /* background-color: var(--clr-gray); */
+    /* padding: .25rem .5rem; */
+    /* border-radius: 100vmax; */
+    font-weight: 100;
+    font-size: 0.875rem;
+    /* font-weight: 400; */
+    /* letter-spacing: normal; */
+    color: var(--clr-gray2);
+    text-decoration: line-through;
+}
+
+.offerPercentage {
+    background-color: var(--clr-offerBG);
+    padding: .25rem .5rem;
+    border-radius: 5px;
+
+    font-weight: 500;
+    font-size: 1rem;
+    /* font-weight: 400; */
+    /* letter-spacing: normal; */
+    color: var(--clr-offer);
+}
+
 
 .see-all {
     background-color: #ececec;
@@ -412,4 +528,14 @@ main {
 .fairy {
     background-color: var(--type-fairy);
     color: #1c1c1c;
+}
+
+.btn-select {
+    transform: scale(1.1);
+    box-shadow: 0 0 2rem rgba(0, 0, 0, .25);
+    box-shadow: 0 0 8px var(--clr-black);
+}
+
+.btn-select:hover {
+    box-shadow: 0 0 8px var(--clr-black);
 }

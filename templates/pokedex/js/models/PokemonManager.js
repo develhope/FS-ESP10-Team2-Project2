@@ -5,29 +5,56 @@ import { PokemonFilter } from "./PokemonFilter.js";
 export class PokemonManager {
   /**
    * Constructor de la clase PokemonManager.
-   * @param {HTMLElement} pokemonDivList - El contenedor en el DOM donde se mostrarán los Pokémon.
-   * @param {NodeListOf<HTMLElement>} fittedButtonsByType - La lista de botones del header para filtrar Pokémon por tipo.
-   * @param {HTMLElement} fittedSelectByProperty - El elemento select para filtrar Pokémon por propiedad.
-   * @throws {Error} - Si alguno de los parámetros requeridos no es proporcionado.
+   * @throws {Error} - Si ocurre algún error durante la inicialización.
    */
-  constructor(pokemonDivList, fittedButtonsByType, fittedSelectByProperty) {
-    if (!pokemonDivList || !fittedButtonsByType || !fittedSelectByProperty) {
+  constructor() {
+    // Obtener referencias a elementos del DOM
+    const mainContainer = document.querySelector("main");
+    const pokemonDivList = document.querySelector("#pokemon-div-list");
+    const fittedButtonsByType = document.querySelectorAll(".btn-header");
+
+    // Verificar que los elementos del DOM necesarios existan
+    if (!mainContainer) {
       throw new Error(
-        "Todos los parámetros (pokemonDivList, fittedButtonsByType, fittedSelectByProperty) son requeridos"
+        "Error: No se pudo encontrar el elemento 'mainContainer' en el DOM."
+      );
+    }
+    if (!pokemonDivList) {
+      throw new Error(
+        "Error: No se pudo encontrar el elemento 'pokemonDivList' en el DOM."
+      );
+    }
+    if (fittedButtonsByType.length === 0) {
+      console.warn(
+        "Advertencia: No se encontraron elementos con la clase 'btn-header' en el DOM."
       );
     }
 
+    // Inicializar las instancias de las clases manejadoras
     this.PokemonDataHandler = new PokemonDataHandler();
     this.PokemonFilter = new PokemonFilter();
-    this.PokemonDOMHandler = new PokemonDOMHandler(pokemonDivList);
+    this.PokemonDOMHandler = new PokemonDOMHandler({
+      mainContainer: mainContainer,
+      pokemonDivList: pokemonDivList,
+    });
+
+    const fittedSelectByProperty = document.querySelector("#pokemon-filter");
+
+    if (!fittedSelectByProperty) {
+      console.warn(
+        "Advertencia: No se pudo encontrar el elemento 'pokemon-filter' en el DOM."
+      );
+    }
 
     this.#data.dom.elements.divList = pokemonDivList;
     this.#data.dom.elements.fittedButtonsType = fittedButtonsByType;
     this.#data.dom.elements.fittedSelectProperty = fittedSelectByProperty;
 
+    // Añadir los event listeners
     this.#addEventListeners();
   }
 
+  // Datos y configuraciones internas del Pokémon Manager
   #data = {
     dom: {
       elements: {
@@ -45,27 +72,62 @@ export class PokemonManager {
   };
 
   /**
+   * Obtiene la lista completa de Pokémon cargada en el manager.
+   * @returns {object[]} - Una copia profunda (deep copy) de la lista de datos de Pokémon.
+   * @example
+   * const allPokemon = pokemonManager.pokemon;
+   */
+  get pokemon() {
+    return JSON.parse(JSON.stringify(this.#data.pokemonDataList));
+  }
+
+  /**
+   * Obtiene la lista de Pokémon filtrada que se muestra actualmente en el DOM.
+   * @returns {object[]} - Una copia profunda (deep copy) de la lista de datos de Pokémon filtrados.
+   * @example
+   * const filteredPokemon = pokemonManager.pokemonFiltered;
+   */
+  get pokemonFiltered() {
+    return JSON.parse(JSON.stringify(this.#data.dom.pokemonDivDataList));
+  }
+
+  /**
    * Inicializa la lista de Pokémon cargando datos desde la API.
    * @param {number} count - La cantidad de Pokémon a cargar.
    * @returns {Promise<void>} - Una promesa que se resuelve cuando los datos están cargados y la vista actualizada.
    * @throws {Error} - Si el parámetro `count` no es válido o si ocurre un error durante la carga de los datos.
    */
   async init(count) {
+    // Muestra el div de carga mientras se procesan los datos
     this.PokemonDOMHandler.toggleLoading(true);
 
     try {
+      // Carga la lista de Pokémon utilizando el manejador de datos
       this.#data.pokemonDataList =
         await this.PokemonDataHandler.loadPokemonList(count);
+
+      // Clona la lista de Pokémon cargados para su manipulación en el DOM
       this.#data.dom.pokemonDivDataList = [...this.#data.pokemonDataList];
-      this.filtersByProperty(
+
+      // Obtiene las configuraciones del filtro de propiedades desde el estado interno
+      const propertyFilterSettings = [
         this.#data.dom.filters.byProperty[0],
-        this.#data.dom.filters.byProperty[1]
+        this.#data.dom.filters.byProperty[1],
+      ];
+
+      // Aplica los filtros a los Pokémon cargados según las configuraciones predeterminadas
+      this.filtersByProperty(
+        propertyFilterSettings[0],
+        propertyFilterSettings[1]
       );
+      // Si el valor del filtro existe, lo establece en el select
+      this.PokemonDOMHandler.setFilterValue(propertyFilterSettings.join("-"));
     } catch (error) {
-      throw new Error(
-        "Error al inicializar la lista de Pokémon. Por favor, inténtelo de nuevo."
-      );
+      // Lanza un error si ocurre algún problema durante la carga de los datos
+      console.error("Error al inicializar la lista de Pokémon:", error);
+      throw new Error("Error al inicializar la lista de Pokémon.");
     } finally {
+      // Oculta el div de carga después de que los datos han sido procesados
       this.PokemonDOMHandler.toggleLoading(false);
     }
   }
@@ -169,6 +231,7 @@ export class PokemonManager {
   #addEventListeners() {
     // Definir la variable holdTimeout fuera de los listeners para evitar errores de referencia
     let holdTimeout;
+    let selectedButton = null;
 
     this.#data.dom.elements.fittedButtonsType.forEach((button) => {
       let holdActivated = false;
@@ -178,6 +241,13 @@ export class PokemonManager {
           const buttonId = event.currentTarget.id;
           const typeFilters = buttonId === "see-all" ? ["all"] : [buttonId];
           this.filtersByTypes(typeFilters, false);
+
+          // Actualizar clases de botones
+          if (selectedButton) {
+            selectedButton.classList.remove("btn-select");
+          }
+          event.currentTarget.classList.add("btn-select");
+          selectedButton = event.currentTarget;
         }
         holdActivated = false;
       };
@@ -189,6 +259,13 @@ export class PokemonManager {
           const typeFilters = buttonId === "see-all" ? ["all"] : [buttonId];
           this.filtersByTypes(typeFilters, true);
           holdActivated = true;
+
+          // Actualizar clases de botones
+          if (selectedButton) {
+            selectedButton.classList.remove("btn-select");
+          }
+          button.classList.add("btn-select");
+          selectedButton = button;
         }, 500);
       };
 

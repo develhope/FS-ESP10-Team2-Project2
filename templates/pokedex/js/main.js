@@ -3,9 +3,6 @@ import { PokemonManager } from "./models/PokemonManager.js";
 // Referencias a elementos del DOM
 const darkModeToggle = document.querySelector("#darkModeToggle");
 const body = document.body;
-const pokemonDivList = document.querySelector("#pokemon-div-list");
-const fittedButtonsByType = document.querySelectorAll(".btn-header");
-const pokemonFilter = document.querySelector("#pokemon-filter");
 
 // Configuración del modo oscuro
 darkModeToggle.addEventListener("click", () => {
@@ -19,11 +16,7 @@ darkModeToggle.addEventListener("click", () => {
 body.classList.toggle("dark-mode");
 
 // Creación de la instancia del gestor de Pokémon
-const pokemonManager = new PokemonManager(
-  pokemonDivList,
-  fittedButtonsByType,
-  pokemonFilter
-);
+const pokemonManager = new PokemonManager();
 
 /**
  * Inicializa la carga de los Pokémon.

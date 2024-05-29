@@ -1,15 +1,14 @@
 export class PokemonDOMHandler {
   /**
    * Constructor de la clase PokemonDOMHandler.
-   * @param {HTMLElement} divList - El contenedor en el DOM donde se mostrarán los Pokémon.
-   * @throws {Error} - Si el parámetro requerido no es proporcionado.
+   * @param {object} options - Objeto de opciones con las propiedades necesarias.
+   * @param {HTMLElement} options.mainContainer - El contenedor principal en el DOM.
+   * @param {HTMLElement} options.pokemonDivList - El contenedor en el DOM donde se mostrarán los Pokémon.
    */
-  constructor(divList) {
-    if (!divList) {
-      throw new Error("Parameter 'divList' is required");
-    }
-
-    this.divList = divList;
+  constructor({ pokemonDivList, mainContainer }) {
+    this.mainContainer = mainContainer;
+    this.pokemonDivList = pokemonDivList;
+    this.#createFilterContainer(mainContainer);
   }
 
   /**
@@ -63,11 +62,11 @@ export class PokemonDOMHandler {
    * @param {object[]} pokemonDataList - Un array de objetos de Pokémon.
    */
   displayPokemon(pokemonDataList) {
-    this.divList.innerHTML = "";
+    this.pokemonDivList.innerHTML = "";
 
     pokemonDataList.forEach((poke) => {
       const div = this.#createPokemonElement(poke);
-      this.divList.append(div);
+      this.pokemonDivList.append(div);
       this.#addImageHoverEffect(div, poke);
     });
   }
@@ -79,44 +78,92 @@ export class PokemonDOMHandler {
    * @private
    */
   #createPokemonElement(poke) {
+    // Formatear el ID del Pokémon con ceros a la izquierda
     const pokeId = poke.pokeId.toString().padStart(3, "0");
+    // Convertir el nombre del Pokémon a mayúsculas
     const name = poke.name.toUpperCase();
 
+    // Generar el HTML para los tipos del Pokémon
     const types = poke.type
-      .map((type) => `<p class="${type} type">${type}</p>`)
+      .map(
+        (type) =>
+          `<p class="${type} type">${
+            type.charAt(0).toUpperCase() + type.slice(1)
+          }</p>`
+      )
       .join("");
 
+    // Determinar la altura del Pokémon en la unidad apropiada
     const height =
       poke.statistics.height.meters < 1
-        ? poke.statistics.height.centimeter + "cm"
-        : poke.statistics.height.meters + "M";
+        ? `${poke.statistics.height.centimeter}cm`
+        : `${poke.statistics.height.meters}M`;
 
+    // Determinar el peso del Pokémon en la unidad apropiada
     const weight =
       poke.statistics.weight.kilograms < 1
-        ? poke.statistics.weight.gram + "g"
-        : poke.statistics.weight.kilograms + "kg";
+        ? `${poke.statistics.weight.gram}g`
+        : `${poke.statistics.weight.kilograms}kg`;
 
+    let market;
+
+    const basePrice = poke.market.price;
+
+    // Si hay un descuento, calcular el precio de oferta y el porcentaje de descuento
+    if (poke.market.discount) {
+      const offerPrice = poke.market.discount;
+
+      // Calcular el porcentaje de descuento
+      const offerPercentage = this.#calculateOfferPercentage(
+        basePrice,
+        offerPrice
+      );
+
+      // Crear el HTML para el precio con descuento
+      market = `
+      <p class="price">${offerPrice}€</p>
+      <p class="offer">${basePrice}€</p>
+      <p class="offerPercentage">${offerPercentage}%</p>
+    `;
+    } else {
+      // Crear el HTML para el precio sin descuento
+      market = `<p class="price">${basePrice}€</p>`;
+    }
+
+    let quality;
+    if (poke.value.isMythical) {
+      quality = "pokemon-name-mythical";
+    } else if (poke.value.isLegendary) {
+      quality = "pokemon-name-lejendary";
+    }
+
+    // Crear el elemento div para el Pokémon
     const div = document.createElement("div");
     div.classList.add("pokemon");
     div.innerHTML = `
-      <p class="pokemon-id-back">#${pokeId}</p>
-      <div class="pokemon-image">
-        <img src="${poke.images.illustration.default}" alt="${poke.name}">
+    <p class="pokemon-id-back">#${pokeId}</p>
+    <div class="pokemon-image">
+      <img src="${poke.images.illustration.default}" alt="${poke.name}">
+    </div>
+    <div class="pokemon-info">
+      <div class="name-container">
+        <p class="pokemon-id">#${pokeId}</p>
+        <h2 class="pokemon-name" id="${quality}">${name}</h2>
+        <!-- <img class="pokemon-img_maxEvo" src="assets/images/pokeballMaxEvo.png" alt="pokeballMaxEvo}"> -->
       </div>
-      <div class="pokemon-info">
-        <div class="name-container">
-          <p class="pokemon-id">#${pokeId}</p>
-          <h2 class="pokemon-name">${name}</h2>
-        </div>
-        <div class="pokemon-types">
-          ${types}
-        </div>
-        <div class="pokemon-stats">
-          <p class="stat">${height}</p>
-          <p class="stat">${weight}</p>
-        </div>
+      <div class="pokemon-types">
+        ${types}
       </div>
-    `;
+      <div class="pokemon-stats">
+        <p class="stat">${height}</p>
+        <p class="stat">${weight}</p>
+      </div>
+      <div class="pokemon-price">
+        ${market}
+      </div>
+    </div>
+  `;
+
     return div;
   }
 
@@ -146,5 +193,83 @@ export class PokemonDOMHandler {
       image.classList.remove("reverse");
       // }, 100); // Debe coincidir con la duración de la transición en el CSS
     });
+  }
+
+  /**
+   * Método para crear el contenedor de filtros y añadirlo al DOM.
+   * @param {HTMLElement} container - El elemento donde se agregará el contenedor de filtros.
+   */
+  #createFilterContainer(container) {
+    const filterContainer = document.createElement("div");
+    filterContainer.classList.add("filter-container");
+
+    filterContainer.innerHTML = `
+        <label class="filter-label" for="pokemon-filter">Filtrar Pokémon por:</label>
+        <select class="filter-select" id="pokemon-filter">
+          <optgroup label="PokeID" class="filter-optgroup">
+            <option value="pokeId-asc" class="filter-option">ID (Menor)</option>
+            <option value="pokeId-desc" class="filter-option">ID (Mayor)</option>
+          </optgroup>
+          <optgroup label="Name" class="filter-optgroup">
+            <option value="name-asc" class="filter-option">Nombre (A-Z)</option>
+            <option value="name-desc" class="filter-option">Nombre (Z-A)</option>
+          </optgroup>
+          <!-- <optgroup label="Type" class="filter-optgroup">
+            <option value="type-asc" class="filter-option">Tipo (A-Z)</option>
+            <option value="type-desc" class="filter-option">Tipo (Z-A)</option> -->
+          </optgroup>
+          <optgroup label="Height (M)" class="filter-optgroup">
+            <option value="statistics.height-asc" class="filter-option">Altura (Menor)</option>
+            <option value="statistics.height-desc" class="filter-option">Altura (Mayor)</option>
+          </optgroup>
+          <optgroup label="Weight (KG)" class="filter-optgroup">
+            <option value="statistics.weight-asc" class="filter-option">Peso (Menor)</option>
+            <option value="statistics.weight-desc" class="filter-option">Peso (Mayor)</option>
+          </optgroup>
+        </select>
+      `;
+
+    container.prepend(filterContainer);
+  }
+
+  /**
+   * Método para cambiar el valor seleccionado del filtro.
+   * @param {string} newValue - El nuevo valor que se debe seleccionar.
+   */
+  setFilterValue(newValue) {
+    const filterSelect = document.querySelector("#pokemon-filter");
+
+    if (!filterSelect) {
+      throw new Error("Error: No se encontró el elemento select.");
+    }
+
+    if (filterSelect.value !== newValue) {
+      if (
+        [...filterSelect.options].some((option) => option.value === newValue)
+      ) {
+        filterSelect.value = newValue;
+      } else {
+        throw new Error(
+          `Error: El valor ${newValue} no es válido para el select.`
+        );
+      }
+    }
+  }
+
+  /**
+   * Calcula el porcentaje de descuento aplicado a un Pokémon.
+   * @param {number} basePrice - El precio base del Pokémon.
+   * @param {number} offerPrice - El precio de oferta del Pokémon.
+   * @returns {number} - El porcentaje de descuento aplicado.
+   */
+  #calculateOfferPercentage(basePrice, offerPrice) {
+    // Calcula la diferencia entre el precio base y el precio de oferta
+    const discount = basePrice - offerPrice;
+
+    // Calcula el porcentaje de descuento aplicado
+    const offerPercentage = (discount / basePrice) * 100;
+
+    // Redondea el porcentaje de descuento a dos decimales
+    return Math.round(offerPercentage * 100) / 100;
   }
 }
