@@ -251,6 +251,7 @@ export class PokemonManager {
             filterValue
           );
           if (filterType === "byMaxPrice") {
+            //! Intento de arreglar el filtro para que filtre por "discount" cuando no sea "undefined"
             // Ordenar la lista de Pokémon filtrados por precio efectivo
             // console.log("XXXXXXXXX");
             // pokemonData.sort(
