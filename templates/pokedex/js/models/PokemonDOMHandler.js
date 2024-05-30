@@ -164,6 +164,10 @@ export class PokemonDOMHandler {
     </div>
   `;
 
+    div.addEventListener("click", () => {
+      
+    });
+
     return div;
   }
 

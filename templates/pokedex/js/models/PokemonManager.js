@@ -358,5 +358,8 @@ export class PokemonManager {
       this.#data.dom.elements.sliderValue.innerText = formatPrice(value);
       debouncedFilterByMaxPrice(value);
     });
+
+
+    
   }
 }
