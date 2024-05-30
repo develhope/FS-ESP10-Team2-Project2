@@ -16,7 +16,7 @@
 
   - [x] **1.1** Al inicializar la clase [`PokemonManager`](templates/pokedex/js/models/PokemonManager.js) mostrar ofertas aleatorias en los precios de algunos Pokémon.
 
-  - [ ] **1.2** Actualizar el modulo [`PokemonDOMHandler.js`](templates/pokedex/js/models/PokemonDOMHandler.js) para mostrar los precios de cada Pokémon; Añadir su respectivo filtro de (Mayor/Menor) precio en el modulo [`PokemonFilter.js`](templates/pokedex/js/models/PokemonFilter.js).
+  - [x] **1.2** Actualizar el modulo [`PokemonDOMHandler.js`](templates/pokedex/js/models/PokemonDOMHandler.js) para mostrar los precios de cada Pokémon; Añadir su respectivo filtro de (Mayor/Menor) precio en el modulo [`PokemonFilter.js`](templates/pokedex/js/models/PokemonFilter.js).
 
   - [ ] **1.3** Implementar un filtro de búsqueda por nombre.
 
