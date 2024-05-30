@@ -9,14 +9,14 @@ export class PokemonManager {
    */
   constructor() {
     // Obtener referencias a elementos del DOM
-    const mainContainer = document.querySelector("main");
+    const filterContainer = document.querySelector(".price-filter-container");
     const pokemonDivList = document.querySelector("#pokemon-div-list");
     const fittedButtonsByType = document.querySelectorAll(".btn-header");
 
     // Verificar que los elementos del DOM necesarios existan
-    if (!mainContainer) {
+    if (!filterContainer) {
       throw new Error(
-        "Error: No se pudo encontrar el elemento 'mainContainer' en el DOM."
+        "Error: No se pudo encontrar el elemento 'filterContainer' en el DOM."
       );
     }
     if (!pokemonDivList) {
@@ -34,10 +34,9 @@ export class PokemonManager {
     this.PokemonDataHandler = new PokemonDataHandler();
     this.PokemonFilter = new PokemonFilter();
     this.PokemonDOMHandler = new PokemonDOMHandler({
-      mainContainer: mainContainer,
+      filterContainer: filterContainer,
       pokemonDivList: pokemonDivList,
     });
-
     const fittedSelectByProperty = document.querySelector("#pokemon-filter");
 
     if (!fittedSelectByProperty) {
@@ -49,6 +48,13 @@ export class PokemonManager {
     this.#data.dom.elements.divList = pokemonDivList;
     this.#data.dom.elements.fittedButtonsType = fittedButtonsByType;
     this.#data.dom.elements.fittedSelectProperty = fittedSelectByProperty;
+    this.#data.dom.elements.filterContainer = filterContainer;
+
+    // Crear el slider de filtro de precio y obtener los elementos
+    const { filterSlider, sliderValue } =
+      this.PokemonDOMHandler.createPriceFilterSlider(filterContainer);
+    this.#data.dom.elements.filterSlider = filterSlider;
+    this.#data.dom.elements.sliderValue = sliderValue;
 
     // Añadir los event listeners
     this.#addEventListeners();
@@ -65,6 +71,7 @@ export class PokemonManager {
       filters: {
         byTypes: [["all"], false],
         byProperty: ["pokeId", "asc"],
+        byMaxPrice: "max",
       },
       pokemonDivDataList: [],
     },
@@ -121,7 +128,25 @@ export class PokemonManager {
         propertyFilterSettings[1]
       );
       // Si el valor del filtro existe, lo establece en el select
-      this.PokemonDOMHandler.setFilterValue(propertyFilterSettings.join("-"));
+      this.PokemonDOMHandler.setFilterSelectValue(
+        propertyFilterSettings.join("-")
+      );
+
+      const maxPrice = this.#data.pokemonDataList.reduce((max, poke) => {
+        return Math.floor(poke.market.price > max ? poke.market.price : max);
+      }, 0);
+
+      const minPrice = this.#data.pokemonDataList.reduce((min, poke) => {
+        return Math.floor(poke.market.price < min ? poke.market.price : min);
+      }, Infinity);
+
+      this.PokemonDOMHandler.setFilterSliderValue(
+        maxPrice,
+        minPrice,
+        maxPrice,
+        // Math.floor((maxPrice - minPrice) / 1000)
+        1
+      );
     } catch (error) {
       // Lanza un error si ocurre algún problema durante la carga de los datos
       console.error("Error al inicializar la lista de Pokémon:", error);
@@ -151,6 +176,17 @@ export class PokemonManager {
   }
 
   /**
+   * Verifica si los datos de los Pokémon han sido cargados.
+   * @throws {Error} - Si los datos de los Pokémon no han sido cargados aún.
+   * @private
+   */
+  #checkDataLoaded() {
+    if (!this.#data.pokemonDataList.length) {
+      throw new Error("Los datos de los Pokémon no han sido cargados aún.");
+    }
+  }
+
+  /**
    * Filtra la lista de Pokémon por tipos.
    * @param {string[]} typeFilters - Los tipos de Pokémon por los cuales filtrar.
    * @param {boolean} exactMatch - Indica si el filtro debe ser una coincidencia exacta.
@@ -173,6 +209,16 @@ export class PokemonManager {
   }
 
   /**
+   * Método para aplicar filtros a la lista de Pokémon.
+   * @param {number} maxPrice - El precio máximo para filtrar los Pokémon.
+   * @returns {void}
+   */
+  filtersByMaxPrice(maxPrice) {
+    this.#data.dom.filters.byMaxPrice = maxPrice;
+    this.#updateViewPokemon();
+  }
+
+  /**
    * Actualiza y muestra la lista de Pokémon en el DOM.
    * @throws {Error} - Si ocurre un error al actualizar y mostrar los datos de los Pokémon.
    * @private
@@ -183,7 +229,7 @@ export class PokemonManager {
     let pokemonData = this.#data.pokemonDataList;
 
     // Iterar sobre los filtros y aplicarlos secuencialmente
-    for (const [filterType, filterValue] of Object.entries(
+    for (let [filterType, filterValue] of Object.entries(
       this.#data.dom.filters
     )) {
       // Construir el nombre del método correspondiente en PokemonFilter
@@ -193,10 +239,27 @@ export class PokemonManager {
 
       // Verificar si hay un método correspondiente en PokemonFilter
       if (typeof this.PokemonFilter[methodName] === "function") {
-        pokemonData = this.PokemonFilter[methodName](
-          pokemonData,
-          ...filterValue
-        );
+        // Llamar al método con filterValue directamente si es una cadena o número
+        if (Array.isArray(filterValue)) {
+          pokemonData = this.PokemonFilter[methodName](
+            pokemonData,
+            ...filterValue
+          );
+        } else {
+          pokemonData = this.PokemonFilter[methodName](
+            pokemonData,
+            filterValue
+          );
+          if (filterType === "byMaxPrice") {
+            // Ordenar la lista de Pokémon filtrados por precio efectivo
+            // console.log("XXXXXXXXX");
+            // pokemonData.sort(
+            //   (a, b) =>
+            //     (a.market.discount ?? a.market.price) -
+            //     (b.market.discount ?? b.market.price)
+            // );
+          }
+        }
       }
     }
 
@@ -211,17 +274,6 @@ export class PokemonManager {
       "pokemonTempDataList",
       this.#data.dom.pokemonDivDataList.length
     );
-  }
-
-  /**
-   * Verifica si los datos de los Pokémon han sido cargados.
-   * @throws {Error} - Si los datos de los Pokémon no han sido cargados aún.
-   * @private
-   */
-  #checkDataLoaded() {
-    if (!this.#data.pokemonDataList.length) {
-      throw new Error("Los datos de los Pokémon no han sido cargados aún.");
-    }
   }
 
   /**
@@ -284,5 +336,26 @@ export class PokemonManager {
         this.filtersByProperty(property, order);
       }
     );
+
+    // Añadir event listener al slider de precio con debounce
+    const formatPrice = (value) => `${Math.floor(value)}€`;
+
+    const debounce = (func, wait) => {
+      let timeout;
+      return (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), wait);
+      };
+    };
+
+    const debouncedFilterByMaxPrice = debounce((value) => {
+      this.filtersByMaxPrice(value);
+    }, 300); // Ajusta el tiempo de espera según sea necesario
+
+    this.#data.dom.elements.filterSlider.addEventListener("input", (event) => {
+      const value = event.target.value;
+      this.#data.dom.elements.sliderValue.innerText = formatPrice(value);
+      debouncedFilterByMaxPrice(value);
+    });
   }
 }

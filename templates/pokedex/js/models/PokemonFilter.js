@@ -133,8 +133,55 @@ export class PokemonFilter {
         return [a.statistics.height.decimeters, b.statistics.height.decimeters];
       case "statistics.weight":
         return [a.statistics.weight.hectograms, b.statistics.weight.hectograms];
+      case "market.price":
+        return [a.market.price, b.market.price];
       default:
         throw new Error(`Propiedad de ordenación desconocida: ${property}`);
     }
+  }
+
+  /**
+   * Método para obtener una lista de Pokémon que tengan un precio menor o igual al precio máximo especificado.
+   * @param {object[]} pokemonDataList - La lista de datos de Pokémon a filtrar.
+   * @param {number} maxPrice - El precio máximo para el filtro.
+   * @returns {object[]} - Un array de objetos de Pokémon que tienen un precio menor o igual al precio máximo especificado.
+   * @throws {TypeError} - Si los parámetros no son válidos.
+   */
+  getPokemonByMaxPrice(pokemonDataList, maxPrice) {
+    // Validación de los parámetros
+    if (!Array.isArray(pokemonDataList)) {
+      throw new TypeError(
+        "pokemonDataList debe ser un array de objetos Pokémon."
+      );
+    }
+
+    if (typeof maxPrice === "string") {
+      switch (maxPrice) {
+        case "max":
+          maxPrice = Math.max(
+            ...pokemonDataList.map(
+              (poke) => poke.market.discount ?? poke.market.price
+            )
+          );
+          break;
+        case "min":
+          maxPrice = Math.min(
+            ...pokemonDataList.map(
+              (poke) => poke.market.discount ?? poke.market.price
+            )
+          );
+          break;
+        default:
+          maxPrice = Number(maxPrice);
+          break;
+      }
+    } else if (typeof maxPrice !== "number") {
+      throw new TypeError("maxPrice debe ser un número.");
+    }
+
+    // Filtrar los Pokémon según el precio máximo especificado
+    return pokemonDataList.filter(
+      (poke) => (poke.market.discount ?? poke.market.price) <= maxPrice
+    );
   }
 }

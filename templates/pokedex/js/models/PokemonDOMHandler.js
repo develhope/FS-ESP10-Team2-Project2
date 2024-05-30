@@ -2,13 +2,13 @@ export class PokemonDOMHandler {
   /**
    * Constructor de la clase PokemonDOMHandler.
    * @param {object} options - Objeto de opciones con las propiedades necesarias.
-   * @param {HTMLElement} options.mainContainer - El contenedor principal en el DOM.
+   * @param {HTMLElement} options.filterContainer - El contenedor principal en el DOM.
    * @param {HTMLElement} options.pokemonDivList - El contenedor en el DOM donde se mostrarán los Pokémon.
    */
-  constructor({ pokemonDivList, mainContainer }) {
-    this.mainContainer = mainContainer;
+  constructor({ pokemonDivList, filterContainer: filterContainer }) {
+    this.mainContainer = filterContainer;
     this.pokemonDivList = pokemonDivList;
-    this.#createFilterContainer(mainContainer);
+    this.#createFilterSelect(filterContainer);
   }
 
   /**
@@ -199,13 +199,21 @@ export class PokemonDOMHandler {
    * Método para crear el contenedor de filtros y añadirlo al DOM.
    * @param {HTMLElement} container - El elemento donde se agregará el contenedor de filtros.
    */
-  #createFilterContainer(container) {
+  #createFilterSelect(container) {
+    if (!container) {
+      throw new Error("Parameter 'container' is required");
+    }
+
     const filterContainer = document.createElement("div");
     filterContainer.classList.add("filter-container");
 
     filterContainer.innerHTML = `
         <label class="filter-label" for="pokemon-filter">Filtrar Pokémon por:</label>
         <select class="filter-select" id="pokemon-filter">
+          <optgroup label="Precio (€)" class="filter-optgroup">
+            <option value="market.price-asc" class="filter-option">Precio (Menor)</option>
+            <option value="market.price-desc" class="filter-option">Precio (Mayor)</option>
+          </optgroup>
           <optgroup label="PokeID" class="filter-optgroup">
             <option value="pokeId-asc" class="filter-option">ID (Menor)</option>
             <option value="pokeId-desc" class="filter-option">ID (Mayor)</option>
@@ -236,7 +244,7 @@ export class PokemonDOMHandler {
    * Método para cambiar el valor seleccionado del filtro.
    * @param {string} newValue - El nuevo valor que se debe seleccionar.
    */
-  setFilterValue(newValue) {
+  setFilterSelectValue(newValue) {
     const filterSelect = document.querySelector("#pokemon-filter");
 
     if (!filterSelect) {
@@ -254,6 +262,81 @@ export class PokemonDOMHandler {
         );
       }
     }
+  }
+
+  /**
+   * Crea un slider para filtrar Pokémon por precio.
+   * @param {HTMLElement} container - El contenedor en el cual se añadirá el slider.
+   * @param {number} min - El valor mínimo del slider.
+   * @param {number} max - El valor máximo del slider.
+   * @param {number} step - El paso del slider.
+   */
+  createPriceFilterSlider(container, min = 0, max = 1000, step = 10) {
+    if (!container) {
+      throw new Error("Parameter 'container' is required");
+    }
+
+    const formatPrice = (value) => `${Math.floor(value)}€`;
+
+    const filterContainer = document.createElement("div");
+    filterContainer.className = "filter-container";
+
+    const filterLabel = document.createElement("label");
+    filterLabel.className = "filter-label";
+    filterLabel.innerText = "Filtrar por Precio:";
+
+    const filterSlider = document.createElement("input");
+    filterSlider.type = "range";
+    filterSlider.min = min;
+    filterSlider.max = max;
+    filterSlider.step = step;
+    filterSlider.className = "filter-slider";
+    filterSlider.id = "price-filter-slider"; // Agregar un id al slider
+
+    const sliderValue = document.createElement("span");
+    sliderValue.className = "slider-value";
+    sliderValue.innerText = formatPrice(max);
+    filterSlider.value = max; // establecer el valor inicial
+
+    filterContainer.appendChild(filterLabel);
+    filterContainer.appendChild(filterSlider);
+    filterContainer.appendChild(sliderValue);
+
+    container.appendChild(filterContainer);
+
+    // Devuelve el control deslizante y los elementos de valor para adjuntar detectores de eventos más adelante
+    return { filterSlider, sliderValue };
+  }
+
+  /**
+   * Método para cambiar el valor del filtro del control deslizante.
+   * @param {number} newValue - El nuevo valor que se debe seleccionar.
+   * @param {number} newMin - El nuevo valor mínimo del control deslizante.
+   * @param {number} newMax - El nuevo valor máximo del control deslizante.
+   * @param {number} newStep - El nuevo valor de paso del slider.
+   */
+  setFilterSliderValue(newValue, newMin = null, newMax = null, newStep = null) {
+    const filterSlider = document.querySelector("#price-filter-slider");
+    const sliderValue = filterSlider.nextElementSibling; // obtener el siguiente elemento hermano (el span)
+
+    if (!filterSlider || !sliderValue) {
+      throw new Error(
+        "Error: No se encontró el elemento del control deslizante o su valor."
+      );
+    }
+
+    if (newMin !== null) {
+      filterSlider.min = newMin + 1;
+    }
+    if (newMax !== null) {
+      filterSlider.max = newMax + 1;
+    }
+    if (newStep !== null) {
+      filterSlider.step = newStep;
+    }
+    newValue++;
+    filterSlider.value = newValue;
+    sliderValue.innerText = `${Math.floor(newValue)}€`;
   }
 
   /**
