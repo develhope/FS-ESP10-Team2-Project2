@@ -19,55 +19,10 @@
   - [ ] **1.2** Actualizar el modulo [`PokemonDOMHandler.js`](templates/pokedex/js/models/PokemonDOMHandler.js) para mostrar los precios de cada Pokémon; Añadir su respectivo filtro de (Mayor/Menor) precio en el modulo [`PokemonFilter.js`](templates/pokedex/js/models/PokemonFilter.js).
 
 
+=======
+  - [ ] **1.3** Implementar un filtro de búsqueda por nombre.
 
-  OJO CON ESTO EQUIPO!! Jugar SÓLO con las KEYS, NO CON LOS VALORES! Este código se encuentra en Carpeta JS->Models->PokemonData
+  - [ ] **1.4** Implementar insignias especiales por cada Pokémon por ejemplo -> Evolución máxima (MaxEvo), Legendario (Legendary), Mítico (Mythical).
 
-   #transformPokemon(poke, species) {
-    return {
-      pokeId: poke.id,
-      name: poke.name,
-      type: poke.types.map((type) => type.type.name),
-      images: {
-        illustration: {
-          default: poke.sprites.other["official-artwork"].front_default,
-          shiny: poke.sprites.other["official-artwork"].front_shiny,
-        },
-        rendering: {
-          default: poke.sprites.other.home.front_default,
-          shiny: poke.sprites.other.home.front_shiny,
-        },
-        gif: {
-          back_default: poke.sprites.other.showdown.back_default,
-          back_shiny: poke.sprites.other.showdown.back_shiny,
-          front_default: poke.sprites.other.showdown.front_default,
-          front_shiny: poke.sprites.other.showdown.front_shiny,
-        },
-      },
-      statistics: {
-        height: {
-          centimeter: this.#formatNumber(poke.height * 10),
-          decimeters: poke.height,
-          meters: this.#formatNumber(poke.height / 10),
-        },
-        weight: {
-          gram: this.#formatNumber(poke.weight * 100),
-          hectograms: poke.weight,
-          kilograms: this.#formatNumber(poke.weight / 10),
-          tons: this.#formatNumber(poke.weight / 10000),
-        },
-        hp: poke.stats[0].base_stat,
-        attack: poke.stats[1].base_stat,
-        defense: poke.stats[2].base_stat,
-        special_attack: poke.stats[3].base_stat,
-        special_defense: poke.stats[4].base_stat,
-        speed: poke.stats[5].base_stat,
-      },
-      value: {
-        base_experience: poke.base_experience,
-        movements: poke.moves.length,
-        capture_rate_percent: Math.round((species.capture_rate * 100) / 255),
-        isLegendary: species.is_legendary,
-        isMythical: species.is_mythical,
-      },
-    };
-   }
+- [ ] **2.** Implementar un sistema automático de paginación para la lista de todos los Pokémon.
+>>>>>>> e0a1884db75d9abede52e1ba862f6c454e0ea8f9
