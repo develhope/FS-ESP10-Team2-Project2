@@ -101,20 +101,34 @@ export class PokemonManager {
   /**
    * Inicializa la lista de Pokémon cargando datos desde la API.
    * @param {number} count - La cantidad de Pokémon a cargar.
+   * @param {boolean} reload -
    * @returns {Promise<void>} - Una promesa que se resuelve cuando los datos están cargados y la vista actualizada.
    * @throws {Error} - Si el parámetro `count` no es válido o si ocurre un error durante la carga de los datos.
    */
-  async init(count) {
+  async init(count, reload = false) {
     // Muestra el div de carga mientras se procesan los datos
     this.PokemonDOMHandler.toggleLoading(true);
 
-    try {
-      // Carga la lista de Pokémon utilizando el manejador de datos
-      this.#data.pokemonDataList =
-        await this.PokemonDataHandler.loadPokemonList(count);
+    if (reload) {
+      //! Eliminar todos los datos almacenados en localStorage
+      localStorage.clear();
+    }
 
-      // Clona la lista de Pokémon cargados para su manipulación en el DOM
-      this.#data.dom.pokemonDivDataList = [...this.#data.pokemonDataList];
+    try {
+      // Obtener el array de objetos Pokémon de localStorage
+      const pokemonAllData = localStorage.getItem("pokemonAllData");
+      if (pokemonAllData) {
+        console.log("Restaurando datos...");
+        this.#data = JSON.parse(pokemonAllData);
+        console.log(this.#data);
+      } else {
+        // Carga la lista de Pokémon utilizando el manejador de datos
+        this.#data.pokemonDataList =
+          await this.PokemonDataHandler.loadPokemonList(count);
+
+        // Clona la lista de Pokémon cargados para su manipulación en el DOM
+        this.#data.dom.pokemonDivDataList = [...this.#data.pokemonDataList];
+      }
 
       // Obtiene las configuraciones del filtro de propiedades desde el estado interno
       const propertyFilterSettings = [
@@ -270,6 +284,8 @@ export class PokemonManager {
     // Mostrar los Pokémon en el DOM usando el manejador de datos de Pokémon
     this.PokemonDOMHandler.displayPokemon(this.#data.dom.pokemonDivDataList);
 
+    this.#addEventListenersPokemonCards(this.#data.dom.pokemonDivDataList);
+
     // Log para depuración
     console.log(
       "pokemonTempDataList",
@@ -357,6 +373,21 @@ export class PokemonManager {
       const value = event.target.value;
       this.#data.dom.elements.sliderValue.innerText = formatPrice(value);
       debouncedFilterByMaxPrice(value);
+    });
+  }
+
+  #addEventListenersPokemonCards(pokemonDivDataList) {
+    pokemonDivDataList.forEach((poke) => {
+      const pokemonElement = document.querySelector(`#pokemon-${poke.pokeId}`);
+      pokemonElement.addEventListener("click", () => {
+        localStorage.setItem("pokemonAllData", JSON.stringify(this.#data));
+        console.log(poke);
+
+        // Almacenar el objeto Pokémon en localStorage
+        localStorage.setItem("selectedPokemon", JSON.stringify(poke));
+        // Redirigir a la nueva página HTML
+        window.location.href = `js/examples/pokemonDetail.html`;
+      });
     });
   }
 }

@@ -15,6 +15,9 @@ darkModeToggle.addEventListener("click", () => {
  */
 body.classList.toggle("dark-mode");
 
+//! Eliminar todos los datos almacenados en localStorage
+// localStorage.clear();
+
 // Creación de la instancia del gestor de Pokémon
 const pokemonManager = new PokemonManager();
 
@@ -22,9 +25,9 @@ const pokemonManager = new PokemonManager();
  * Inicializa la carga de los Pokémon.
  * @param {number} count - El número de Pokémon a descargar.
  */
-async function initializePokemonManager(count) {
+async function initializePokemonManager(count, reload) {
   try {
-    await pokemonManager.init(count);
+    await pokemonManager.init(count, reload);
     console.log("#---------------#");
   } catch (error) {
     console.error("Error al inicializar el PokemonManager:", error);

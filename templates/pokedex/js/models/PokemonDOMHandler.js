@@ -54,7 +54,7 @@ export class PokemonDOMHandler {
         100% { transform: rotate(360deg); }
       }
     `;
-    document.head.appendChild(style);
+    div.appendChild(style);
   }
 
   /**
@@ -139,6 +139,7 @@ export class PokemonDOMHandler {
 
     // Crear el elemento div para el Pokémon
     const div = document.createElement("div");
+    div.id = `pokemon-${poke.pokeId}`; // Asigna un ID único al elemento
     div.classList.add("pokemon");
     div.innerHTML = `
     <p class="pokemon-id-back">#${pokeId}</p>
@@ -149,7 +150,6 @@ export class PokemonDOMHandler {
       <div class="name-container">
         <p class="pokemon-id">#${pokeId}</p>
         <h2 class="pokemon-name" id="${quality}">${name}</h2>
-        <!-- <img class="pokemon-img_maxEvo" src="assets/images/pokeballMaxEvo.png" alt="pokeballMaxEvo}"> -->
       </div>
       <div class="pokemon-types">
         ${types}
@@ -163,11 +163,6 @@ export class PokemonDOMHandler {
       </div>
     </div>
   `;
-
-    div.addEventListener("click", () => {
-      
-    });
-
     return div;
   }
 
