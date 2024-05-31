@@ -16,7 +16,7 @@ darkModeToggle.addEventListener("click", () => {
 body.classList.toggle("dark-mode");
 
 //! Eliminar todos los datos almacenados en localStorage
-localStorage.clear();
+// localStorage.clear();
 
 // Creación de la instancia del gestor de Pokémon
 const pokemonManager = new PokemonManager();
