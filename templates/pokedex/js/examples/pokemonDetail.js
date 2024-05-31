@@ -5,25 +5,6 @@ function pokemonMain(pokemon) {
   createBuyButton(pokemon);
 }
 
-// Función para crear el Botón Comprar
-function createBuyButton(pokemon) {
-  // Crear un elemento de botón
-  const button = document.createElement("button");
-  button.innerText = "Añadir al carrito";
-  button.id = "buy-button";
-
-  // Agregar un detector de eventos al botón
-  button.addEventListener("click", function () {
-    // Llama a la función externa para guardar el pokemon en el carrito
-    // AddCarito(pokemon);
-    alert(`${pokemon.name} se añadió al carrito correctamente.`);
-  });
-
-  // Añade el botón al contenedor de Pokémon.
-  const container = document.getElementById("pokemon-container");
-  container.appendChild(button);
-}
-
 // Función para mostrar detalles de Pokémon
 function displayPokemonDetails(pokemon) {
   const container = document.getElementById("pokemon-container");
@@ -50,8 +31,27 @@ function displayPokemonDetails(pokemon) {
   `;
 }
 
+// Función para crear el Botón Comprar
+function createBuyButton(pokemon) {
+  // Crear un elemento de botón
+  const button = document.createElement("button");
+  button.innerText = "Añadir al carrito";
+  button.id = "buy-button";
+
+  // Agregar un detector de eventos al botón
+  button.addEventListener("click", function () {
+    // Llama a la función externa para guardar el pokemon en el carrito
+    // AddCarito(pokemon);
+    alert(`${pokemon.name} se añadió al carrito correctamente.`);
+  });
+
+  // Añade el botón al contenedor de Pokémon.
+  const container = document.getElementById("pokemon-container");
+  container.appendChild(button);
+}
+
 // Obtener el objeto Pokémon de localStorage y llamamos a la función principal
-const storedPokemon = localStorage.getItem("selectedPokemon");
+const storedPokemon = localStorage.getItem("pokemonPreview");
 if (storedPokemon) {
   const pokemon = JSON.parse(storedPokemon);
   pokemonMain(pokemon);

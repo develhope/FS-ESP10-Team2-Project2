@@ -101,7 +101,7 @@ export class PokemonManager {
   /**
    * Inicializa la lista de Pokémon cargando datos desde la API.
    * @param {number} count - La cantidad de Pokémon a cargar.
-   * @param {boolean} reload -
+   * @param {boolean} reload - Indica si se deben recargar los datos.
    * @returns {Promise<void>} - Una promesa que se resuelve cuando los datos están cargados y la vista actualizada.
    * @throws {Error} - Si el parámetro `count` no es válido o si ocurre un error durante la carga de los datos.
    */
@@ -116,18 +116,20 @@ export class PokemonManager {
 
     try {
       // Obtener el array de objetos Pokémon de localStorage
-      const pokemonAllData = localStorage.getItem("pokemonAllData");
+      let pokemonAllData = localStorage.getItem("pokemonAllData");
       if (pokemonAllData) {
         console.log("Restaurando datos...");
         this.#data = JSON.parse(pokemonAllData);
-        console.log(this.#data);
       } else {
-        // Carga la lista de Pokémon utilizando el manejador de datos
+        // Cargar la lista de Pokémon utilizando el manejador de datos
         this.#data.pokemonDataList =
           await this.PokemonDataHandler.loadPokemonList(count);
 
-        // Clona la lista de Pokémon cargados para su manipulación en el DOM
+        // Clonar la lista de Pokémon cargados para su manipulación en el DOM
         this.#data.dom.pokemonDivDataList = [...this.#data.pokemonDataList];
+
+        // Guardar la lista en localStorage
+        localStorage.setItem("pokemonAllData", JSON.stringify(this.#data));
       }
 
       // Obtiene las configuraciones del filtro de propiedades desde el estado interno
@@ -141,19 +143,21 @@ export class PokemonManager {
         propertyFilterSettings[0],
         propertyFilterSettings[1]
       );
+
       // Si el valor del filtro existe, lo establece en el select
       this.PokemonDOMHandler.setFilterSelectValue(
         propertyFilterSettings.join("-")
       );
 
-      const maxPrice = this.#data.pokemonDataList.reduce((max, poke) => {
-        return Math.floor(poke.market.price > max ? poke.market.price : max);
-      }, 0);
+      // Determinar el precio máximo y mínimo de los Pokémon
+      const maxPrice = Math.max(
+        ...this.#data.pokemonDataList.map((poke) => poke.market.price)
+      );
+      const minPrice = Math.min(
+        ...this.#data.pokemonDataList.map((poke) => poke.market.price)
+      );
 
-      const minPrice = this.#data.pokemonDataList.reduce((min, poke) => {
-        return Math.floor(poke.market.price < min ? poke.market.price : min);
-      }, Infinity);
-
+      // Configurar el slider del filtro de precios
       this.PokemonDOMHandler.setFilterSliderValue(
         maxPrice,
         minPrice,
@@ -376,16 +380,26 @@ export class PokemonManager {
     });
   }
 
+  /**
+   * Añade event listeners a los elementos de la lista de Pokémon.
+   * @param {Array} pokemonDivDataList - Lista de objetos Pokémon para los que se añadirán event listeners.
+   */
   #addEventListenersPokemonCards(pokemonDivDataList) {
+    // Itera sobre cada objeto Pokémon en la lista proporcionada
     pokemonDivDataList.forEach((poke) => {
+      // Selecciona el elemento del DOM correspondiente al Pokémon actual
       const pokemonElement = document.querySelector(`#pokemon-${poke.pokeId}`);
+
+      // Añade un event listener de tipo 'click' al elemento seleccionado
       pokemonElement.addEventListener("click", () => {
+        // Guarda el estado completo de los datos en localStorage
         localStorage.setItem("pokemonAllData", JSON.stringify(this.#data));
         console.log(poke);
 
-        // Almacenar el objeto Pokémon en localStorage
-        localStorage.setItem("selectedPokemon", JSON.stringify(poke));
-        // Redirigir a la nueva página HTML
+        // Almacena el objeto Pokémon seleccionado en localStorage
+        localStorage.setItem("pokemonPreview", JSON.stringify(poke));
+
+        // Redirige a la página de detalles del Pokémon
         window.location.href = `js/examples/pokemonDetail.html`;
       });
     });
