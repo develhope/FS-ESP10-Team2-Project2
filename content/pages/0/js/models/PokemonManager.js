@@ -14,9 +14,6 @@ export class PokemonManager {
 
     // Obtener referencias a elementos del DOM
     this.#getDOMElements();
-
-    // Añadir los event listeners
-    this.#addEventListeners();
   }
 
   // Datos y configuraciones internas del Pokémon Manager
@@ -51,6 +48,45 @@ export class PokemonManager {
    */
   get pokemonFiltered() {
     return JSON.parse(JSON.stringify(this.#data.dom.pokemonDivDataList));
+  }
+
+  /**
+   ** Método para depurar y mostrar el objeto #data en la consola.
+   */
+  logDataDebug() {
+    console.log(
+      `#data:
+- dom:
+  - elements:
+    - pokemonDivList: ${
+      this.#data.dom.elements.pokemonDivList ? "Present" : "Not Found"
+    }
+    - filterContainer: ${
+      this.#data.dom.elements.filterContainer ? "Present" : "Not Found"
+    }
+    - fittedButtonsType: ${
+      this.#data.dom.elements.fittedButtonsType
+        ? `${this.#data.dom.elements.fittedButtonsType.length} items`
+        : "Not Found"
+    }
+    - fittedSelectProperty: ${
+      this.#data.dom.elements.fittedSelectProperty ? "Present" : "Not Found"
+    }
+    - filterSlider: ${
+      this.#data.dom.elements.filterSlider ? "Present" : "Not Found"
+    }
+    - sliderValue: ${
+      this.#data.dom.elements.sliderValue ? "Present" : "Not Found"
+    }
+  - filters:
+    - type: ${this.#data.dom.filters.byTypes[0][0]}
+    - exactMatch: ${this.#data.dom.filters.byTypes[1]}
+    - property: ${this.#data.dom.filters.byProperty[0]}
+    - order: ${this.#data.dom.filters.byProperty[1]}
+    - maxPrice: ${this.#data.dom.filters.byMaxPrice}
+  - pokemonDivDataList length: ${this.#data.dom.pokemonDivDataList.length}
+- pokemonDataList length: ${this.#data.pokemonDataList.length}`
+    );
   }
 
   /**
@@ -117,6 +153,9 @@ export class PokemonManager {
         propertyFilterSettings[0],
         propertyFilterSettings[1]
       );
+
+      // Añadir los event listeners
+      this.#addEventListeners();
     } catch (error) {
       // Lanza un error si ocurre algún problema durante la carga de los datos
       console.error("Error al inicializar la lista de Pokémon:", error);
@@ -160,12 +199,6 @@ export class PokemonManager {
     this.#data.dom.elements.sliderValue =
       document.querySelector(".slider-value");
   }
-
-  //!
-  //!
-  //!
-  //!
-  //!
 
   /**
    * Obtiene los datos de un Pokémon por su ID.
@@ -283,10 +316,7 @@ export class PokemonManager {
     this.#addEventListenersPokemonCards(this.#data.dom.pokemonDivDataList);
 
     // Log para depuración
-    console.log(
-      "pokemonTempDataList",
-      this.#data.dom.pokemonDivDataList.length
-    );
+    this.logDataDebug();
   }
 
   /**
@@ -298,14 +328,23 @@ export class PokemonManager {
     let holdTimeout;
     let selectedButton = null;
 
+    const currentFilter = this.#data.dom.filters.byTypes[0][0];
+    const typeFilters = currentFilter === "all" ? "see-all" : currentFilter;
     this.#data.dom.elements.fittedButtonsType.forEach((button) => {
+      if (button.classList.contains(typeFilters)) {
+        selectedButton = button;
+        button.classList.add("btn-select");
+      } else {
+        button.classList.remove("btn-select");
+      }
+
       let holdActivated = false;
 
       const handleButtonClick = async (event) => {
         if (!holdActivated) {
           const buttonId = event.currentTarget.id;
-          const typeFilters = buttonId === "see-all" ? ["all"] : [buttonId];
-          this.filtersByTypes(typeFilters, false);
+          const newTypeFilters = buttonId === "see-all" ? ["all"] : [buttonId];
+          this.filtersByTypes(newTypeFilters, false);
 
           // Actualizar clases de botones
           if (selectedButton) {
@@ -321,8 +360,8 @@ export class PokemonManager {
         const button = event.currentTarget;
         return setTimeout(() => {
           const buttonId = button.id;
-          const typeFilters = buttonId === "see-all" ? ["all"] : [buttonId];
-          this.filtersByTypes(typeFilters, true);
+          const newTypeFilters = buttonId === "see-all" ? ["all"] : [buttonId];
+          this.filtersByTypes(newTypeFilters, true);
           holdActivated = true;
 
           // Actualizar clases de botones
