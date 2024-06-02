@@ -10,6 +10,8 @@
   <div class="filter-container">
   ```
 
+- [ ] **2.** Implementar un filtro de búsqueda por nombre/id.
+
 ### Ideas
 
 - [x] **1.** Implementar un sistema automático de evaluación de precio en monedas para cada Pokémon basado en sus propiedades más relevantes.
@@ -18,8 +20,6 @@
 
   - [x] **1.2** Actualizar el modulo [`PokemonDOMHandler.js`](content/pages/0/js/models/PokemonDOMHandler.js) para mostrar los precios de cada Pokémon; Añadir su respectivo filtro de (Mayor/Menor) precio en el modulo [`PokemonFilter.js`](content/pages/0/js/models/PokemonFilter.js).
 
-  - [ ] **1.3** Implementar un filtro de búsqueda por nombre.
+- [ ] **2.** Implementar insignias especiales por cada Pokémon por ejemplo -> Evolución máxima (MaxEvo), Legendario (Legendary), Mítico (Mythical).
 
-  - [ ] **1.4** Implementar insignias especiales por cada Pokémon por ejemplo -> Evolución máxima (MaxEvo), Legendario (Legendary), Mítico (Mythical).
-
-- [ ] **2.** Implementar un sistema automático de paginación para la lista de todos los Pokémon.
+- [ ] **3.** Implementar un sistema automático de paginación para la lista de todos los Pokémon.
