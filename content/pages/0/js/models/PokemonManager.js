@@ -316,6 +316,7 @@ export class PokemonManager {
     this.#addEventListenersPokemonCards(this.#data.dom.pokemonDivDataList);
 
     // Log para depuración
+    console.clear();
     this.logDataDebug();
   }
 

@@ -24,7 +24,7 @@ function displayPokemonDetails(pokemon) {
   container.innerHTML = `
     <h1>${pokemon.name}</h1>
     <img src="${pokemon.images.gif.front_default}" alt="${pokemon.name} front">
-    <img src="${pokemon.images.gif.back_default}" alt="${pokemon.name}" back>
+    <img src="${pokemon.images.gif.back_default}" alt="${pokemon.name} back">
     <p>ID: ${pokemon.pokeId}</p>
     <p>Type: ${pokemon.type.join(", ")}</p>
     <p>Height: ${pokemon.statistics.height.meters} meters</p>
