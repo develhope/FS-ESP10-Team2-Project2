@@ -8,53 +8,12 @@ export class PokemonManager {
    * @throws {Error} - Si ocurre algún error durante la inicialización.
    */
   constructor() {
-    // Obtener referencias a elementos del DOM
-    const filterContainer = document.querySelector(".price-filter-container");
-    const pokemonDivList = document.querySelector("#pokemon-div-list");
-    const fittedButtonsByType = document.querySelectorAll(".btn-header");
-
-    // Verificar que los elementos del DOM necesarios existan
-    if (!filterContainer) {
-      throw new Error(
-        "Error: No se pudo encontrar el elemento 'filterContainer' en el DOM."
-      );
-    }
-    if (!pokemonDivList) {
-      throw new Error(
-        "Error: No se pudo encontrar el elemento 'pokemonDivList' en el DOM."
-      );
-    }
-    if (fittedButtonsByType.length === 0) {
-      console.warn(
-        "Advertencia: No se encontraron elementos con la clase 'btn-header' en el DOM."
-      );
-    }
-
     // Inicializar las instancias de las clases manejadoras
     this.PokemonDataHandler = new PokemonDataHandler();
     this.PokemonFilter = new PokemonFilter();
-    this.PokemonDOMHandler = new PokemonDOMHandler({
-      filterContainer: filterContainer,
-      pokemonDivList: pokemonDivList,
-    });
-    const fittedSelectByProperty = document.querySelector("#pokemon-filter");
 
-    if (!fittedSelectByProperty) {
-      console.warn(
-        "Advertencia: No se pudo encontrar el elemento 'pokemon-filter' en el DOM."
-      );
-    }
-
-    this.#data.dom.elements.divList = pokemonDivList;
-    this.#data.dom.elements.fittedButtonsType = fittedButtonsByType;
-    this.#data.dom.elements.fittedSelectProperty = fittedSelectByProperty;
-    this.#data.dom.elements.filterContainer = filterContainer;
-
-    // Crear el slider de filtro de precio y obtener los elementos
-    const { filterSlider, sliderValue } =
-      this.PokemonDOMHandler.createPriceFilterSlider(filterContainer);
-    this.#data.dom.elements.filterSlider = filterSlider;
-    this.#data.dom.elements.sliderValue = sliderValue;
+    // Obtener referencias a elementos del DOM
+    this.#getDOMElements();
 
     // Añadir los event listeners
     this.#addEventListeners();
@@ -63,11 +22,7 @@ export class PokemonManager {
   // Datos y configuraciones internas del Pokémon Manager
   #data = {
     dom: {
-      elements: {
-        divList: undefined,
-        fittedButtonsType: undefined,
-        fittedSelectProperty: undefined,
-      },
+      elements: {},
       filters: {
         byTypes: [["all"], false],
         byProperty: ["pokeId", "asc"],
@@ -99,27 +54,32 @@ export class PokemonManager {
   }
 
   /**
-   * Inicializa la lista de Pokémon cargando datos desde la API.
+   * Inicializa la lista de Pokémon cargando datos desde la API o restaurando desde localStorage.
    * @param {number} count - La cantidad de Pokémon a cargar.
    * @param {boolean} reload - Indica si se deben recargar los datos.
    * @returns {Promise<void>} - Una promesa que se resuelve cuando los datos están cargados y la vista actualizada.
-   * @throws {Error} - Si el parámetro `count` no es válido o si ocurre un error durante la carga de los datos.
+   * @throws {Error} - Si ocurre un error durante la carga de los datos.
    */
   async init(count, reload = false) {
     // Muestra el div de carga mientras se procesan los datos
     this.PokemonDOMHandler.toggleLoading(true);
 
     if (reload) {
-      //! Eliminar todos los datos almacenados en localStorage
+      // Eliminar todos los datos almacenados en localStorage
       localStorage.clear();
     }
 
     try {
-      // Obtener el array de objetos Pokémon de localStorage
-      let pokemonAllData = localStorage.getItem("pokemonAllData");
-      if (pokemonAllData) {
+      // Intentar obtener los datos del localStorage
+      let PokemonManager_data_JSON = localStorage.getItem(
+        "PokemonManager_data"
+      );
+      if (PokemonManager_data_JSON) {
+        const PokemonManager_data = JSON.parse(PokemonManager_data_JSON);
         console.log("Restaurando datos...");
-        this.#data = JSON.parse(pokemonAllData);
+
+        this.#data = PokemonManager_data;
+        this.#getDOMElements(true);
       } else {
         // Cargar la lista de Pokémon utilizando el manejador de datos
         this.#data.pokemonDataList =
@@ -129,8 +89,17 @@ export class PokemonManager {
         this.#data.dom.pokemonDivDataList = [...this.#data.pokemonDataList];
 
         // Guardar la lista en localStorage
-        localStorage.setItem("pokemonAllData", JSON.stringify(this.#data));
+        localStorage.setItem("PokemonManager_data", JSON.stringify(this.#data));
       }
+
+      // Configurar el slider del filtro de precios
+      this.PokemonDOMHandler.setFilterSliderValue(
+        this.#data.pokemonDataList,
+        this.#data.dom.filters.byMaxPrice,
+        "min",
+        "max",
+        1
+      );
 
       // Obtiene las configuraciones del filtro de propiedades desde el estado interno
       const propertyFilterSettings = [
@@ -138,32 +107,15 @@ export class PokemonManager {
         this.#data.dom.filters.byProperty[1],
       ];
 
-      // Aplica los filtros a los Pokémon cargados según las configuraciones predeterminadas
-      this.filtersByProperty(
-        propertyFilterSettings[0],
-        propertyFilterSettings[1]
-      );
-
       // Si el valor del filtro existe, lo establece en el select
       this.PokemonDOMHandler.setFilterSelectValue(
         propertyFilterSettings.join("-")
       );
 
-      // Determinar el precio máximo y mínimo de los Pokémon
-      const maxPrice = Math.max(
-        ...this.#data.pokemonDataList.map((poke) => poke.market.price)
-      );
-      const minPrice = Math.min(
-        ...this.#data.pokemonDataList.map((poke) => poke.market.price)
-      );
-
-      // Configurar el slider del filtro de precios
-      this.PokemonDOMHandler.setFilterSliderValue(
-        maxPrice,
-        minPrice,
-        maxPrice,
-        // Math.floor((maxPrice - minPrice) / 1000)
-        1
+      // Aplica los filtros a los Pokémon cargados según las configuraciones predeterminadas
+      this.filtersByProperty(
+        propertyFilterSettings[0],
+        propertyFilterSettings[1]
       );
     } catch (error) {
       // Lanza un error si ocurre algún problema durante la carga de los datos
@@ -174,6 +126,46 @@ export class PokemonManager {
       this.PokemonDOMHandler.toggleLoading(false);
     }
   }
+
+  /**
+   * Método para obtener referencias a los elementos del DOM
+   * @param {boolean} reload - Indica si es necesario re-inicializar el PokemonDOMHandler.
+   * @private
+   */
+  #getDOMElements(reload = false) {
+    this.#data.dom.elements.pokemonDivList =
+      document.querySelector("#pokemon-div-list");
+    this.#data.dom.elements.filterContainer = document.querySelector(
+      ".price-filter-container"
+    );
+
+    if (!reload) {
+      this.PokemonDOMHandler = new PokemonDOMHandler({
+        filterContainer: this.#data.dom.elements.filterContainer,
+        pokemonDivList: this.#data.dom.elements.pokemonDivList,
+      });
+
+      // Crear el slider de filtro de precio y obtener los elementos
+      this.PokemonDOMHandler.createPriceFilterSlider(
+        this.#data.dom.elements.filterContainer
+      );
+    }
+
+    this.#data.dom.elements.fittedButtonsType =
+      document.querySelectorAll(".btn-header");
+    this.#data.dom.elements.fittedSelectProperty =
+      document.querySelector("#pokemon-filter");
+    this.#data.dom.elements.filterSlider =
+      document.querySelector(".filter-slider");
+    this.#data.dom.elements.sliderValue =
+      document.querySelector(".slider-value");
+  }
+
+  //!
+  //!
+  //!
+  //!
+  //!
 
   /**
    * Obtiene los datos de un Pokémon por su ID.
@@ -393,8 +385,9 @@ export class PokemonManager {
       // Añade un event listener de tipo 'click' al elemento seleccionado
       pokemonElement.addEventListener("click", () => {
         // Guarda el estado completo de los datos en localStorage
-        localStorage.setItem("pokemonAllData", JSON.stringify(this.#data));
-        console.log(poke);
+        localStorage.setItem("PokemonManager_data", JSON.stringify(this.#data));
+        // console.log(poke);
+        console.log(this.#data.dom.elements);
 
         // Almacena el objeto Pokémon seleccionado en localStorage
         localStorage.setItem("pokemonPreview", JSON.stringify(poke));

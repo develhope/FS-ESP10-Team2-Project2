@@ -302,19 +302,23 @@ export class PokemonDOMHandler {
     filterContainer.appendChild(sliderValue);
 
     container.appendChild(filterContainer);
-
-    // Devuelve el control deslizante y los elementos de valor para adjuntar detectores de eventos más adelante
-    return { filterSlider, sliderValue };
   }
 
   /**
    * Método para cambiar el valor del filtro del control deslizante.
-   * @param {number} newValue - El nuevo valor que se debe seleccionar.
-   * @param {number} newMin - El nuevo valor mínimo del control deslizante.
-   * @param {number} newMax - El nuevo valor máximo del control deslizante.
-   * @param {number} newStep - El nuevo valor de paso del slider.
+   * @param {Array} pokemonList - La lista de Pokémon.
+   * @param {number|string} newValue - El nuevo valor que se debe seleccionar.
+   * @param {number|string} [newMin=null] - El nuevo valor mínimo del control deslizante.
+   * @param {number|string} [newMax=null] - El nuevo valor máximo del control deslizante.
+   * @param {number} [newStep=null] - El nuevo valor de paso del slider.
    */
-  setFilterSliderValue(newValue, newMin = null, newMax = null, newStep = null) {
+  setFilterSliderValue(
+    pokemonList,
+    newValue,
+    newMin = null,
+    newMax = null,
+    newStep = null
+  ) {
     const filterSlider = document.querySelector("#price-filter-slider");
     const sliderValue = filterSlider.nextElementSibling; // obtener el siguiente elemento hermano (el span)
 
@@ -324,16 +328,48 @@ export class PokemonDOMHandler {
       );
     }
 
-    if (newMin !== null) {
+    // Función para calcular el valor clave basado en 'min' o 'max'
+    function calculationKey(key) {
+      key = key.toUpperCase();
+      let price;
+      switch (key) {
+        case "MIN":
+          price = Math.min(...pokemonList.map((poke) => poke.market.price));
+          break;
+        case "MAX":
+          price = Math.max(...pokemonList.map((poke) => poke.market.price));
+          break;
+        default:
+          price = key;
+          break;
+      }
+      // console.log("price", key, price);
+      return price;
+    }
+
+    // Aplicar los valores de newMin, newMax, y newStep
+    if (typeof newMin === "string") {
+      filterSlider.min = calculationKey(newMin) + 1;
+    } else if (newMin !== null) {
       filterSlider.min = newMin + 1;
     }
-    if (newMax !== null) {
+
+    if (typeof newMax === "string") {
+      filterSlider.max = calculationKey(newMax) + 1;
+    } else if (newMax !== null) {
       filterSlider.max = newMax + 1;
     }
+
     if (newStep !== null) {
       filterSlider.step = newStep;
     }
-    newValue++;
+
+    if (typeof newValue === "string") {
+      newValue = calculationKey(newValue);
+    } else {
+      newValue++;
+    }
+
     filterSlider.value = newValue;
     sliderValue.innerText = `${Math.floor(newValue)}€`;
   }
