@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'Aldrich';
-    src: url('/FS-ESP10-Team2-Project2/content/pages/assets/2/font-family/Aldrich-Regular.ttf') format('truetype');
+    src: url('../../assets/2/font-family/Aldrich-Regular.ttf') format('truetype');
 }
 
 body{
@@ -9,7 +9,7 @@ body{
 
 .navbar-complete{
     display: grid;
-    grid-template-columns: repeat(20, 1fr) ;
+    grid-template-columns: repeat(20, 1fr);
     justify-content: center;
     align-items: center;
     background-color: rgb(251, 227, 45);
@@ -18,15 +18,13 @@ body{
     border: 1px solid rgb(251, 227, 45) ;
     border-radius: 10px;
     box-shadow: 0rem 0.2rem 0.3rem -0.1rem rgba(0, 0, 0, 0.25);
-    /* top: 0;
-    left: 0;
-    position:fixed */
+ 
 }
 
 .logo-navbar{
     grid-column: 1;
-    margin-left: 20px;
     cursor: pointer;
+    margin-left: 20px;
 }
 
 .logo-navbar:hover{
@@ -53,10 +51,10 @@ body{
 
 .carritoImage{
     grid-column: 20;
-    margin: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-right: 20px;
 }
 
 .carritoButton{
@@ -71,8 +69,4 @@ body{
 
 .carritoButton > img{
     width: 30px;
-}
-
-#content {
-    margin-top: 20px;
 }
