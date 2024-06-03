@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'Aldrich';
-    src: url('../assets/font-family/Aldrich-Regular.ttf') format('truetype');
+    src: url('/FS-ESP10-Team2-Project2/content/pages/assets/2/font-family/Aldrich-Regular.ttf') format('truetype');
 }
 
 body{
