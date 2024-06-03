@@ -52,11 +52,13 @@ function createBuyButton(pokemon) {
   container.appendChild(button);
 }
 
-// Obtener el objeto Pokémon de localStorage y llamamos a la función principal
-const storedPokemon = localStorage.getItem("pokemonPreview");
+// Obtener el objeto Pokémon de sessionStorage y llamamos a la función principal
+const storedPokemon = sessionStorage.getItem("pokemonPreview");
 if (storedPokemon) {
   const pokemon = JSON.parse(storedPokemon);
   pokemonMain(pokemon);
 } else {
-  console.error("No se encontró ningún Pokémon seleccionado en localStorage.");
+  console.error(
+    "No se encontró ningún Pokémon seleccionado en sessionStorage."
+  );
 }

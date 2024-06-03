@@ -17,6 +17,8 @@ body.classList.toggle("dark-mode");
 
 //! Eliminar todos los datos almacenados en localStorage
 // localStorage.clear();
+// sessionStorage.clear();
+// console.log(JSON.stringify(sessionStorage, null, 2));
 
 // Creación de la instancia del gestor de Pokémon
 const pokemonManager = new PokemonManager();

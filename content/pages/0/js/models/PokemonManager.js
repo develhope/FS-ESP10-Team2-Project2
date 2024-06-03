@@ -90,7 +90,7 @@ export class PokemonManager {
   }
 
   /**
-   * Inicializa la lista de Pokémon cargando datos desde la API o restaurando desde localStorage.
+   * Inicializa la lista de Pokémon cargando datos desde la API o restaurando desde sessionStorage.
    * @param {number} count - La cantidad de Pokémon a cargar.
    * @param {boolean} reload - Indica si se deben recargar los datos.
    * @returns {Promise<void>} - Una promesa que se resuelve cuando los datos están cargados y la vista actualizada.
@@ -101,13 +101,13 @@ export class PokemonManager {
     this.PokemonDOMHandler.toggleLoading(true);
 
     if (reload) {
-      // Eliminar todos los datos almacenados en localStorage
-      localStorage.clear();
+      // Eliminar todos los datos almacenados en sessionStorage
+      sessionStorage.clear();
     }
 
     try {
-      // Intentar obtener los datos del localStorage
-      let PokemonManager_data_JSON = localStorage.getItem(
+      // Intentar obtener los datos del sessionStorage
+      let PokemonManager_data_JSON = sessionStorage.getItem(
         "PokemonManager_data"
       );
       if (PokemonManager_data_JSON) {
@@ -124,8 +124,11 @@ export class PokemonManager {
         // Clonar la lista de Pokémon cargados para su manipulación en el DOM
         this.#data.dom.pokemonDivDataList = [...this.#data.pokemonDataList];
 
-        // Guardar la lista en localStorage
-        localStorage.setItem("PokemonManager_data", JSON.stringify(this.#data));
+        // Guardar la lista en sessionStorage
+        sessionStorage.setItem(
+          "PokemonManager_data",
+          JSON.stringify(this.#data)
+        );
       }
 
       // Configurar el slider del filtro de precios
@@ -424,13 +427,16 @@ export class PokemonManager {
 
       // Añade un event listener de tipo 'click' al elemento seleccionado
       pokemonElement.addEventListener("click", () => {
-        // Guarda el estado completo de los datos en localStorage
-        localStorage.setItem("PokemonManager_data", JSON.stringify(this.#data));
+        // Guarda el estado completo de los datos en sessionStorage
+        sessionStorage.setItem(
+          "PokemonManager_data",
+          JSON.stringify(this.#data)
+        );
         // console.log(poke);
         console.log(this.#data.dom.elements);
 
-        // Almacena el objeto Pokémon seleccionado en localStorage
-        localStorage.setItem("pokemonPreview", JSON.stringify(poke));
+        // Almacena el objeto Pokémon seleccionado en sessionStorage
+        sessionStorage.setItem("pokemonPreview", JSON.stringify(poke));
 
         // Redirige a la página de detalles del Pokémon
         // window.location.href = `../../../1/pokemonDetail.html`;
