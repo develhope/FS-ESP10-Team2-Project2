@@ -64,6 +64,9 @@ export class PokemonManager {
     - filterContainer: ${
       this.#data.dom.elements.filterContainer ? "Present" : "Not Found"
     }
+    - filterSliderContainer: ${
+      this.#data.dom.elements.filterSliderContainer ? "Present" : "Not Found"
+    }
     - fittedButtonsType: ${
       this.#data.dom.elements.fittedButtonsType
         ? `${this.#data.dom.elements.fittedButtonsType.length} items`
@@ -175,10 +178,14 @@ export class PokemonManager {
    * @private
    */
   #getDOMElements(reload = false) {
+    this.#data.dom.elements.filterSliderContainer = document.querySelector(
+      ".main-filter-slider-container"
+    );
+
     this.#data.dom.elements.pokemonDivList =
       document.querySelector("#pokemon-div-list");
     this.#data.dom.elements.filterContainer = document.querySelector(
-      ".price-filter-container"
+      ".main-filter-container"
     );
 
     if (!reload) {
@@ -189,7 +196,7 @@ export class PokemonManager {
 
       // Crear el slider de filtro de precio y obtener los elementos
       this.PokemonDOMHandler.createPriceFilterSlider(
-        this.#data.dom.elements.filterContainer
+        this.#data.dom.elements.filterSliderContainer
       );
     }
 
