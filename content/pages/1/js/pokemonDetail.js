@@ -1,4 +1,4 @@
-// import { AddToCart } from "./cart.js";
+// import { AddToCart } from "content/pages/2/js/cart.js";
 
 // Función principal para enlazar toda la lógica del código
 function pokemonMain(pokemon) {
