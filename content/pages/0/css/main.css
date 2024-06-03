@@ -150,8 +150,20 @@ main {
     margin: 0 auto;
 }
 
+/*! */
+/*! */
+/*! */
 
-/*? General Styles for the Select Element */
+
+/*? General Styles para los Filtros */
+.main-filter-container {
+    margin-bottom: 10px;
+}
+
+.main-filter-slider-container {
+    margin-bottom: 25px;
+}
+
 /* Estilos para el Contenedor del Filtro */
 .filter-container {
     margin-bottom: 10px;
@@ -159,24 +171,31 @@ main {
 
 /* Estilos para la Etiqueta del Filtro */
 .filter-label {
-    font-size: 14px;
     display: block;
     margin-bottom: 5px;
+    font-size: 14px;
     font-weight: 400;
 }
 
-/* Estilos para el Select del Filtro */
+/*? Estilos para el Select Element */
+.select-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
 .filter-select {
+    display: flex;
     width: 100%;
     padding: 10px 15px;
-    margin-top: 5px;
-    border-radius: 5px;
     border: 1px solid var(--clr-gray);
+    border-radius: 5px;
     background-color: var(--clr-white);
     font-size: 16px;
-    color: var(--clr-black);
-    /* appearance: none; */
+    color: var(--clr-gray2);
     outline: none;
+    transition: border-color 0.3s;
+    box-shadow: 0 0 3rem -1rem rgba(0, 0, 0, .25);
 }
 
 .filter-select:hover {
@@ -195,26 +214,60 @@ main {
 
 /* Estilos para los Grupos de Opciones del Filtro */
 .filter-optgroup {
+    font-size: 14px;
     font-weight: bold;
-    font-size: 14px;
 }
 
-.price-filter-container {
-    margin-bottom: 20px;
+/*? Estilos para el input del Filtro */
+.search-container {
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 
-/*? Estilos para el Contenedor del Filtro */
-.filter-container {
-    margin-bottom: 10px;
+.search-input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid var(--clr-white);
+    border-radius: 5px;
+    background-color: var(--clr-white);
+    font-size: 16px;
+    color: var(--clr-gray2);
+    outline: none;
+    transition: border-color 0.3s;
+    box-shadow: 0 0 3rem -1rem rgba(0, 0, 0, .25);
 }
 
-/* Estilos para la Etiqueta del Filtro */
-.filter-label {
-    font-size: 14px;
-    display: block;
-    margin-bottom: 5px;
-    font-weight: 400;
+.search-input:hover {
+    border-color: var(--clr-black);
 }
+
+.search-input:focus {
+    border-color: var(--clr-black);
+    box-shadow: 0 0 5px rgba(28, 28, 28, 0.5);
+}
+
+/* Estilos Responsivos */
+@media screen and (min-width: 500px) {
+    .main-filter-container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .select-container,
+    .search-container {
+        width: 49%;
+    }
+}
+
+
+
+
+
+
+/*! */
+/*! */
+/*! */
 
 /*? Estilos para el Slider del Filtro */
 .filter-slider {

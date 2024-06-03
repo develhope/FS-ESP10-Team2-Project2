@@ -8,6 +8,7 @@ export class PokemonDOMHandler {
   constructor({ pokemonDivList, filterContainer: filterContainer }) {
     this.mainContainer = filterContainer;
     this.pokemonDivList = pokemonDivList;
+    this.#createSearchInput(filterContainer);
     this.#createFilterSelect(filterContainer);
   }
 
@@ -204,10 +205,10 @@ export class PokemonDOMHandler {
     }
 
     const filterContainer = document.createElement("div");
-    filterContainer.classList.add("filter-container");
+    filterContainer.classList.add("select-container");
 
     filterContainer.innerHTML = `
-        <label class="filter-label" for="pokemon-filter">Filtrar Pokémon por:</label>
+    <!-- <label class="filter-label" for="pokemon-filter">Filtrar Pokémon por:</label> -->
         <select class="filter-select" id="pokemon-filter">
           <optgroup label="Precio (€)" class="filter-optgroup">
             <option value="market.price-asc" class="filter-option">Precio (Menor)</option>
@@ -261,6 +262,25 @@ export class PokemonDOMHandler {
         );
       }
     }
+  }
+
+  /**
+   * Método para crear el elemento de búsqueda y añadirlo al DOM.
+   * @param {HTMLElement} container - El elemento donde se agregará el elemento de búsqueda.
+   */
+  #createSearchInput(container) {
+    if (!container) {
+      throw new Error("Parameter 'container' is required");
+    }
+
+    const searchContainer = document.createElement("div");
+    searchContainer.classList.add("search-container");
+
+    searchContainer.innerHTML = `
+    <input type="text" class="search-input" placeholder="Buscar Pokémon por nombre o ID...">
+  `;
+
+    container.prepend(searchContainer);
   }
 
   /**
