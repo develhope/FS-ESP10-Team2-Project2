@@ -98,5 +98,7 @@ function initNavEvents() {
   }
 }
 
-// Añade un event listener para cargar la barra de navegación cuando el DOM esté completamente cargado
-document.addEventListener("DOMContentLoaded", loadNavbar);
+//? Añade un event listener para cargar la barra de navegación cuando el DOM esté completamente cargado
+// document.addEventListener("DOMContentLoaded", loadNavbar);
+//? Carga más rápido la NavBar ya que no espera a que el DOM esté totalmente cargado.
+loadNavbar(); //! Si hay problemas cambiar la carga. No debería haber problemas porque la navbar no depende de la carga completa del DOM.
