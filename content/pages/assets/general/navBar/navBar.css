@@ -18,6 +18,10 @@
     margin-left: 20px;
 }
 
+.logo-navbar img {
+    width: 85px;
+}
+
 .logo-navbar:hover {
     transform: scale(1.1);
 }
