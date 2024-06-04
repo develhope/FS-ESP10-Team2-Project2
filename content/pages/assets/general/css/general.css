@@ -18,24 +18,24 @@
     --dark-mode-text: var(--clr-gray);
 
     /* Define los colores de los tipos de Pokemon */
-    --type-normal: #A8A878;
-    --type-fire: #F08030;
-    --type-water: #6890F0;
-    --type-grass: #78C850;
-    --type-electric: #F8D030;
-    --type-ice: #98D8D8;
-    --type-fighting: #C03028;
-    --type-poison: #A040A0;
-    --type-ground: #E0C068;
-    --type-flying: #A890F0;
-    --type-psychic: #F85888;
-    --type-bug: #A8B820;
-    --type-rock: #B8A038;
-    --type-ghost: #705898;
-    --type-dark: #705848;
-    --type-dragon: #7038F8;
-    --type-steel: #B8B8D0;
-    --type-fairy: #F0B6BC;
+    --clr-type-normal: #A8A878;
+    --clr-type-fire: #F08030;
+    --clr-type-water: #6890F0;
+    --clr-type-grass: #78C850;
+    --clr-type-electric: #F8D030;
+    --clr-type-ice: #98D8D8;
+    --clr-type-fighting: #C03028;
+    --clr-type-poison: #A040A0;
+    --clr-type-ground: #E0C068;
+    --clr-type-flying: #A890F0;
+    --clr-type-psychic: #F85888;
+    --clr-type-bug: #A8B820;
+    --clr-type-rock: #B8A038;
+    --clr-type-ghost: #705898;
+    --clr-type-dark: #705848;
+    --clr-type-dragon: #7038F8;
+    --clr-type-steel: #B8B8D0;
+    --clr-type-fairy: #F0B6BC;
 
     /* Define los colores de la oferta */
     --clr-offerBG: #f2ff80;
