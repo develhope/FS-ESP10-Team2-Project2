@@ -1,8 +1,11 @@
 /**
- * Ruta al archivo HTML de la barra de navegación.
- * @constant {string}
+ * @constant {string} navBarPath - Ruta al archivo HTML de la barra de navegación.
+ * @constant {Object} pages - Rutas a las páginas del sitio web.
  */
 const navBarPath = "../assets/general/navBar/navBar.html";
+const pages = {
+  home: "../0/home.html",
+};
 
 /**
  * Carga la barra de navegación desde un archivo HTML externo y la inserta en el DOM.
@@ -28,28 +31,70 @@ async function loadNavbar() {
     // Esperar a que el DOM se haya actualizado
     await new Promise((resolve) => requestAnimationFrame(resolve));
 
-    // Referencias a elementos del DOM
-    const darkModeToggle = document.querySelector("#darkModeToggle");
-    const body = document.body;
+    // Inicializar la funcionalidad del modo oscuro
+    initDarkMode();
 
-    // Función para activar/desactivar el modo oscuro
-    const toggleDarkMode = () => {
-      const isDarkMode = body.classList.toggle("dark-mode");
-      localStorage.setItem("darkMode", isDarkMode);
-    };
-
-    // Event listener para el botón de modo oscuro
-    if (darkModeToggle) {
-      darkModeToggle.addEventListener("click", toggleDarkMode);
-    }
-
-    // Verificar el estado del modo oscuro en localStorage
-    const darkModeStatus = localStorage.getItem("darkMode");
-    if (darkModeStatus === "true") {
-      body.classList.add("dark-mode");
-    }
+    // Inicializar los eventos de navegación
+    initNavEvents();
   } catch (error) {
     console.error("Error loading navbar: ", error);
+  }
+}
+
+/**
+ * Inicializa la funcionalidad del modo oscuro.
+ */
+function initDarkMode() {
+  const darkModeToggle = document.querySelector("#darkModeToggle");
+  const body = document.body;
+
+  // Función para activar/desactivar el modo oscuro
+  const toggleDarkMode = () => {
+    const isDarkMode = body.classList.toggle("dark-mode");
+    localStorage.setItem("darkMode", isDarkMode);
+  };
+
+  // Event listener para el botón de modo oscuro
+  if (darkModeToggle) {
+    darkModeToggle.addEventListener("click", toggleDarkMode);
+  }
+
+  // Verificar el estado del modo oscuro en localStorage
+  const darkModeStatus = localStorage.getItem("darkMode");
+  if (darkModeStatus === "true") {
+    body.classList.add("dark-mode");
+  }
+}
+
+/**
+ * Inicializa los eventos de navegación.
+ */
+function initNavEvents() {
+  const logoNavbar = document.querySelector(".logo-navbar img");
+  const homeNavbar = document.querySelector(".home-nav-btn");
+  const carritoButton = document.querySelector("#carritoButton");
+
+  const gotoHomePage = () => {
+    // Redirige a la página de inicio
+    window.location.href = pages.home;
+  };
+
+  const gotoCartPage = () => {
+    // Redirige a la página del carito
+    window.location.href = pages.cart;
+  };
+
+  // Añadir event listeners para navegación
+  if (logoNavbar) {
+    logoNavbar.addEventListener("click", gotoHomePage);
+  }
+
+  if (homeNavbar) {
+    homeNavbar.addEventListener("click", gotoHomePage);
+  }
+
+  if (carritoButton) {
+    carritoButton.addEventListener("click", gotoCartPage);
   }
 }
 
