@@ -348,7 +348,7 @@ export class PokemonManager {
     this.#addEventListenersPokemonCards(this.#data.dom.pokemonDivDataList);
 
     // Log para depuración
-    console.clear();
+    // console.clear();
     this.logDataDebug();
   }
 
@@ -480,7 +480,7 @@ export class PokemonManager {
         sessionStorage.setItem("pokemonPreview", JSON.stringify(poke));
 
         // Redirige a la página de detalles del Pokémon
-        window.location.href = `content/pages/1/pokemonDetail.html`;
+        window.location.href = `../1/pokemonDetail.html`;
       });
     });
   }
