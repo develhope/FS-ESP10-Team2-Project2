@@ -24,31 +24,34 @@ async function loadNavbar() {
 
     // Inserta el contenido HTML en el elemento con id "navbar-complete"
     document.getElementById("navbar-complete").innerHTML = navbarHTML;
+
+    // Esperar a que el DOM se haya actualizado
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
+    // Referencias a elementos del DOM
+    const darkModeToggle = document.querySelector("#darkModeToggle");
+    const body = document.body;
+
+    // Función para activar/desactivar el modo oscuro
+    const toggleDarkMode = () => {
+      const isDarkMode = body.classList.toggle("dark-mode");
+      localStorage.setItem("darkMode", isDarkMode);
+    };
+
+    // Event listener para el botón de modo oscuro
+    if (darkModeToggle) {
+      darkModeToggle.addEventListener("click", toggleDarkMode);
+    }
+
+    // Verificar el estado del modo oscuro en localStorage
+    const darkModeStatus = localStorage.getItem("darkMode");
+    if (darkModeStatus === "true") {
+      body.classList.add("dark-mode");
+    }
   } catch (error) {
     console.error("Error loading navbar: ", error);
   }
 }
 
-//! Arreglar esto, (creo que se podria solucionar con una funcion asinclrona que espere a que el elemento document.querySelector("#darkModeToggle") se haya creado !!!!Tengo que irme, si veis esto y no estais seguros dejarlo que lo terminare!!!!)
 // Añade un event listener para cargar la barra de navegación cuando el DOM esté completamente cargado
-// document.addEventListener("DOMContentLoaded", loadNavbar);
-loadNavbar();
-//? Funcionalidad del modo oscuro
-// // Referencias a elementos del DOM
-// const darkModeToggle = document.querySelector("#darkModeToggle");
-// const body = document.body;
-// console.log(darkModeToggle);
-// // Función para activar/desactivar el modo oscuro
-// const toggleDarkMode = () => {
-//   const isDarkMode = body.classList.toggle("dark-mode");
-//   localStorage.setItem("darkMode", isDarkMode);
-// };
-
-// // Event listener para el botón de modo oscuro
-// darkModeToggle.addEventListener("click", toggleDarkMode);
-
-// // Verificar el estado del modo oscuro en localStorage
-// const darkModeStatus = localStorage.getItem("darkMode");
-// if (darkModeStatus === "true") {
-//   body.classList.add("dark-mode");
-// }
+document.addEventListener("DOMContentLoaded", loadNavbar);
