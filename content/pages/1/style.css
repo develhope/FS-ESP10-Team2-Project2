@@ -1,0 +1,22 @@
+#buy-button{
+    border: 1px rgb(224, 224, 87) solid;
+    border-radius: 5px;
+    padding: 5px;
+    margin-top: 10px;
+    background-color: yellow;
+    box-shadow: 0rem 0.2rem 0.2rem -0.1rem rgba(122, 122, 30, 0.607);
+    cursor: pointer;
+}
+
+#buy-button:hover{
+    transform: scale(1.1);
+}
+
+.pokemon-container{
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center ;
+margin-top: 100px;
+gap: 20px;
+}
