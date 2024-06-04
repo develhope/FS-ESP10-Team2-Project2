@@ -277,7 +277,7 @@ export class PokemonDOMHandler {
     searchContainer.classList.add("search-container");
     searchContainer.spellcheck = false;
     searchContainer.innerHTML = `
-    <input type="text" class="search-input" placeholder="Buscar Pokémon por nombre o ID...">
+    <input type="text" class="search-input" placeholder="Buscar por Nombre o ID...">
   `;
 
     container.prepend(searchContainer);
