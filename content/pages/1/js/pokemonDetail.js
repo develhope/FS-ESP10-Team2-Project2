@@ -1,4 +1,4 @@
-// import { AddToCart } from "content/pages/2/js/cart.js";
+import { addToCart } from "./../../2/js/carrito.js";
 
 // Función principal para enlazar toda la lógica del código
 function pokemonMain(pokemon) {
@@ -43,7 +43,7 @@ function createBuyButton(pokemon) {
   // Agregar un detector de eventos al botón
   button.addEventListener("click", function () {
     // Llama a la función externa para guardar el pokemon en el carrito
-    // AddToCart(pokemon);
+    addToCart(pokemon);
     alert(`${pokemon.name} se añadió al carrito correctamente.`);
   });
 
