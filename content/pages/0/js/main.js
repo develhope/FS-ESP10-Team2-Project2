@@ -4,16 +4,20 @@ import { PokemonManager } from "./models/PokemonManager.js";
 const darkModeToggle = document.querySelector("#darkModeToggle");
 const body = document.body;
 
-// Configuración del modo oscuro
-darkModeToggle.addEventListener("click", () => {
-  body.classList.toggle("dark-mode");
-});
+// Función para activar/desactivar el modo oscuro
+const toggleDarkMode = () => {
+  const isDarkMode = body.classList.toggle("dark-mode");
+  localStorage.setItem("darkMode", isDarkMode);
+};
 
-/**
- * Activa el modo oscuro por defecto.
- *! Quita esta línea si no deseas que el modo oscuro esté activo inicialmente.
- */
-body.classList.toggle("dark-mode");
+// Event listener para el botón de modo oscuro
+darkModeToggle.addEventListener("click", toggleDarkMode);
+
+// Verificar el estado del modo oscuro en localStorage
+const darkModeStatus = localStorage.getItem("darkMode");
+if (darkModeStatus === "true") {
+  body.classList.add("dark-mode");
+}
 
 //! Eliminar todos los datos almacenados en localStorage
 // localStorage.clear();
