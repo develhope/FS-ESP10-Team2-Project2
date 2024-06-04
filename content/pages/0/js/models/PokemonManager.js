@@ -24,6 +24,7 @@ export class PokemonManager {
         byTypes: [["all"], false],
         byProperty: ["pokeId", "asc"],
         byMaxPrice: "max",
+        byNameOrId: undefined,
       },
       pokemonDivDataList: [],
     },
@@ -87,6 +88,7 @@ export class PokemonManager {
     - property: ${this.#data.dom.filters.byProperty[0]}
     - order: ${this.#data.dom.filters.byProperty[1]}
     - maxPrice: ${this.#data.dom.filters.byMaxPrice}
+    - nameOrId: ${this.#data.dom.filters.byNameOrId}
   - pokemonDivDataList length: ${this.#data.dom.pokemonDivDataList.length}
 - pokemonDataList length: ${this.#data.pokemonDataList.length}`
     );
@@ -160,6 +162,10 @@ export class PokemonManager {
         propertyFilterSettings[1]
       );
 
+      this.PokemonDOMHandler.setFilterSearchInput(
+        this.#data.dom.filters.byNameOrId
+      );
+
       // Añadir los event listeners
       this.#addEventListeners();
     } catch (error) {
@@ -208,6 +214,8 @@ export class PokemonManager {
       document.querySelector(".filter-slider");
     this.#data.dom.elements.sliderValue =
       document.querySelector(".slider-value");
+    this.#data.dom.elements.searchInput =
+      document.querySelector(".search-input");
   }
 
   /**
@@ -263,11 +271,25 @@ export class PokemonManager {
 
   /**
    * Método para aplicar filtros a la lista de Pokémon.
-   * @param {number} maxPrice - El precio máximo para filtrar los Pokémon.
+   * @param {string|number} maxPrice - El precio máximo para filtrar los Pokémon.
    * @returns {void}
    */
   filtersByMaxPrice(maxPrice) {
     this.#data.dom.filters.byMaxPrice = maxPrice;
+    this.#updateViewPokemon();
+  }
+
+  /**
+   * Filtra la lista de Pokémon por nombre o ID.
+   * @param {string|number} query - El nombre o ID del Pokémon a buscar.
+   * @returns {void}
+   */
+  filtersByNameOrId(query) {
+    if (query) {
+      this.#data.dom.filters.byNameOrId = String(query);
+    } else {
+      this.#data.dom.filters.byNameOrId = undefined;
+    }
     this.#updateViewPokemon();
   }
 
@@ -331,7 +353,7 @@ export class PokemonManager {
   }
 
   /**
-   * Añade event listeners a los botones del header y el filtro de propiedades.
+   * Añade event listeners a los botones del header, el filtro de propiedades y el input de búsqueda.
    * @private
    */
   #addEventListeners() {
@@ -400,7 +422,7 @@ export class PokemonManager {
       }
     );
 
-    // Añadir event listener al slider de precio con debounce
+    // Añadir event listener al slider de precio y al input de búsqueda con debounce
     const formatPrice = (value) => `${Math.floor(value)}€`;
 
     const debounce = (func, wait) => {
@@ -411,14 +433,26 @@ export class PokemonManager {
       };
     };
 
+    // Ajusta el tiempo de espera según sea necesario
+    const debounceTimeFilterByMaxPrice = 300;
+    const debounceTimeFilterByNameOrId = 500;
+
     const debouncedFilterByMaxPrice = debounce((value) => {
       this.filtersByMaxPrice(value);
-    }, 300); // Ajusta el tiempo de espera según sea necesario
+    }, debounceTimeFilterByMaxPrice);
 
     this.#data.dom.elements.filterSlider.addEventListener("input", (event) => {
       const value = event.target.value;
       this.#data.dom.elements.sliderValue.innerText = formatPrice(value);
       debouncedFilterByMaxPrice(value);
+    });
+
+    const debouncedFilterByNameOrId = debounce((query) => {
+      this.filtersByNameOrId(query);
+    }, debounceTimeFilterByNameOrId);
+
+    this.#data.dom.elements.searchInput.addEventListener("input", (event) => {
+      debouncedFilterByNameOrId(event.target.value);
     });
   }
 

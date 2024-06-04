@@ -10,7 +10,7 @@
   <div class="filter-container">
   ```
 
-- [ ] **2.** Implementar un filtro de búsqueda por nombre/id.
+- [x] **2.** Implementar un filtro de búsqueda por nombre/id.
 
 ### Ideas
 

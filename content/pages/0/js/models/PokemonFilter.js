@@ -143,7 +143,7 @@ export class PokemonFilter {
   /**
    * Método para obtener una lista de Pokémon que tengan un precio menor o igual al precio máximo especificado.
    * @param {object[]} pokemonDataList - La lista de datos de Pokémon a filtrar.
-   * @param {number} maxPrice - El precio máximo para el filtro.
+   * @param {string|number} maxPrice - El precio máximo para el filtro.
    * @returns {object[]} - Un array de objetos de Pokémon que tienen un precio menor o igual al precio máximo especificado.
    * @throws {TypeError} - Si los parámetros no son válidos.
    */
@@ -183,5 +183,22 @@ export class PokemonFilter {
     return pokemonDataList.filter(
       (poke) => (poke.market.discount ?? poke.market.price) <= maxPrice
     );
+  }
+
+  /**
+   * Filtra la lista de Pokémon por nombre o ID.
+   * @param {Array} pokemonList - La lista de Pokémon.
+   * @param {string|number} query - El nombre o ID del Pokémon a buscar.
+   * @returns {Array} - La lista de Pokémon filtrada.
+   */
+  getPokemonByNameOrId(pokemonList, query) {
+    if (!query) return pokemonList;
+
+    return pokemonList.filter((pokemon) => {
+      return (
+        pokemon.name.toLowerCase().includes(query.toLowerCase()) ||
+        pokemon.pokeId == query
+      );
+    });
   }
 }
