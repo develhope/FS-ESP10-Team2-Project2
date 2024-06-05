@@ -1,6 +1,6 @@
-# Home
+# Lista de tareas
 
-## Actualizaciones
+## Actualizaciones Home
 
 - [x] **1.** Traspasar el **div** `.filter-container` del codigo HTML al JS:
 
