@@ -24,6 +24,6 @@
 
   - [ ] **2.1** Implementar insignias especiales por cada Pokémon por ejemplo -> Evolución máxima (MaxEvo), Legendario (Legendary), Mítico (Mythical) o/y Una insignia de evolución que muestre su número de evolución actual y cambie su estilo CSS según el progreso del Pokémon; Ejem: (50% de progreso = 2/4 evoluciones alcanzadas).
 
-  - [ ] **2.2** Crear un elemento de más información importante como (hp, attack, …), la información adicional se mostrara al pasar el cursor por encima de este.
+  - [ ] **2.2** Crear un elemento PopUp de más información importante como (hp, attack, …), la información adicional se mostrara al pasar el cursor por encima de este.
 
 - [ ] **3.** Implementar un sistema automático de paginación para la lista de todos los Pokémon.
