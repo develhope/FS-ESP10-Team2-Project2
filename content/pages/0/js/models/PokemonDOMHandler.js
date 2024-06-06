@@ -127,10 +127,12 @@ export class PokemonDOMHandler {
 
     // Función para obtener el color de fondo según el porcentaje
     const getColorByPercentage = (percent) => {
+      if (percent <= 1) return "#666666";
       if (percent <= 25) return "red";
       if (percent <= 50) return "yellow";
       if (percent <= 75) return "green";
-      return "blue";
+      if (percent <= 99) return "blue";
+      return "darkviolet";
     };
 
     // Crear el elemento div para el Pokémon
