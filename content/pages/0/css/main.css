@@ -487,9 +487,7 @@ main {
 }
 
 .info-pokemon-popup {
-    /* left: -100%; */
     transform: translateX(-100%);
-
     display: none;
     position: absolute;
     background-color: var(--clr-white);
@@ -499,7 +497,6 @@ main {
     border-radius: 5px;
     z-index: 100;
     width: auto;
-
 }
 
 .info-pokemon-popup.show {
@@ -507,11 +504,35 @@ main {
 }
 
 .info-pokemon-popup p {
-    width: 100%;
+    width: auto;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
 }
+
+.div-stat-percent {
+    display: flex;
+    width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
+}
+
+.stat-percentage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+    color: #fff;
+    border-radius: 100%;
+    margin-bottom: 5px;
+
+
+}
+
 
 
 

@@ -25,12 +25,18 @@
  * @property {number} statistics.weight.hectograms - Peso en hectogramos.
  * @property {number} statistics.weight.kilograms - Peso en kilogramos.
  * @property {number} statistics.weight.tons - Peso en toneladas.
- * @property {number} statistics.hp - Los puntos de vida de los Pokémon.
+ * @property {number} statistics.hp - Los puntos de vida del Pokémon.
+ * @property {number} statistics.hp_percent - El porcentaje de vida del Pokémon, se calcula procesando la vida de todos los Pokémon de la lista.
  * @property {number} statistics.attack - La estadística de ataque del Pokémon.
+ * @property {number} statistics.attack_percent - El porcentaje de ataque del Pokémon, se calcula procesando el ataque de todos los Pokémon de la lista.
  * @property {number} statistics.defense - La estadística de defensa del Pokémon.
- * @property {number} statistics.special_attack - La estadística de ataque especial del Pokémon.
- * @property {number} statistics.special_defense - La estadística de defensa especial de los Pokémon.
- * @property {number} statistics.speed - La estadística de velocidad del Pokémon.
+ * @property {number} statistics.defense_percent - El porcentaje de defensa del Pokémon, se calcula procesando la defensa de todos los Pokémon de la lista.
+ * @property {number} statistics.special_attack - La estadística del ataque especial del Pokémon.
+ * @property {number} statistics.special_attack_percent - El porcentaje del ataque especial del Pokémon, se calcula procesando el ataque especial de todos los Pokémon de la lista.
+ * @property {number} statistics.special_defense - La estadística de la defensa especial de los Pokémon.
+ * @property {number} statistics.special_defense_percent - El porcentaje de la defensa especial del Pokémon, se calcula procesando la defensa especial de todos los Pokémon de la lista.
+ * @property {number} statistics.speed - La estadística de la velocidad del Pokémon.
+ * @property {number} statistics.speed_percent - El porcentaje de la velocidad del Pokémon, se calcula procesando la velocidad de todos los Pokémon de la lista.
  * @property {Object} value - Un objeto que contiene los atributos de valor del Pokémon.
  * @property {number} value.base_experience - La experiencia base de los Pokémon.
  * @property {number} value.movements - La cantidad de movimientos que tiene el Pokémon.
@@ -86,12 +92,18 @@ const pokemon = {
       kilograms: 6.9, // Peso en kilogramos
       tons: 0.0069, // Peso en toneladas
     },
-    hp: 45, // Puntos de golpe
-    attack: 49, // Estadística de ataque
-    defense: 49, // Estadística de defensa
-    special_attack: 65, // Estadística de ataque especial
-    special_defense: 65, // Estadística de defensa especial
-    speed: 45, // Estadística de velocidad
+    hp: 45, // Puntos de puntos de vida
+    hp_percent: 10, // Porcentaje de puntos de vida
+    attack: 49, // Estadística de puntos de ataque
+    attack_percent: 49, // Porcentaje de puntos de ataque
+    defense: 49, // Estadística de puntos de defensa
+    defense_percent: 49, // Porcentaje de puntos de defensa
+    special_attack: 65, // Estadística de puntos de ataque especial
+    special_attack_percent: 65, // Porcentaje de puntos de ataque especial
+    special_defense: 65, // Estadística de puntos de defensa especial
+    special_defense_percent: 65, // Porcentaje de puntos de defensa especial
+    speed: 45, // Estadística de puntos de velocidad
+    speed_percent: 45, // Porcentaje de puntos de velocidad
   },
   value: {
     base_experience: 64, // Experiencia base

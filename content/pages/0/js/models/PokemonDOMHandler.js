@@ -125,6 +125,14 @@ export class PokemonDOMHandler {
       ? "pokemon-name-legendary"
       : "";
 
+    // Función para obtener el color de fondo según el porcentaje
+    const getColorByPercentage = (percent) => {
+      if (percent <= 25) return "red";
+      if (percent <= 50) return "yellow";
+      if (percent <= 75) return "green";
+      return "blue";
+    };
+
     // Crear el elemento div para el Pokémon
     const div = document.createElement("div");
     div.id = `pokemon-${poke.pokeId}`; // Asigna un ID único al elemento
@@ -176,10 +184,43 @@ export class PokemonDOMHandler {
     </svg>
 
     <div class="info-pokemon-popup">
-      <p>HP: ${poke.statistics.hp}</p>
-      <p>Attack: ${poke.statistics.attack}</p>
-      <p>Defense: ${poke.statistics.defense}</p>
-      <p>Speed: ${poke.statistics.speed}</p>
+      
+      <div class="div-stat-percent">
+        <div class="stat-percentage" style="background-color: ${getColorByPercentage(
+          poke.statistics.hp_percent
+        )}">
+        </div>
+        <p>HP: ${poke.statistics.hp} </p>
+        <p>(${poke.statistics.hp_percent}%)</p>
+      </div>
+
+      <div class="div-stat-percent">
+        <div class="stat-percentage" style="background-color: ${getColorByPercentage(
+          poke.statistics.attack_percent
+        )}">
+        </div>
+        <p>Attack: ${poke.statistics.attack} </p>
+        <p>(${poke.statistics.attack_percent}%)</p>
+      </div>
+
+      <div class="div-stat-percent">
+        <div class="stat-percentage" style="background-color: ${getColorByPercentage(
+          poke.statistics.defense_percent
+        )}">
+        </div>
+        <p>Defense: ${poke.statistics.defense} </p>
+        <p>(${poke.statistics.defense_percent}%)</p>
+      </div>
+
+      <div class="div-stat-percent">
+        <div class="stat-percentage" style="background-color: ${getColorByPercentage(
+          poke.statistics.speed_percent
+        )}">
+        </div>
+        <p>Speed: ${poke.statistics.speed} </p>
+        <p>(${poke.statistics.speed_percent}%)</p>
+      </div>
+
     </div>
   `;
 
