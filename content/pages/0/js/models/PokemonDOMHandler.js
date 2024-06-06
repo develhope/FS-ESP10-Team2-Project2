@@ -137,7 +137,7 @@ export class PokemonDOMHandler {
     <div class="pokemon-info">
       <div class="name-container">
         <p class="pokemon-id">#${pokeId}</p>
-        <h2 class="pokemon-name ${quality}">${name}</h2>
+        <h2 class="pokemon-name" id="${quality}">${name}</h2>
       </div>
       <div class="pokemon-types">
         ${types}
