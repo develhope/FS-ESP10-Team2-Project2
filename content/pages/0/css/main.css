@@ -50,6 +50,7 @@ body {
 }
 
 .btn-header {
+    user-select: none;
     padding: .5rem;
     border-radius: 100vmax;
     cursor: pointer;
@@ -500,6 +501,7 @@ main {
 }
 
 .info-pokemon-popup.show {
+    user-select: text;
     display: block;
 }
 

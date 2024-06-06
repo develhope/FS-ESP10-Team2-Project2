@@ -149,6 +149,7 @@ export class PokemonDOMHandler {
     const div = document.createElement("div");
     div.id = `pokemon-${poke.pokeId}`; // Asigna un ID único al elemento
     div.classList.add("pokemon");
+    div.style.userSelect = "none"; // Bloquear la selección del elemento
     div.innerHTML = `
     <p class="pokemon-id-back">#${pokeId}</p>
     <div class="pokemon-image">
@@ -175,6 +176,7 @@ export class PokemonDOMHandler {
     // Crear el elemento de PopUp con información adicional
     const divPopUp = document.createElement("div");
     divPopUp.classList.add("div-pokemon-popup");
+    divPopUp.style.userSelect = "none"; // Bloquear la selección del elemento
 
     divPopUp.innerHTML = `
     <svg class="info-icon-svg" width="30" height="30" viewBox="0 0 512 512">
