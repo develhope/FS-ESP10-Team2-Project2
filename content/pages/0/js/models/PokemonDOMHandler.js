@@ -235,7 +235,28 @@ export class PokemonDOMHandler {
         <p>(${poke.statistics.speed_percent}%)</p>
       </div>
 
+
+      <div class="div-stat-percent">
+        <div class="stat-percentage" style="background-color: ${getColorByPercentage(
+          poke.statistics.special_attack_percent
+        )}">
+        </div>
+        <p>Special Attack: ${poke.statistics.special_attack} </p>
+        <p>(${poke.statistics.special_attack_percent}%)</p>
+      </div>
+
+      <div class="div-stat-percent">
+        <div class="stat-percentage" style="background-color: ${getColorByPercentage(
+          poke.statistics.special_defense_percent
+        )}">
+        </div>
+        <p>Special Defense: ${poke.statistics.special_defense} </p>
+        <p>(${poke.statistics.special_defense_percent}%)</p>
+      </div>
+
     </div>
+
+    
   `;
 
     div.appendChild(divPopUp);
