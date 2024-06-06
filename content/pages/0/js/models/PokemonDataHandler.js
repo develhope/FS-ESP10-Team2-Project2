@@ -54,6 +54,11 @@ export class PokemonDataHandler {
     // Añadir ofertas aleatorias a algunos Pokémon
     this.#addRandomOffers(results, offerCount, 60);
 
+    // Calcula los valores máximos y mínimos para cada estadística
+    const maxMinValues = this.#calculateMaxMinValues(results);
+
+    // Calcula los porcentajes para cada estadística
+    this.#calculateStatisticsPercentages(results, maxMinValues);
     return results;
   }
 
@@ -106,6 +111,7 @@ export class PokemonDataHandler {
         speciesData,
         evolutionChainData
       );
+
       pokemon.market.price = this.#calculatePokemonValue(pokemon);
 
       // pokemon.market.discount = this.#calculatePriceDiscount(pokemon, 1);
@@ -427,5 +433,101 @@ export class PokemonDataHandler {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  /**
+   * Calcula los valores máximos y mínimos para cada estadística de los Pokémon.
+   * @param {object[]} results - La lista de datos de Pokémon.
+   * @returns {object} - Un objeto que contiene los valores máximos y mínimos para cada estadística.
+   */
+  #calculateMaxMinValues(results) {
+    const maxHP = Math.max(...results.map((poke) => poke.statistics.hp));
+    const minHP = Math.min(...results.map((poke) => poke.statistics.hp));
+
+    const maxAttack = Math.max(
+      ...results.map((poke) => poke.statistics.attack)
+    );
+    const minAttack = Math.min(
+      ...results.map((poke) => poke.statistics.attack)
+    );
+
+    const maxDefense = Math.max(
+      ...results.map((poke) => poke.statistics.defense)
+    );
+    const minDefense = Math.min(
+      ...results.map((poke) => poke.statistics.defense)
+    );
+
+    const maxSpecialAttack = Math.max(
+      ...results.map((poke) => poke.statistics.special_attack)
+    );
+    const minSpecialAttack = Math.min(
+      ...results.map((poke) => poke.statistics.special_attack)
+    );
+
+    const maxSpecialDefense = Math.max(
+      ...results.map((poke) => poke.statistics.special_defense)
+    );
+    const minSpecialDefense = Math.min(
+      ...results.map((poke) => poke.statistics.special_defense)
+    );
+
+    const maxSpeed = Math.max(...results.map((poke) => poke.statistics.speed));
+    const minSpeed = Math.min(...results.map((poke) => poke.statistics.speed));
+
+    return {
+      maxHP,
+      minHP,
+      maxAttack,
+      minAttack,
+      maxDefense,
+      minDefense,
+      maxSpecialAttack,
+      minSpecialAttack,
+      maxSpecialDefense,
+      minSpecialDefense,
+      maxSpeed,
+      minSpeed,
+    };
+  }
+
+  /**
+   * Calcula los porcentajes para cada estadística de los Pokémon.
+   * @param {object[]} results - La lista de datos de Pokémon.
+   * @param {object} maxMinValues - Un objeto que contiene los valores máximos y mínimos para cada estadística.
+   */
+  #calculateStatisticsPercentages(results, maxMinValues) {
+    results.forEach((poke) => {
+      poke.statistics.hp_percent = Math.round(
+        ((poke.statistics.hp - maxMinValues.minHP) /
+          (maxMinValues.maxHP - maxMinValues.minHP)) *
+          100
+      );
+      poke.statistics.attack_percent = Math.round(
+        ((poke.statistics.attack - maxMinValues.minAttack) /
+          (maxMinValues.maxAttack - maxMinValues.minAttack)) *
+          100
+      );
+      poke.statistics.defense_percent = Math.round(
+        ((poke.statistics.defense - maxMinValues.minDefense) /
+          (maxMinValues.maxDefense - maxMinValues.minDefense)) *
+          100
+      );
+      poke.statistics.special_attack_percent = Math.round(
+        ((poke.statistics.special_attack - maxMinValues.minSpecialAttack) /
+          (maxMinValues.maxSpecialAttack - maxMinValues.minSpecialAttack)) *
+          100
+      );
+      poke.statistics.special_defense_percent = Math.round(
+        ((poke.statistics.special_defense - maxMinValues.minSpecialDefense) /
+          (maxMinValues.maxSpecialDefense - maxMinValues.minSpecialDefense)) *
+          100
+      );
+      poke.statistics.speed_percent = Math.round(
+        ((poke.statistics.speed - maxMinValues.minSpeed) /
+          (maxMinValues.maxSpeed - maxMinValues.minSpeed)) *
+          100
+      );
+    });
   }
 }
