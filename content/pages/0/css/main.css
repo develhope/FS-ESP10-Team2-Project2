@@ -368,7 +368,7 @@ main {
 }
 
 /* Animación de transición de color de izquierda a derecha para Legendary */
-#pokemon-name-lejendary {
+#pokemon-name-legendary {
     position: relative;
     background: linear-gradient(to right, #F8D030, #fff19f, #F8D030, #FFEA70);
     background-size: 400% 100%;
@@ -458,6 +458,71 @@ main {
     /* letter-spacing: normal; */
     color: var(--clr-offer);
 }
+
+
+.div-pokemon-popup {
+    /* width: 100%; */
+    /* height: 100%; */
+    /* align-content: end; */
+
+    position: absolute;
+
+
+    left: 93%;
+    transform: translateX(-50%);
+
+    top: 4%;
+
+
+    /* font-size: 6rem; */
+    /* font-weight: 800; */
+    color: var(--clr-gray);
+}
+
+.pokemon {
+    position: relative;
+}
+
+.info-icon-svg {
+    /* left: 100%;
+    transform: translateX(20%);
+    transform: translateY(-20%); */
+    fill: var(--clr-black);
+}
+
+.info-icon-svg:hover {
+    fill: var(--clr-gray2);
+}
+
+.info-pokemon-popup {
+    /* left: -100%; */
+    transform: translateX(-100%);
+
+    display: none;
+    position: absolute;
+    background-color: var(--clr-white);
+    border: 1px solid var(--clr-black);
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    z-index: 100;
+    width: auto;
+
+}
+
+.info-pokemon-popup.show {
+    display: block;
+}
+
+.info-pokemon-popup p {
+    width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+
+
 
 
 .see-all {

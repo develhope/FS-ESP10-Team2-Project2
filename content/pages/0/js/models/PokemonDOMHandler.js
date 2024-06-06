@@ -106,37 +106,24 @@ export class PokemonDOMHandler {
         ? `${poke.statistics.weight.gram}g`
         : `${poke.statistics.weight.kilograms}kg`;
 
-    let market;
-
+    // Calcular el precio y el porcentaje de descuento
     const basePrice = poke.market.price;
+    const offerPrice = poke.market.discount;
+    const offerPercentage = offerPrice
+      ? this.#calculateOfferPercentage(basePrice, offerPrice)
+      : null;
+    const market = offerPrice
+      ? `<p class="price">${offerPrice}€</p>
+       <p class="offer">${basePrice}€</p>
+       <p class="offerPercentage">${offerPercentage}%</p>`
+      : `<p class="price">${basePrice}€</p>`;
 
-    // Si hay un descuento, calcular el precio de oferta y el porcentaje de descuento
-    if (poke.market.discount) {
-      const offerPrice = poke.market.discount;
-
-      // Calcular el porcentaje de descuento
-      const offerPercentage = this.#calculateOfferPercentage(
-        basePrice,
-        offerPrice
-      );
-
-      // Crear el HTML para el precio con descuento
-      market = `
-      <p class="price">${offerPrice}€</p>
-      <p class="offer">${basePrice}€</p>
-      <p class="offerPercentage">${offerPercentage}%</p>
-    `;
-    } else {
-      // Crear el HTML para el precio sin descuento
-      market = `<p class="price">${basePrice}€</p>`;
-    }
-
-    let quality;
-    if (poke.value.isMythical) {
-      quality = "pokemon-name-mythical";
-    } else if (poke.value.isLegendary) {
-      quality = "pokemon-name-lejendary";
-    }
+    // Determinar la calidad del Pokémon
+    const quality = poke.value.isMythical
+      ? "pokemon-name-mythical"
+      : poke.value.isLegendary
+      ? "pokemon-name-legendary"
+      : "";
 
     // Crear el elemento div para el Pokémon
     const div = document.createElement("div");
@@ -150,7 +137,7 @@ export class PokemonDOMHandler {
     <div class="pokemon-info">
       <div class="name-container">
         <p class="pokemon-id">#${pokeId}</p>
-        <h2 class="pokemon-name" id="${quality}">${name}</h2>
+        <h2 class="pokemon-name ${quality}">${name}</h2>
       </div>
       <div class="pokemon-types">
         ${types}
@@ -164,6 +151,49 @@ export class PokemonDOMHandler {
       </div>
     </div>
   `;
+
+    // Crear el elemento de PopUp con información adicional
+    const divPopUp = document.createElement("div");
+    divPopUp.classList.add("div-pokemon-popup");
+
+    divPopUp.innerHTML = `
+    <svg class="info-icon-svg" width="30" height="30" viewBox="0 0 512 512">
+      <path
+          d="M256,6.234C118.059,6.234,6.234,118.059,6.234,256.001c0,137.94,111.824,249.765,249.766,249.765  s249.766-111.824,249.766-249.765C505.766,118.059,393.941,6.234,256,6.234z M489.966,258  C487.828,385.396,383.907,488.017,256,488.017c-127.907,0-231.829-102.62-233.966-230.017h-0.051c0-0.669,0.02-1.333,0.025-2  c-0.006-0.667-0.025-1.331-0.025-2h0.051C24.171,126.603,128.093,23.983,256,23.983c127.907,0,231.829,102.62,233.966,230.017h0.051  c0,0.669-0.02,1.333-0.025,2c0.006,0.667,0.025,1.331,0.025,2H489.966z" />
+      <path
+          d="M256,132.228  c-68.357,0-123.772,55.415-123.772,123.772S187.643,379.772,256,379.772S379.772,324.357,379.772,256S324.357,132.228,256,132.228z   M256,331.024c-41.436,0-75.024-33.59-75.024-75.024s33.589-75.024,75.024-75.024c41.435,0,75.024,33.59,75.024,75.024  S297.435,331.024,256,331.024z"
+          fill="none" />
+      <path
+          d="M256,223.724c-17.826,0-32.276,14.451-32.276,32.276c0,17.826,14.45,32.276,32.276,32.276  s32.276-14.45,32.276-32.276C288.276,238.174,273.826,223.724,256,223.724z M256,277.951c-12.124,0-21.952-9.827-21.952-21.951  s9.828-21.952,21.952-21.952c12.124,0,21.951,9.828,21.951,21.952S268.124,277.951,256,277.951z" />
+      <path
+          d="M256,180.976c-41.436,0-75.024,33.59-75.024,75.024s33.589,75.024,75.024,75.024  c41.435,0,75.024-33.59,75.024-75.024S297.435,180.976,256,180.976z M256,307.025c-28.181,0-51.025-22.844-51.025-51.025  s22.845-51.025,51.025-51.025c28.182,0,51.025,22.844,51.025,51.025S284.182,307.025,256,307.025z" />
+      <g>
+          <path
+              d="M136.784,252.489c0-17.625,3.758-34.489,10.509-49.489H14v107h137.237   C142.019,292,136.784,273.296,136.784,252.489z" />
+          <path
+              d="M369.264,203c6.751,15,10.509,31.863,10.509,49.489c0,20.807-5.234,39.511-14.452,57.511H498V203H369.264z" />
+      </g>
+    </svg>
+
+    <div class="info-pokemon-popup">
+      <p>HP: ${poke.statistics.hp}</p>
+      <p>Attack: ${poke.statistics.attack}</p>
+      <p>Defense: ${poke.statistics.defense}</p>
+      <p>Speed: ${poke.statistics.speed}</p>
+    </div>
+  `;
+
+    div.appendChild(divPopUp);
+
+    // Añadir eventos de hover para mostrar y ocultar el PopUp
+    divPopUp.addEventListener("mouseenter", () => {
+      divPopUp.querySelector(".info-pokemon-popup").classList.add("show");
+    });
+
+    divPopUp.addEventListener("mouseleave", () => {
+      divPopUp.querySelector(".info-pokemon-popup").classList.remove("show");
+    });
+
     return div;
   }
 
