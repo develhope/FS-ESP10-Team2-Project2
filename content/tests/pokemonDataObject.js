@@ -1,8 +1,12 @@
 /**
  * @typedef {Object} Pokemon
+ *
  * @property {number} pokeId - El ID del Pokémon.
+ *
  * @property {string} name - El nombre del Pokémon.
+ *
  * @property {string[]} type - Un array de tipos de Pokémon.
+ *
  * @property {Object} images - Un objeto que contiene URL de imágenes del Pokémon.
  * @property {Object} images.illustration - Un objeto que contiene URL de imagen de ilustración.
  * @property {string} images.illustration.default - La URL de ilustración predeterminada.
@@ -15,6 +19,7 @@
  * @property {string|null} images.gif.back_shiny - La URL GIF brillante posterior.
  * @property {string|null} images.gif.front_default - La URL GIF predeterminada frontal.
  * @property {string|null} images.gif.front_shiny - La URL del GIF brillante frontal.
+ *
  * @property {Object} statistics - Un objeto que contiene las estadísticas del Pokémon.
  * @property {Object} statistics.height - Un objeto que contiene medidas de altura.
  * @property {number} statistics.height.centimeter - Altura en centímetros.
@@ -37,6 +42,10 @@
  * @property {number} statistics.special_defense_percent - El porcentaje de la defensa especial del Pokémon, se calcula procesando la defensa especial de todos los Pokémon de la lista.
  * @property {number} statistics.speed - La estadística de la velocidad del Pokémon.
  * @property {number} statistics.speed_percent - El porcentaje de la velocidad del Pokémon, se calcula procesando la velocidad de todos los Pokémon de la lista.
+ *
+ * @property {number} statistics.power - La suma de todas sus estadisticas de lucha (hp, attack, defense, special_attack, special_defense, speed).
+ * @property {number} statistics.power_percent - El porcentaje de la suma de todas sus estadisticas de lucha del Pokémon, se calcula procesando el power de todos los Pokémon de la lista.
+ *
  * @property {Object} value - Un objeto que contiene los atributos de valor del Pokémon.
  * @property {number} value.base_experience - La experiencia base de los Pokémon.
  * @property {number} value.movements - La cantidad de movimientos que tiene el Pokémon.
@@ -44,8 +53,9 @@
  * @property {boolean} value.isLegendary - Si el Pokémon es legendario.
  * @property {boolean} value.isMythical - Si el Pokémon es mítico.
  * @property {boolean} value.isFinalEvolution - Si el Pokémon ya no puede evolucionar mas porque se encuentra en su ultima evolución.
- * @property {Object[]} evolutions - Una lista de objetos que representan las evoluciones del Pokémon.
- *                                  Cada objeto contiene el nombre del Pokémon y una lista de nombres de los Pokémon a los que puede evolucionar.
+ *
+ * @property {Object[]} evolutions - Una lista de objetos que representan las evoluciones del Pokémon. Cada objeto contiene el nombre del Pokémon y una lista de nombres de los Pokémon a los que puede evolucionar.
+ *
  * @property {Object} market - Un objeto que contiene datos del mercado actual.
  * @property {number} market.price - La cantidad de dinero actual que vale el Pokémon si no hay un descuento vigente.
  * @property {number|undefined} market.discount - La cantidad de dinero vigente que vale el Pokémon con el descuento de la oferta, si se encuentra "undefined" no habrá oferta disponible.
@@ -95,15 +105,18 @@ const pokemon = {
     hp: 45, // Puntos de puntos de vida
     hp_percent: 10, // Porcentaje de puntos de vida
     attack: 49, // Estadística de puntos de ataque
-    attack_percent: 49, // Porcentaje de puntos de ataque
-    defense: 49, // Estadística de puntos de defensa
-    defense_percent: 49, // Porcentaje de puntos de defensa
+    attack_percent: 50, // Porcentaje de puntos de ataque
+    defense: 20, // Estadística de puntos de defensa
+    defense_percent: 10, // Porcentaje de puntos de defensa
     special_attack: 65, // Estadística de puntos de ataque especial
     special_attack_percent: 65, // Porcentaje de puntos de ataque especial
-    special_defense: 65, // Estadística de puntos de defensa especial
-    special_defense_percent: 65, // Porcentaje de puntos de defensa especial
+    special_defense: 30, // Estadística de puntos de defensa especial
+    special_defense_percent: 40, // Porcentaje de puntos de defensa especial
     speed: 45, // Estadística de puntos de velocidad
     speed_percent: 45, // Porcentaje de puntos de velocidad
+
+    power: 254, // La suma de todas sus estadisticas de lucha.
+    power_percent: 30, // Porcentaje de todas sus estadisticas de lucha.
   },
   value: {
     base_experience: 64, // Experiencia base

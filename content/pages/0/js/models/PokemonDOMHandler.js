@@ -198,7 +198,18 @@ export class PokemonDOMHandler {
     </svg>
 
     <div class="info-pokemon-popup">
-      
+    
+    
+      <div class="div-stat-percent-power">
+        <div class="stat-percentage-power" style="background-color: ${getColorByPercentage(
+          poke.statistics.power_percent
+        )}">
+        </div>
+        <p>Power: ${poke.statistics.power} </p>
+        <p>(${poke.statistics.power_percent}%)</p>
+      </div>
+
+
       <div class="div-stat-percent">
         <div class="stat-percentage" style="background-color: ${getColorByPercentage(
           poke.statistics.hp_percent
@@ -217,7 +228,7 @@ export class PokemonDOMHandler {
         <p>(${poke.statistics.attack_percent}%)</p>
       </div>
 
-      <div class="div-stat-percent div-stat-percent-special">
+      <div class="div-stat-percent-special">
         <div class="stat-percentage-special" style="background-color: ${getColorByPercentage(
           poke.statistics.special_attack_percent
         )}">
@@ -235,7 +246,7 @@ export class PokemonDOMHandler {
         <p>(${poke.statistics.defense_percent}%)</p>
       </div>
 
-      <div class="div-stat-percent div-stat-percent-special">
+      <div class="div-stat-percent-special">
         <div class="stat-percentage-special" style="background-color: ${getColorByPercentage(
           poke.statistics.special_defense_percent
         )}">
@@ -252,9 +263,6 @@ export class PokemonDOMHandler {
         <p>Speed: ${poke.statistics.speed} </p>
         <p>(${poke.statistics.speed_percent}%)</p>
       </div>
-
-
-
 
     </div>
   `;
@@ -324,19 +332,23 @@ export class PokemonDOMHandler {
             <option value="pokeId-asc" class="filter-option">ID (Menor)</option>
             <option value="pokeId-desc" class="filter-option">ID (Mayor)</option>
           </optgroup>
-          <optgroup label="Name" class="filter-optgroup">
+          <optgroup label="Nombre" class="filter-optgroup">
             <option value="name-asc" class="filter-option">Nombre (A-Z)</option>
             <option value="name-desc" class="filter-option">Nombre (Z-A)</option>
           </optgroup>
-          <!-- <optgroup label="Type" class="filter-optgroup">
+          <optgroup label="Poder" class="filter-optgroup">
+            <option value="statistics.power-asc" class="filter-option">Poder (Menor)</option>
+            <option value="statistics.power-desc" class="filter-option">Poder (Mayor)</option>
+          </optgroup>
+          <!-- <optgroup label="Tipo" class="filter-optgroup">
             <option value="type-asc" class="filter-option">Tipo (A-Z)</option>
             <option value="type-desc" class="filter-option">Tipo (Z-A)</option> -->
           </optgroup>
-          <optgroup label="Height (M)" class="filter-optgroup">
+          <optgroup label="Altura (M)" class="filter-optgroup">
             <option value="statistics.height-asc" class="filter-option">Altura (Menor)</option>
             <option value="statistics.height-desc" class="filter-option">Altura (Mayor)</option>
           </optgroup>
-          <optgroup label="Weight (KG)" class="filter-optgroup">
+          <optgroup label="Peso (KG)" class="filter-optgroup">
             <option value="statistics.weight-asc" class="filter-option">Peso (Menor)</option>
             <option value="statistics.weight-desc" class="filter-option">Peso (Mayor)</option>
           </optgroup>

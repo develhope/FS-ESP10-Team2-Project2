@@ -112,6 +112,14 @@ export class PokemonDataHandler {
         evolutionChainData
       );
 
+      pokemon.statistics.power =
+        pokemon.statistics.hp +
+        pokemon.statistics.attack +
+        pokemon.statistics.defense +
+        pokemon.statistics.special_attack +
+        pokemon.statistics.special_defense +
+        pokemon.statistics.speed;
+
       pokemon.market.price = this.#calculatePokemonValue(pokemon);
 
       // pokemon.market.discount = this.#calculatePriceDiscount(pokemon, 1);
@@ -475,6 +483,9 @@ export class PokemonDataHandler {
     const maxSpeed = Math.max(...results.map((poke) => poke.statistics.speed));
     const minSpeed = Math.min(...results.map((poke) => poke.statistics.speed));
 
+    const maxPower = Math.max(...results.map((poke) => poke.statistics.power));
+    const minPower = Math.min(...results.map((poke) => poke.statistics.power));
+
     return {
       maxHP,
       minHP,
@@ -488,6 +499,8 @@ export class PokemonDataHandler {
       minSpecialDefense,
       maxSpeed,
       minSpeed,
+      maxPower,
+      minPower,
     };
   }
 
@@ -526,6 +539,11 @@ export class PokemonDataHandler {
       poke.statistics.speed_percent = Math.round(
         ((poke.statistics.speed - maxMinValues.minSpeed) /
           (maxMinValues.maxSpeed - maxMinValues.minSpeed)) *
+          100
+      );
+      poke.statistics.power_percent = Math.round(
+        ((poke.statistics.power - maxMinValues.minPower) /
+          (maxMinValues.maxPower - maxMinValues.minPower)) *
           100
       );
     });

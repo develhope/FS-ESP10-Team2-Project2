@@ -493,7 +493,7 @@ main {
 
 .info-pokemon-popup {
     transform: translateX(-100%);
-    display: none;
+    display: block;
     position: absolute;
     background-color: var(--clr-white);
     border: 1px solid var(--clr-black);
@@ -506,7 +506,7 @@ main {
 
 .info-pokemon-popup.show {
     user-select: text;
-    display: block;
+    display: none;
 }
 
 .info-pokemon-popup p {
@@ -516,34 +516,61 @@ main {
     overflow: hidden;
 }
 
-.div-stat-percent {
+.div-stat-percent,
+.div-stat-percent-special,
+.div-stat-percent-power {
     display: flex;
     width: 100%;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+    padding-bottom: 5px;
+}
+
+.div-stat-percent:last-child {
+    padding-bottom: 0px;
+}
+
+.div-stat-percent-power {
+    padding-bottom: 10px;
+}
+
+.div-stat-percent {
+    padding-left: 10px;
 }
 
 .div-stat-percent-special {
-    padding-left: 10px;
+    padding-left: 20px;
     padding-bottom: 5px;
+}
+
+.stat-percentage,
+.stat-percentage-special,
+.stat-percentage-power {
+    margin-right: 7px;
+}
+
+.stat-percentage-power {
+    width: 15px;
+    height: 15px;
+    border-radius: 0%;
 }
 
 .stat-percentage {
     width: 14px;
     height: 14px;
-    border-radius: 20%;
-    margin-bottom: 10px;
-    margin-right: 5px;
+    border-radius: 23%;
 }
 
 .stat-percentage-special {
-    width: 14px;
-    height: 14px;
+    width: 13px;
+    height: 13px;
     border-radius: 100%;
-    margin-bottom: 10px;
-    margin-right: 5px;
 }
+
+
+
+
 
 
 .see-all {

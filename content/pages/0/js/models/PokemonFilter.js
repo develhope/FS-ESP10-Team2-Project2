@@ -62,7 +62,7 @@ export class PokemonFilter {
   /**
    * Método para obtener una lista de Pokémon ordenados por una propiedad específica.
    * @param {object[]} pokemonDataList - La lista de datos de Pokémon a ordenar.
-   * @param {string} property - La propiedad por la cual ordenar. Puede ser "pokeId", "name", "type", "statistics.height", "statistics.weight".
+   * @param {string} property - La propiedad por la cual ordenar. Puede ser "market.price", "pokeId", "name", "statistics.power", "type", "statistics.height", "statistics.weight".
    * @param {string} [order='asc'] - El orden de la ordenación. Puede ser "asc" para ascendente o "desc" para descendente.
    * @returns {object[]} - Un array de objetos de Pokémon ordenados según la propiedad y el orden especificados.
    * @throws {Error} - Si la propiedad de ordenación es desconocida.
@@ -127,6 +127,8 @@ export class PokemonFilter {
         return [a.pokeId, b.pokeId];
       case "name":
         return [a.name.toLowerCase(), b.name.toLowerCase()];
+      case "statistics.power":
+        return [a.statistics.power, b.statistics.power];
       case "type":
         return [a.type[0].toLowerCase(), b.type[0].toLowerCase()]; // Ordenar por el primer tipo
       case "statistics.height":
