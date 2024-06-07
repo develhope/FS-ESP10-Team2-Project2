@@ -131,18 +131,18 @@ export class PokemonDOMHandler {
      * @returns {string} - El color de fondo correspondiente al porcentaje.
      */
     const getColorByPercentage = (percent) => {
-      // Retorna color gris oscuro si el porcentaje es 1% (Nefasto)
-      if (percent <= 1) return "#666666";
-      // Retorna color rojo si el porcentaje está entre 2% y 25% (Malo)
-      if (percent <= 25) return "red"; // 24%
+      // Retorna color gris oscuro si el porcentaje es menor o igual a 4% (Nefasto)
+      if (percent <= 4) return "#666666"; // 4%
+      // Retorna color rojo si el porcentaje está entre 5% y 25% (Malo)
+      if (percent <= 25) return "red"; // 20%
       // Retorna color amarillo si el porcentaje está entre 26% y 50% (Normal)
-      if (percent <= 50) return "yellow"; // 25%
+      if (percent <= 50) return "yellow"; // 24%
       // Retorna color verde si el porcentaje está entre 51% y 75% (Bueno)
-      if (percent <= 75) return "green"; // 25%
-      // Retorna color azul si el porcentaje está entre 76% y 99% (Muy bueno)
-      if (percent <= 99) return "blue"; // 24%
-      // Retorna color violeta oscuro si el porcentaje es 100% (Sublime)
-      return "darkviolet"; // Sublime 1%
+      if (percent <= 75) return "green"; // 24%
+      // Retorna color azul si el porcentaje está entre 76% y 96% (Muy bueno)
+      if (percent <= 96) return "blue"; // 20%
+      // Retorna color violeta oscuro si el porcentaje es mayor o igual a 96% (Sublime)
+      return "darkviolet"; // 4%
     };
 
     // Crear el elemento div para el Pokémon
