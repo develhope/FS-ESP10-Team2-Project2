@@ -240,7 +240,7 @@ main {
     gap: 1rem;
 }
 
-@media screen and (min-width: 500px) {
+@media screen and (min-width: 565px) {
     .pokemon-all {
         grid-template-columns: 1fr 1fr;
     }
