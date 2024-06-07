@@ -522,22 +522,28 @@ main {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+}
 
+.div-stat-percent-special {
+    padding-left: 10px;
+    padding-bottom: 5px;
 }
 
 .stat-percentage {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 15px;
-    height: 15px;
+    width: 14px;
+    height: 14px;
+    border-radius: 20%;
+    margin-bottom: 10px;
     margin-right: 5px;
-    color: #fff;
-    border-radius: 100%;
-    margin-bottom: 5px;
 }
 
-
+.stat-percentage-special {
+    width: 14px;
+    height: 14px;
+    border-radius: 100%;
+    margin-bottom: 10px;
+    margin-right: 5px;
+}
 
 
 .see-all {
