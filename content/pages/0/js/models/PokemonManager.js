@@ -82,6 +82,9 @@ export class PokemonManager {
     - sliderValue: ${
       this.#data.dom.elements.sliderValue ? "Present" : "Not Found"
     }
+    - searchInput: ${
+      this.#data.dom.elements.searchInput ? "Present" : "Not Found"
+    }
   - filters:
     - type: ${this.#data.dom.filters.byTypes[0][0]}
     - exactMatch: ${this.#data.dom.filters.byTypes[1]}

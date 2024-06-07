@@ -209,7 +209,6 @@ export class PokemonDOMHandler {
         <p>(${poke.statistics.power_percent}%)</p>
       </div>
 
-
       <div class="div-stat-percent">
         <div class="stat-percentage" style="background-color: ${getColorByPercentage(
           poke.statistics.hp_percent
