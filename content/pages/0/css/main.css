@@ -493,7 +493,7 @@ main {
 
 .info-pokemon-popup {
     transform: translateX(-100%);
-    display: block;
+    display: none;
     position: absolute;
     background-color: var(--clr-white);
     border: 1px solid var(--clr-black);
@@ -506,7 +506,7 @@ main {
 
 .info-pokemon-popup.show {
     user-select: text;
-    display: none;
+    display: block;
 }
 
 .info-pokemon-popup p {
