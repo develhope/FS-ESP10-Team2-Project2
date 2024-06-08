@@ -98,6 +98,18 @@ export class PokemonManager {
   }
 
   /**
+   * Maneja el evento 'beforeunload' para limpiar el sessionStorage.
+   * @param {Event} event - El evento 'beforeunload'.
+   */
+  #clearSessionStorage(event = null) {
+    if (event) event.preventDefault();
+
+    console.log("Clear Session Storage\npokemonManager_data, pokemonPreview");
+    sessionStorage.removeItem("pokemonManager_data");
+    sessionStorage.removeItem("pokemonPreview");
+  }
+
+  /**
    * Inicializa la lista de Pokémon cargando datos desde la API o restaurando desde sessionStorage.
    * @param {number} count - La cantidad de Pokémon a cargar.
    * @param {boolean} reload - Indica si se deben recargar los datos.
@@ -105,24 +117,27 @@ export class PokemonManager {
    * @throws {Error} - Si ocurre un error durante la carga de los datos.
    */
   async init(count, reload = false) {
+    // Añadir el event listener
+    window.addEventListener("beforeunload", this.#clearSessionStorage);
+
     // Muestra el div de carga mientras se procesan los datos
     this.PokemonDOMHandler.toggleLoading(true);
 
     if (reload) {
-      // Eliminar todos los datos almacenados en sessionStorage
-      sessionStorage.clear();
+      // Eliminar los datos almacenados en sessionStorage
+      this.#clearSessionStorage();
     }
 
     try {
       // Intentar obtener los datos del sessionStorage
-      let PokemonManager_data_JSON = sessionStorage.getItem(
-        "PokemonManager_data"
+      let pokemonManager_data_JSON = sessionStorage.getItem(
+        "pokemonManager_data"
       );
-      if (PokemonManager_data_JSON) {
-        const PokemonManager_data = JSON.parse(PokemonManager_data_JSON);
+      if (pokemonManager_data_JSON) {
+        const pokemonManager_data = JSON.parse(pokemonManager_data_JSON);
         console.log("Restaurando datos...");
 
-        this.#data = PokemonManager_data;
+        this.#data = pokemonManager_data;
         this.#getDOMElements(true);
       } else {
         // Cargar la lista de Pokémon utilizando el manejador de datos
@@ -134,7 +149,7 @@ export class PokemonManager {
 
         // Guardar la lista en sessionStorage
         sessionStorage.setItem(
-          "PokemonManager_data",
+          "pokemonManager_data",
           JSON.stringify(this.#data)
         );
       }
@@ -471,9 +486,12 @@ export class PokemonManager {
 
       // Añade un event listener de tipo 'click' al elemento seleccionado
       pokemonElement.addEventListener("click", () => {
+        // Eliminar el event listener
+        window.removeEventListener("beforeunload", this.#clearSessionStorage);
+
         // Guarda el estado completo de los datos en sessionStorage
         sessionStorage.setItem(
-          "PokemonManager_data",
+          "pokemonManager_data",
           JSON.stringify(this.#data)
         );
         // console.log(poke);
