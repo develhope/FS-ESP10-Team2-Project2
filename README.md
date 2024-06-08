@@ -28,22 +28,22 @@
 
 - [ ] **3.** Implementar un sistema automático de paginación para la lista de todos los Pokémon.
 
-- [ ] **?.** Crear un _módulo de batalla básica_ para poder enfrentar dos Pokémon (en principio solo se podrán enfrentar Pokémon que existan en el carrito de compra).
+- [ ] **?.** Crear un módulo de batalla básica para poder enfrentar a dos Pokémon (en principio solo se podrán enfrentar Pokémon que existan en el carrito de compra).
 
-  - **Más información**: El sistema de batalla será ejecutado de la siguiente forma y se usaran estas propiedades de cada Pokémon: **Propiedades normales** (`HP`, `attack`, `special_attack`, `defense`, `special_defense`, `speed`), **Propiedades en combate** (`fatigue`):
+  - Más información: El sistema de batalla se ejecutará de la siguiente manera, utilizando estas propiedades de cada Pokémon: Propiedades normales (`HP`, `attack`, `special_attack`, `defense`, `special_defense`, `speed`) y Propiedades en combate (`fatigue`).
 
-    - **Primer ataque**: El Pokémon con mas velodidad (`speed`) sera el primero en lanzar un ataque, si ambos tienen los mismos puntos de velocidad el primer ataque sera decidido aleatoriamente.
+    - **Primer ataque**: El Pokémon con más velocidad (`speed`) será el primero en lanzar un ataque. Si ambos tienen los mismos puntos de velocidad, el primer ataque se decidirá aleatoriamente.
 
-    - **Ataque**: Los ataques se turnarán, un ataque por cada Pokémon por cada turno, hay dos tipos de ataque, _ataque normal_: (`attack`) y _ataque especial_ (`special_attack`).
+    - **Ataque**: Los ataques se turnarán, con un ataque por cada Pokémon en cada turno. Hay dos tipos de ataques: _ataque normal_ (`attack`) y _ataque especial_ (`special_attack`).
 
-      - **Ataque Normal** (`attack`): Se lanzará con un porcentaje del 80% cuando la fatiga no supere un maximo de puntos establecido.
+      - **Ataque Normal** (`attack`): Tiene una posibilidad del 80% de lanzarse, cuando la fatiga no supere un máximo de puntos establecido.
 
-      - **Ataque Especial** (`special_attack`): Se lanzará con un porcentaje del 20% cuando la fatiga no supere un maximo de puntos establecido (necesita menos fatiga que el _ataque normal_ para ejecutarse).
+      - **Ataque Especial** (`special_attack`): Tiene una posibilidad del 20% de lanzarse, cuando la fatiga no supere un máximo de puntos establecido (necesita menos fatiga que el ataque normal para ejecutarse).
 
-    - **Defensa**: Las defensas se ejecutarán cada vez que el Pokémon rival lance un ataque, hay dos tipos de defensa, _defensa normal_: (`defense`) y _defensa especial_ (`special_defense`).
+    - **Defensa**: Las defensas se ejecutarán cada vez que el Pokémon rival lance un ataque. Hay dos tipos de defensa: _defensa normal_ (`defense`) y _defensa especial_ (`special_defense`).
 
-      - **Defensa Normal** (`defense`): Se ejecutará cada vez que reciba un _ataque normal_, siempre y cuando la fatiga no supere un maximo de puntos establecido (en principio mismos que el _ataque normal_ o parecido).
+      - **Defensa Normal** (`defense`): Se ejecutará cada vez que reciba un _ataque normal_, siempre y cuando la fatiga no supere un máximo de puntos establecido (en principio, el mismo que para el _ataque normal_ o similar).
 
-      - **Defensa Especial** (`special_defense`): Se ejecutará cada vez que reciba un _ataque especal_, siempre y cuando la fatiga no supere un máximo de puntos establecido (en principio mismos que el _ataque especal_ o parecido).
+      - **Defensa Especial** (`special_defense`): Se ejecutará cada vez que reciba un _ataque especial_:, siempre y cuando la fatiga no supere un máximo de puntos establecido (en principio, el mismo que para el _ataque especial_: o similar).
 
-  - **Puntos de Salud** (`HP`): El proceso de cálculo es el siguiente, `HP = (attack - defense) - HP` o `HP = (special_attack - special_defense) - HP`, cuando el `HP` sean 0 o menor, el Pokémon estará fuera de combate.
+  - **Puntos de Salud** (`HP`): El proceso de cálculo es el siguiente: `HP = HP - (attack - defense)` o `HP = HP - (special_attack - special_defense)`. Cuando los `HP` sean 0 o menores, el Pokémon estará fuera de combate.
