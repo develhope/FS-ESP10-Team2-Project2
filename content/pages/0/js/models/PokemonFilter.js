@@ -195,6 +195,7 @@ export class PokemonFilter {
    */
   getPokemonByNameOrId(pokemonList, query) {
     if (!query) return pokemonList;
+    query = query.trim();
 
     return pokemonList.filter((pokemon) => {
       return (
