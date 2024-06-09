@@ -1,23 +1,23 @@
 // Lista de debilidades de Pokémon
 const weaknesses = {
-  Steel: ["Fighting", "Fire", "Ground"],
-  Water: ["Grass", "Electric"],
-  Bug: ["Flying", "Fire", "Rock"],
-  Dragon: ["Fairy", "Ice", "Dragon"],
-  Electric: ["Ground"],
-  Ghost: ["Ghost", "Dark"],
-  Fire: ["Ground", "Water", "Rock"],
-  Fairy: ["Steel", "Poison"],
-  Ice: ["Fighting", "Steel", "Rock", "Fire"],
-  Fighting: ["Psychic", "Flying", "Fairy"],
-  Normal: ["Fighting"],
-  Grass: ["Flying", "Bug", "Poison", "Ice", "Fire"],
-  Psychic: ["Bug", "Ghost", "Dark"],
-  Rock: ["Fighting", "Ground", "Steel", "Water", "Grass"],
-  Dark: ["Fighting", "Fairy", "Bug"],
-  Ground: ["Water", "Grass", "Ice"],
-  Poison: ["Ground", "Psychic"],
-  Flying: ["Rock", "Ice", "Electric"],
+  steel: ["fighting", "fire", "ground"],
+  water: ["grass", "electric"],
+  bug: ["flying", "fire", "rock"],
+  dragon: ["fairy", "ice", "dragon"],
+  electric: ["ground"],
+  ghost: ["ghost", "dark"],
+  fire: ["ground", "water", "rock"],
+  fairy: ["steel", "poison"],
+  ice: ["fighting", "steel", "rock", "fire"],
+  fighting: ["psychic", "flying", "fairy"],
+  normal: ["fighting"],
+  grass: ["flying", "bug", "poison", "ice", "fire"],
+  psychic: ["bug", "ghost", "dark"],
+  rock: ["fighting", "ground", "steel", "water", "grass"],
+  dark: ["fighting", "fairy", "bug"],
+  ground: ["water", "grass", "ice"],
+  poison: ["ground", "psychic"],
+  flying: ["rock", "ice", "electric"],
 };
 
 // Clase Pokemon
@@ -129,9 +129,11 @@ class Pokemon {
 
   addNormalDefense() {
     this.log.moves.defenses.normal++;
-    const recoveryFatigue = 5;
-    this.p.c.fatigue -= recoveryFatigue;
-    this.log.recovery.fatigue += recoveryFatigue;
+    if (!this.isDefeated()) {
+      const fatigueRecovery = 5;
+      this.p.c.fatigue -= fatigueRecovery;
+      this.log.recovery.fatigue += fatigueRecovery;
+    }
   }
 
   addSpecialDefense() {
@@ -155,46 +157,85 @@ class Pokemon {
     };
   }
 
-  //? Métodos para defenderse
+  /**
+   * Realiza la defensa normal, reduciendo el daño recibido en función de la defensa del Pokémon.
+   * Si la defensa es insuficiente, intenta reducir el daño con la defensa especial.
+   * @param {number} damage - La cantidad de daño recibida.
+   */
   normalDefense(damage) {
-    this.addNormalDefense();
-
     damage = Math.round(damage);
 
-    let reducedDamage = damage - this.p.c.defense;
-    this.p.c.defense -= damage;
+    let reducedDamage = damage;
 
-    reducedDamage = reducedDamage > 0 ? reducedDamage : 0;
-    this.p.c.hp -= reducedDamage;
-    console.log(
-      `${this.p.i.name}: Defensa normal. Daño reducido a ${reducedDamage}. HP restante: ${this.p.c.hp}`
-    );
+    // Reducir daño con defensa normal si está disponible
+    if (this.p.c.defense > 0) {
+      this.addNormalDefense();
+      reducedDamage = Math.max(0, damage - this.p.c.defense);
+      this.p.c.defense = Math.max(0, this.p.c.defense - damage);
+    } else if (this.p.c.special_defense > 0) {
+      // Si la defensa normal no es suficiente, usar defensa especial
+      this.addSpecialDefense();
+      reducedDamage = Math.max(0, damage - this.p.c.special_defense);
+      this.p.c.special_defense = Math.max(0, this.p.c.special_defense - damage);
+    }
+
+    // Aplicar el daño reducido al HP
+    this.p.c.hp = Math.max(0, this.p.c.hp - reducedDamage);
+
+    if (this.p.c.hp === 0) {
+      console.log(`${this.p.i.name} No puedo soportar el ataque.`);
+    } else {
+      console.log(
+        `${this.p.i.name}: Defensa normal. Daño reducido a ${reducedDamage}. HP restante: ${this.p.c.hp}/${this.p.b.hp}`
+      );
+    }
   }
 
+  /**
+   * Realiza la defensa especial, reduciendo el daño recibido en función de la defensa especial del Pokémon.
+   * @param {number} damage - La cantidad de daño recibida.
+   */
   specialDefense(damage) {
-    this.addSpecialDefense();
-
     damage = Math.round(damage);
 
-    let reducedDamage = damage - this.p.c.special_defense;
-    this.p.c.special_defense -= damage;
+    // Calcular el daño reducido basado en la defensa especial
+    this.addSpecialDefense();
+    let reducedDamage = Math.max(0, damage - this.p.c.special_defense);
+    this.p.c.special_defense = Math.max(0, this.p.c.special_defense - damage);
 
-    reducedDamage = reducedDamage > 0 ? reducedDamage : 0;
-    this.p.c.hp -= reducedDamage;
-    console.log(
-      `${this.p.i.name}: Defensa especial. Daño reducido a ${reducedDamage}. HP restante: ${this.p.c.hp}`
-    );
+    // Aplicar el daño reducido al HP
+    this.p.c.hp = Math.max(0, this.p.c.hp - reducedDamage);
+
+    if (this.p.c.hp === 0) {
+      console.log(`${this.p.i.name} No puedo soportar el ataque.`);
+    } else {
+      console.log(
+        `${this.p.i.name}: Defensa especial. Daño reducido a ${reducedDamage}. HP restante: ${this.p.c.hp}/${this.p.b.hp}`
+      );
+    }
   }
 
   isDefeated() {
     return this.p.c.hp <= 0;
   }
 
+  getPercentOfProperty(nameProperty) {
+    return Math.round((this.p.c[nameProperty] * 100) / this.p.b[nameProperty]);
+  }
+
   state() {
     console.log(`${this.p.i.name}:`);
-    console.log(`- HP: ${this.p.c.hp}`);
-    console.log(`- Defensa: ${this.p.c.defense}`);
-    console.log(`- Defensa Especial: ${this.p.c.special_defense}`);
+    console.log(`- HP: ${this.p.c.hp} (${this.getPercentOfProperty("hp")}%)`);
+    console.log(
+      `- Defensa: ${this.p.c.defense} (${this.getPercentOfProperty(
+        "defense"
+      )}%)`
+    );
+    console.log(
+      `- Defensa Especial: ${
+        this.p.c.special_defense
+      } (${this.getPercentOfProperty("special_defense")}%)`
+    );
     console.log(`- Fatiga: ${this.p.c.fatigue}`);
     console.log(`- Recuperación de Fatiga: ${this.log.recovery.fatigue}`);
     console.log(`- Estado: ${this.isDefeated() ? "Derrotado" : "Ganador"}`);
@@ -265,20 +306,22 @@ class PokemonBattle {
    * @returns {number} - La cantidad de daño ajustada si hay una debilidad.
    */
   applyWeaknessBonus(defender, attacker, damage) {
-    for (let defenderType of defender.p.i.type) {
-      for (let attackerType of attacker.p.i.type) {
-        if (
-          weaknesses[defenderType] &&
-          weaknesses[defenderType].includes(attackerType)
-        ) {
-          if (Math.random() < 0.5) {
-            let multiplier = 1.1 + Math.random() * 0.8; // Rango de 1.1 a 1.9
-            console.log(
-              `${defender.p.i.name} (Crítico * ${multiplier.toFixed(
-                2
-              )}): Débil contra ${attackerType}.`
-            );
-            return damage * multiplier;
+    const defenderTypes = defender.p.i.type.map((type) => type.toLowerCase());
+    const attackerTypes = attacker.p.i.type.map((type) => type.toLowerCase());
+
+    for (const defenderType of defenderTypes) {
+      if (weaknesses[defenderType]) {
+        for (const attackerType of attackerTypes) {
+          if (weaknesses[defenderType].includes(attackerType)) {
+            if (Math.random() < 0.5) {
+              const multiplier = 1.1 + Math.random() * 0.8; // Rango de 1.1 a 1.9
+              console.log(
+                `${defender.p.i.name} (Crítico * ${multiplier.toFixed(
+                  2
+                )}): Débil contra ${attackerType}.`
+              );
+              return damage * multiplier;
+            }
           }
         }
       }
@@ -357,8 +400,25 @@ class PokemonBattle {
 }
 
 // Ejemplo de uso
-let squirtle = new Pokemon("1: Squirtle", ["Water"], 44, 48, 50, 65, 64, 43);
-let charmander = new Pokemon("2: Charmander", ["Fire"], 39, 52, 60, 43, 50, 65);
+const pokemonCollection = {
+  squirtle: new Pokemon("Squirtle", ["Water"], 44, 48, 50, 65, 64, 43),
+  charmander: new Pokemon("Charmander", ["Fire"], 39, 52, 60, 43, 50, 65),
+  mewtwo: new Pokemon("Mewtwo", ["Psychic"], 106, 110, 154, 90, 90, 130),
+  dragonite: new Pokemon(
+    "Dragonite",
+    ["Dragon", "Flying"],
+    91,
+    134,
+    100,
+    95,
+    100,
+    80
+  ),
+  scyther: new Pokemon("Scyther", ["Bug", "Flying"], 70, 110, 55, 80, 80, 105),
+};
 
-let battle = new PokemonBattle(squirtle, charmander);
+let battle = new PokemonBattle(
+  pokemonCollection.dragonite,
+  pokemonCollection.scyther
+);
 battle.startBattle();
