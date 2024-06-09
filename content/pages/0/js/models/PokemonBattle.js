@@ -112,34 +112,6 @@ class Pokemon {
     this.log = this.#data.log;
   }
 
-  //? Sumar registro de movimientos
-  #addNormalAttack() {
-    this.log.moves.attacks.normal++;
-    this.p.c.fatigue += 5;
-
-    // console.log(`${this.p.i.name} incrementa su fatiga a ${this.p.c.fatigue}`);
-  }
-
-  #addSpecialAttack() {
-    this.log.moves.attacks.special++;
-    this.p.c.fatigue += 10;
-
-    // console.log(`${this.p.i.name} incrementa su fatiga a ${this.p.c.fatigue}`);
-  }
-
-  #addNormalDefense() {
-    this.log.moves.defenses.normal++;
-    if (!this.isDefeated()) {
-      const fatigueRecovery = 5;
-      this.p.c.fatigue -= fatigueRecovery;
-      this.log.recovery.fatigue += fatigueRecovery;
-    }
-  }
-
-  addSpecialDefense() {
-    this.log.moves.defenses.special++;
-  }
-
   //? Métodos para atacar
   normalAttack() {
     this.#addNormalAttack();
@@ -157,6 +129,63 @@ class Pokemon {
     };
   }
 
+  #addNormalAttack() {
+    this.log.moves.attacks.normal++;
+    this.p.c.fatigue += 5;
+  }
+
+  #addSpecialAttack() {
+    this.log.moves.attacks.special++;
+    this.p.c.fatigue += 10;
+  }
+
+  #addNormalDefense() {
+    this.log.moves.defenses.normal++;
+    if (!this.isDefeated()) {
+      const fatigueRecovery = 5;
+      this.p.c.fatigue -= fatigueRecovery;
+      this.log.recovery.fatigue += fatigueRecovery;
+    }
+  }
+
+  #addSpecialDefense() {
+    this.log.moves.defenses.special++;
+  }
+
+  /**
+   * Reduce el valor de una propiedad del Pokémon asegurando que no sea negativo.
+   * @param {string} nameProperty - El nombre de la propiedad a reducir.
+   * @param {number} value - El valor a restar de la propiedad.
+   * @returns {number} - El nuevo valor de la propiedad.
+   */
+  #pcReduce(nameProperty, value) {
+    return Math.max(0, this.p.c[nameProperty] - value);
+  }
+
+  /**
+   * Reduce dos valores asegurando que el resultado no sea negativo.
+   * @param {number} minuend - El valor inicial.
+   * @param {number} subtrahend - El valor a restar.
+   * @returns {number} - El resultado de la resta, asegurando que no sea negativo.
+   */
+  #reduce(minuend, subtrahend) {
+    return Math.max(0, minuend - subtrahend);
+  }
+
+  /**
+   * Aplica el daño reducido a la propiedad HP y registra la defensa.
+   * @param {number} reducedDamage - La cantidad de daño reducido.
+   * @param {string} defenseType - El tipo de defensa utilizada ("normal" o "special").
+   */
+  #applyReducedDamage(reducedDamage, defenseType) {
+    this.p.c.hp = this.#pcReduce("hp", reducedDamage);
+    if (defenseType === "normal") {
+      this.#addNormalDefense();
+    } else {
+      this.#addSpecialDefense();
+    }
+  }
+
   /**
    * Realiza la defensa normal, reduciendo el daño recibido en función de la defensa del Pokémon.
    * Si la defensa es insuficiente, intenta reducir el daño con la defensa especial.
@@ -167,20 +196,15 @@ class Pokemon {
 
     let reducedDamage = damage;
 
-    // Reducir daño con defensa normal si está disponible
     if (this.p.c.defense > 0) {
-      this.#addNormalDefense();
-      reducedDamage = Math.max(0, damage - this.p.c.defense);
-      this.p.c.defense = Math.max(0, this.p.c.defense - damage);
+      reducedDamage = this.#reduce(damage, this.p.c.defense);
+      this.p.c.defense = this.#pcReduce("defense", damage);
+      this.#applyReducedDamage(reducedDamage, "normal");
     } else if (this.p.c.special_defense > 0) {
-      // Si la defensa normal no es suficiente, usar defensa especial
-      this.addSpecialDefense();
-      reducedDamage = Math.max(0, damage - this.p.c.special_defense);
-      this.p.c.special_defense = Math.max(0, this.p.c.special_defense - damage);
+      reducedDamage = this.#reduce(damage, this.p.c.special_defense);
+      this.p.c.special_defense = this.#pcReduce("special_defense", damage);
+      this.#applyReducedDamage(reducedDamage, "special");
     }
-
-    // Aplicar el daño reducido al HP
-    this.p.c.hp = Math.max(0, this.p.c.hp - reducedDamage);
 
     if (this.p.c.hp === 0) {
       console.log(`${this.p.i.name} No puedo soportar el ataque.`);
@@ -198,13 +222,10 @@ class Pokemon {
   specialDefense(damage) {
     damage = Math.round(damage);
 
-    // Calcular el daño reducido basado en la defensa especial
-    this.addSpecialDefense();
-    let reducedDamage = Math.max(0, damage - this.p.c.special_defense);
-    this.p.c.special_defense = Math.max(0, this.p.c.special_defense - damage);
+    let reducedDamage = this.#reduce(damage, this.p.c.special_defense);
+    this.p.c.special_defense = this.#pcReduce("special_defense", damage);
 
-    // Aplicar el daño reducido al HP
-    this.p.c.hp = Math.max(0, this.p.c.hp - reducedDamage);
+    this.#applyReducedDamage(reducedDamage, "special");
 
     if (this.p.c.hp === 0) {
       console.log(`${this.p.i.name} No puedo soportar el ataque.`);
@@ -419,6 +440,6 @@ const pokemonCollection = {
 
 let battle = new PokemonBattle(
   pokemonCollection.dragonite,
-  pokemonCollection.scyther
+  pokemonCollection.squirtle
 );
 battle.startBattle();
