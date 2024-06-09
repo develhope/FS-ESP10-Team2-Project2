@@ -47,8 +47,8 @@ class Pokemon {
     battleData: {
       isFirstAttacker: undefined,
       lastDamage: {
-        received: { total: undefined, critic: undefined },
-        inflicted: { total: undefined, critic: undefined },
+        received: { base: undefined, critic: undefined, total: undefined },
+        inflicted: { base: undefined, critic: undefined, total: undefined },
       },
     },
     log: {
@@ -165,32 +165,44 @@ class Pokemon {
       );
   }
 
-  #attackConsoleLog(attackValue, attackType) {
+  #attackConsoleLog(attackType) {
+    const attackBase = this.battleData.lastDamage.inflicted.base;
+    const attackCritic = this.battleData.lastDamage.inflicted.critic;
+    const attackTotal = this.battleData.lastDamage.inflicted.total;
+
     const attackMessage =
       attackType === "special" ? "Ataque especial" : "Ataque normal";
+
+    const attackCriticMessage = attackCritic
+      ? ` * ${attackCritic} = ${attackTotal}`
+      : "";
+
     console.log(
-      `- ${this.p.i.name}: ${attackMessage}. Valor del ataque: ${attackValue}`
+      `- ${this.p.i.name}: ${attackMessage}. Valor del ataque: ${attackBase}${attackCriticMessage}`
     );
   }
 
   /**
    * Registra el resultado de la defensa en la consola y actualiza los contadores de defensa.
-   * @param {number} reducedDamage - La cantidad de daño reducida.
    * @param {string} defenseType - El tipo de defensa utilizada, puede ser "normal" o "special".
    */
-  #defenseConsoleLog(reducedDamage, defenseType) {
+  #defenseConsoleLog(defenseType) {
+    // const defenseBase = this.battleData.lastDamage.received.base;
+    const defenseCritic = this.battleData.lastDamage.received.critic;
+    const defenseTotal = this.battleData.lastDamage.received.total;
+    const cHP = this.p.c.hp;
+    const bHP = this.p.b.hp;
+
     if (this.p.c.hp === 0) {
       console.log(`${this.p.i.name} No puedo soportar el ataque.`);
     } else {
       const defenseMessage =
         defenseType === "special" ? "Defensa especial" : "Defensa normal";
 
-      const defenseCriticMessage = this.battleData.lastDamage.received.critic
-        ? `(Crítico * ${this.battleData.lastDamage.received.critic})`
-        : "";
+      const defenseCriticMessage = defenseCritic ? `(Crítico) ` : "";
 
       console.log(
-        `- ${this.p.i.name}: ${defenseMessage}. ${defenseCriticMessage} Daño reducido a ${reducedDamage}. HP restante: ${this.p.c.hp}/${this.p.b.hp}`
+        `- ${this.p.i.name}: ${defenseMessage}. ${defenseCriticMessage}Daño reducido a ${defenseTotal}. HP restante: ${cHP}/${bHP}`
       );
 
       if (defenseType === "normal") {
@@ -203,12 +215,12 @@ class Pokemon {
 
   //? Métodos para atacar
 
-  normalAttack(attackValue) {
-    this.#attackConsoleLog(attackValue, "normal");
+  normalAttack() {
+    this.#attackConsoleLog("normal");
     this.#addNormalAttack();
   }
-  specialAttack(attackValue) {
-    this.#attackConsoleLog(attackValue, "special");
+  specialAttack() {
+    this.#attackConsoleLog("special");
     this.#addSpecialAttack();
   }
 
@@ -227,13 +239,14 @@ class Pokemon {
     reducedDamage = this.#reduce(damage, this.p.c.defense);
     this.p.c.defense = this.#pcReduce("defense", damage);
     this.p.c.hp = this.#pcReduce("hp", reducedDamage);
-    this.#defenseConsoleLog(reducedDamage, "normal");
+    this.battleData.lastDamage.received.total = reducedDamage;
+    this.#defenseConsoleLog("normal");
     // } else if (this.p.c.special_defense > 0) {
     // this.specialDefense(reducedDamage);
     // reducedDamage = this.#reduce(damage, this.p.c.special_defense);
     // this.p.c.special_defense = this.#pcReduce("special_defense", damage);
     // this.p.c.hp = this.#pcReduce("hp", reducedDamage);
-    // this.#defenseConsoleLog(reducedDamage, "special");
+    // this.#defenseConsoleLog("special");
     // }
   }
 
@@ -248,7 +261,7 @@ class Pokemon {
     this.p.c.special_defense = this.#pcReduce("special_defense", damage);
 
     this.p.c.hp = this.#pcReduce("hp", reducedDamage);
-    this.#defenseConsoleLog(reducedDamage, "special");
+    this.#defenseConsoleLog("special");
   }
 
   /**
@@ -419,12 +432,14 @@ class PokemonBattle {
               const totalDamage = Math.round(damage * multiplier);
               const multiplierFixed = multiplier.toFixed(2);
 
-              attacker.battleData.lastDamage.inflicted.total = totalDamage;
+              attacker.battleData.lastDamage.inflicted.base = damage;
               attacker.battleData.lastDamage.inflicted.critic = multiplierFixed;
+              attacker.battleData.lastDamage.inflicted.total = totalDamage;
               attacker.log.moves.critic.inflicted++;
 
-              defender.battleData.lastDamage.received.total = totalDamage;
+              defender.battleData.lastDamage.received.base = damage;
               defender.battleData.lastDamage.received.critic = multiplierFixed;
+              defender.battleData.lastDamage.received.total = totalDamage;
               defender.log.moves.critic.received++;
 
               return totalDamage;
@@ -433,10 +448,11 @@ class PokemonBattle {
         }
       }
     }
-    attacker.battleData.lastDamage.inflicted.total = damage;
+    attacker.battleData.lastDamage.inflicted.base = damage;
     attacker.battleData.lastDamage.inflicted.critic = false;
+    attacker.battleData.lastDamage.inflicted.total = damage;
 
-    defender.battleData.lastDamage.received.total = damage;
+    defender.battleData.lastDamage.received.base = damage;
     defender.battleData.lastDamage.received.critic = false;
     return damage;
   }
