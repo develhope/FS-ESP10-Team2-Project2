@@ -28,7 +28,7 @@
 
 - [ ] **3.** Implementar un sistema automático de paginación para la lista de todos los Pokémon.
 
-- [ ] **?.** Crear un módulo de batalla básica para poder enfrentar a dos Pokémon (en principio solo se podrán enfrentar Pokémon que existan en el carrito de compra).
+- [ ] **?.1** Crear un módulo de batalla básica para poder enfrentar a dos Pokémon (en principio solo se podrán enfrentar Pokémon que existan en el carrito de compra).
 
   - Más información: El sistema de batalla se ejecutará de la siguiente manera, utilizando estas propiedades de cada Pokémon: Propiedades normales (`HP`, `attack`, `special_attack`, `defense`, `special_defense`, `speed`) y Propiedades en combate (`fatigue`).
 
