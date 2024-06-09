@@ -44,6 +44,9 @@ class Pokemon {
         fatigue: 0,
       },
     },
+    battleData: {
+      isFirstAttacker: undefined,
+    },
     log: {
       moves: {
         attacks: { normal: 0, special: 0 },
@@ -110,33 +113,30 @@ class Pokemon {
     };
 
     this.log = this.#data.log;
+    this.battleData = this.#data.battleData;
   }
 
-  //? Métodos para atacar
-  normalAttack() {
-    this.#addNormalAttack();
-    return {
-      type: "normal",
-      value: this.p.c.attack,
-    };
-  }
-
-  specialAttack() {
-    this.#addSpecialAttack();
-    return {
-      type: "special",
-      value: this.p.c.special_attack,
-    };
+  #isFirstAttacker() {
+    if (this.battleData.isFirstAttacker) {
+      this.battleData.isFirstAttacker = false;
+      return true;
+    } else {
+      return false;
+    }
   }
 
   #addNormalAttack() {
     this.log.moves.attacks.normal++;
-    this.p.c.fatigue += 5;
+    const fatigueIncrease = this.#isFirstAttacker() ? 0 : 5;
+    this.p.c.fatigue += fatigueIncrease;
+    this.#fatigueConsoleLog(fatigueIncrease, "+");
   }
 
   #addSpecialAttack() {
     this.log.moves.attacks.special++;
-    this.p.c.fatigue += 10;
+    const fatigueIncrease = this.#isFirstAttacker() ? 5 : 10;
+    this.p.c.fatigue += fatigueIncrease;
+    this.#fatigueConsoleLog(fatigueIncrease, "+");
   }
 
   #addNormalDefense() {
@@ -145,11 +145,100 @@ class Pokemon {
       const fatigueRecovery = 5;
       this.p.c.fatigue -= fatigueRecovery;
       this.log.recovery.fatigue += fatigueRecovery;
+      this.#fatigueConsoleLog(fatigueRecovery, "-");
     }
   }
 
   #addSpecialDefense() {
     this.log.moves.defenses.special++;
+  }
+
+  #fatigueConsoleLog(value, operator) {
+    if (value != 0)
+      console.log(
+        `   ${this.p.i.name}: Fatiga ${operator}${value} (${this.p.c.fatigue})`
+      );
+  }
+
+  #attackConsoleLog(attackValue, attackType) {
+    const attackMessage =
+      attackType === "special" ? "Ataque especial" : "Ataque normal";
+    console.log(
+      `- ${this.p.i.name}: ${attackMessage}. Valor del ataque: ${attackValue}`
+    );
+  }
+
+  /**
+   * Registra el resultado de la defensa en la consola y actualiza los contadores de defensa.
+   * @param {number} reducedDamage - La cantidad de daño reducida.
+   * @param {string} defenseType - El tipo de defensa utilizada, puede ser "normal" o "special".
+   */
+  #defenseConsoleLog(reducedDamage, defenseType) {
+    if (this.p.c.hp === 0) {
+      console.log(`${this.p.i.name} No puedo soportar el ataque.`);
+    } else {
+      const defenseMessage =
+        defenseType === "special" ? "Defensa especial" : "Defensa normal";
+      console.log(
+        `- ${this.p.i.name}: ${defenseMessage}. Daño reducido a ${reducedDamage}. HP restante: ${this.p.c.hp}/${this.p.b.hp}`
+      );
+
+      if (defenseType === "normal") {
+        this.#addNormalDefense();
+      } else {
+        this.#addSpecialDefense();
+      }
+    }
+  }
+
+  //? Métodos para atacar
+
+  normalAttack(attackValue) {
+    this.#attackConsoleLog(attackValue, "normal");
+    this.#addNormalAttack();
+  }
+  specialAttack(attackValue) {
+    this.#attackConsoleLog(attackValue, "special");
+    this.#addSpecialAttack();
+  }
+
+  //? Métodos para defender
+  /**
+   * Realiza la defensa normal, reduciendo el daño recibido en función de la defensa del Pokémon.
+   * Si la defensa es insuficiente, intenta reducir el daño con la defensa especial.
+   * @param {number} damage - La cantidad de daño recibida.
+   */
+  normalDefense(damage) {
+    damage = Math.round(damage);
+
+    let reducedDamage = damage;
+
+    // if (this.p.c.defense > 0) {
+    reducedDamage = this.#reduce(damage, this.p.c.defense);
+    this.p.c.defense = this.#pcReduce("defense", damage);
+    this.p.c.hp = this.#pcReduce("hp", reducedDamage);
+    this.#defenseConsoleLog(reducedDamage, "normal");
+    // } else if (this.p.c.special_defense > 0) {
+    // this.specialDefense(reducedDamage);
+    // reducedDamage = this.#reduce(damage, this.p.c.special_defense);
+    // this.p.c.special_defense = this.#pcReduce("special_defense", damage);
+    // this.p.c.hp = this.#pcReduce("hp", reducedDamage);
+    // this.#defenseConsoleLog(reducedDamage, "special");
+    // }
+  }
+
+  /**
+   * Realiza la defensa especial, reduciendo el daño recibido en función de la defensa especial del Pokémon.
+   * @param {number} damage - La cantidad de daño recibida.
+   */
+  specialDefense(damage) {
+    damage = Math.round(damage);
+
+    let reducedDamage = this.#reduce(damage, this.p.c.special_defense);
+    this.p.c.special_defense = this.#pcReduce("special_defense", damage);
+
+    this.p.c.hp = this.#pcReduce("hp", reducedDamage);
+    this.#defenseConsoleLog(reducedDamage, "special");
   }
 
   /**
@@ -172,70 +261,7 @@ class Pokemon {
     return Math.max(0, minuend - subtrahend);
   }
 
-  /**
-   * Aplica el daño reducido a la propiedad HP y registra la defensa.
-   * @param {number} reducedDamage - La cantidad de daño reducido.
-   * @param {string} defenseType - El tipo de defensa utilizada ("normal" o "special").
-   */
-  #applyReducedDamage(reducedDamage, defenseType) {
-    this.p.c.hp = this.#pcReduce("hp", reducedDamage);
-    if (defenseType === "normal") {
-      this.#addNormalDefense();
-    } else {
-      this.#addSpecialDefense();
-    }
-  }
-
-  /**
-   * Realiza la defensa normal, reduciendo el daño recibido en función de la defensa del Pokémon.
-   * Si la defensa es insuficiente, intenta reducir el daño con la defensa especial.
-   * @param {number} damage - La cantidad de daño recibida.
-   */
-  normalDefense(damage) {
-    damage = Math.round(damage);
-
-    let reducedDamage = damage;
-
-    if (this.p.c.defense > 0) {
-      reducedDamage = this.#reduce(damage, this.p.c.defense);
-      this.p.c.defense = this.#pcReduce("defense", damage);
-      this.#applyReducedDamage(reducedDamage, "normal");
-    } else if (this.p.c.special_defense > 0) {
-      reducedDamage = this.#reduce(damage, this.p.c.special_defense);
-      this.p.c.special_defense = this.#pcReduce("special_defense", damage);
-      this.#applyReducedDamage(reducedDamage, "special");
-    }
-
-    if (this.p.c.hp === 0) {
-      console.log(`${this.p.i.name} No puedo soportar el ataque.`);
-    } else {
-      console.log(
-        `${this.p.i.name}: Defensa normal. Daño reducido a ${reducedDamage}. HP restante: ${this.p.c.hp}/${this.p.b.hp}`
-      );
-    }
-  }
-
-  /**
-   * Realiza la defensa especial, reduciendo el daño recibido en función de la defensa especial del Pokémon.
-   * @param {number} damage - La cantidad de daño recibida.
-   */
-  specialDefense(damage) {
-    damage = Math.round(damage);
-
-    let reducedDamage = this.#reduce(damage, this.p.c.special_defense);
-    this.p.c.special_defense = this.#pcReduce("special_defense", damage);
-
-    this.#applyReducedDamage(reducedDamage, "special");
-
-    if (this.p.c.hp === 0) {
-      console.log(`${this.p.i.name} No puedo soportar el ataque.`);
-    } else {
-      console.log(
-        `${this.p.i.name}: Defensa especial. Daño reducido a ${reducedDamage}. HP restante: ${this.p.c.hp}/${this.p.b.hp}`
-      );
-    }
-  }
-
+  //? Oros metodos
   isDefeated() {
     return this.p.c.hp <= 0;
   }
@@ -295,9 +321,12 @@ class PokemonBattle {
         : this.pokemon2;
     } else {
       // Si no es la primera vez, se considera la fatiga y se introduce un factor de aleatoriedad
-      if (this.pokemon1.p.c.fatigue < 0) {
+      if (this.pokemon1.p.c.fatigue < 0 || this.pokemon2.p.c.fatigue >= 30) {
         return this.pokemon1;
-      } else if (this.pokemon2.p.c.fatigue < 0) {
+      } else if (
+        this.pokemon2.p.c.fatigue < 0 ||
+        this.pokemon1.p.c.fatigue >= 30
+      ) {
         return this.pokemon2;
       }
 
@@ -336,11 +365,11 @@ class PokemonBattle {
           if (weaknesses[defenderType].includes(attackerType)) {
             if (Math.random() < 0.5) {
               const multiplier = 1.1 + Math.random() * 0.8; // Rango de 1.1 a 1.9
-              console.log(
-                `${defender.p.i.name} (Crítico * ${multiplier.toFixed(
-                  2
-                )}): Débil contra ${attackerType}.`
-              );
+              // console.log(
+              //   `${defender.p.i.name} (Crítico * ${multiplier.toFixed(
+              //     2
+              //   )}): Débil contra ${attackerType}.`
+              // );
               return damage * multiplier;
             }
           }
@@ -353,25 +382,21 @@ class PokemonBattle {
   // Método para ejecutar un turno de ataque
   #executeTurn(attacker, defender) {
     // Determinar el tipo de ataque (normal o especial)
-    let attackType = Math.random() < 0.2 ? "special" : "normal";
+    let attackType = Math.random() <= 0.3 ? "special" : "normal";
     let attackValue =
       attackType === "special"
-        ? attacker.specialAttack().value
-        : attacker.normalAttack().value;
-
-    console.log(
-      `${attacker.p.i.name}: ${
-        attackType === "special" ? "Ataque especial" : "Ataque normal"
-      }. Valor del ataque: ${attackValue}`
-    );
+        ? attacker.p.c.special_attack
+        : attacker.p.c.attack;
 
     // Aplicar la debilidad
     attackValue = this.#applyWeaknessBonus(defender, attacker, attackValue);
 
     // Aplicar la defensa correspondiente
     if (attackType === "special") {
+      attacker.specialAttack(attackValue);
       defender.specialDefense(attackValue);
     } else {
+      attacker.normalAttack(attackValue);
       defender.normalDefense(attackValue);
     }
 
@@ -390,7 +415,10 @@ class PokemonBattle {
    * alternando ataques hasta que uno de los Pokémon sea derrotado.
    */
   startBattle() {
+    console.log("\n# Iniio de la Batalla:\n");
     let firstAttacker = this.#determineAttacker(true);
+    firstAttacker.battleData.isFirstAttacker = true;
+
     let secondAttacker =
       firstAttacker === this.pokemon1 ? this.pokemon2 : this.pokemon1;
 
@@ -404,6 +432,7 @@ class PokemonBattle {
       firstAttacker = this.#determineAttacker();
       secondAttacker =
         firstAttacker === this.pokemon1 ? this.pokemon2 : this.pokemon1;
+      console.log("");
     }
     this.showBattleResult();
   }
@@ -413,7 +442,7 @@ class PokemonBattle {
    * Muestra gráficamente por consola los datos relevantes del resultado final de cada Pokémon.
    */
   showBattleResult() {
-    console.log("\nResultado Final de la Batalla:\n");
+    console.log("\n# Resultado Final de la Batalla:\n");
     this.pokemon1.state();
     console.log("");
     this.pokemon2.state();
@@ -422,9 +451,16 @@ class PokemonBattle {
 
 // Ejemplo de uso
 const pokemonCollection = {
+  caterpie: new Pokemon("Caterpie", ["Bug"], 45, 30, 20, 35, 20, 45),
+
+  weedle: new Pokemon("Weedle", ["Bug", "Poison"], 40, 35, 20, 30, 20, 50),
+
   squirtle: new Pokemon("Squirtle", ["Water"], 44, 48, 50, 65, 64, 43),
+
   charmander: new Pokemon("Charmander", ["Fire"], 39, 52, 60, 43, 50, 65),
-  mewtwo: new Pokemon("Mewtwo", ["Psychic"], 106, 110, 154, 90, 90, 130),
+
+  scyther: new Pokemon("Scyther", ["Bug", "Flying"], 70, 110, 55, 80, 80, 105),
+
   dragonite: new Pokemon(
     "Dragonite",
     ["Dragon", "Flying"],
@@ -435,11 +471,12 @@ const pokemonCollection = {
     100,
     80
   ),
-  scyther: new Pokemon("Scyther", ["Bug", "Flying"], 70, 110, 55, 80, 80, 105),
+
+  mewtwo: new Pokemon("Mewtwo", ["Psychic"], 106, 110, 154, 90, 90, 130),
 };
 
 let battle = new PokemonBattle(
-  pokemonCollection.dragonite,
-  pokemonCollection.squirtle
+  pokemonCollection.squirtle,
+  pokemonCollection.charmander
 );
 battle.startBattle();
