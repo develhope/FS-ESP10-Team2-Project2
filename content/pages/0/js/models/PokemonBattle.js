@@ -46,11 +46,16 @@ class Pokemon {
     },
     battleData: {
       isFirstAttacker: undefined,
+      lastDamage: {
+        received: { total: undefined, critic: undefined },
+        inflicted: { total: undefined, critic: undefined },
+      },
     },
     log: {
       moves: {
         attacks: { normal: 0, special: 0 },
         defenses: { normal: 0, special: 0 },
+        critic: { received: 0, inflicted: 0 },
       },
       recovery: { fatigue: 0 },
     },
@@ -179,8 +184,13 @@ class Pokemon {
     } else {
       const defenseMessage =
         defenseType === "special" ? "Defensa especial" : "Defensa normal";
+
+      const defenseCriticMessage = this.battleData.lastDamage.received.critic
+        ? `(Crítico * ${this.battleData.lastDamage.received.critic})`
+        : "";
+
       console.log(
-        `- ${this.p.i.name}: ${defenseMessage}. Daño reducido a ${reducedDamage}. HP restante: ${this.p.c.hp}/${this.p.b.hp}`
+        `- ${this.p.i.name}: ${defenseMessage}. ${defenseCriticMessage} Daño reducido a ${reducedDamage}. HP restante: ${this.p.c.hp}/${this.p.b.hp}`
       );
 
       if (defenseType === "normal") {
@@ -266,10 +276,18 @@ class Pokemon {
     return this.p.c.hp <= 0;
   }
 
+  /**
+   * Obtiene el porcentaje de una propiedad en relación a su valor base.
+   * @param {string} nameProperty - El nombre de la propiedad.
+   * @returns {number} - El porcentaje de la propiedad en relación a su valor base.
+   */
   #getPercentOfProperty(nameProperty) {
     return Math.round((this.p.c[nameProperty] * 100) / this.p.b[nameProperty]);
   }
 
+  /**
+   * Muestra el estado actual del Pokémon incluyendo sus estadísticas y movimientos realizados.
+   */
   state() {
     console.log(`${this.p.i.name}:`);
     console.log(`- HP: ${this.p.c.hp} (${this.#getPercentOfProperty("hp")}%)`);
@@ -286,11 +304,33 @@ class Pokemon {
     console.log(`- Fatiga: ${this.p.c.fatigue}`);
     console.log(`- Recuperación de Fatiga: ${this.log.recovery.fatigue}`);
     console.log(`- Estado: ${this.isDefeated() ? "Derrotado" : "Ganador"}`);
+
     console.log(`- Movimientos Realizados:`);
-    console.log(`  - Ataques Normales: ${this.log.moves.attacks.normal}`);
-    console.log(`  - Ataques Especiales: ${this.log.moves.attacks.special}`);
-    console.log(`  - Defensas Normales: ${this.log.moves.defenses.normal}`);
-    console.log(`  - Defensas Especiales: ${this.log.moves.defenses.special}`);
+    if (Object.values(this.log.moves.attacks).some((value) => value > 0)) {
+      console.log(`  - Ataques:`);
+      if (this.log.moves.attacks.normal > 0) {
+        console.log(`    - Normales: ${this.log.moves.attacks.normal}`);
+      }
+      if (this.log.moves.attacks.special > 0) {
+        console.log(`    - Especiales: ${this.log.moves.attacks.special}`);
+      }
+      if (this.log.moves.critic.inflicted > 0) {
+        console.log(`    - Críticos: ${this.log.moves.critic.inflicted}`);
+      }
+    }
+
+    if (Object.values(this.log.moves.defenses).some((value) => value > 0)) {
+      console.log(`  - Defensas:`);
+      if (this.log.moves.defenses.normal > 0) {
+        console.log(`    - Normales: ${this.log.moves.defenses.normal}`);
+      }
+      if (this.log.moves.defenses.special > 0) {
+        console.log(`    - Especiales: ${this.log.moves.defenses.special}`);
+      }
+      if (this.log.moves.critic.received > 0) {
+        console.log(`    - Críticas: ${this.log.moves.critic.received}`);
+      }
+    }
   }
 }
 
@@ -365,17 +405,29 @@ class PokemonBattle {
           if (weaknesses[defenderType].includes(attackerType)) {
             if (Math.random() < 0.5) {
               const multiplier = 1.1 + Math.random() * 0.8; // Rango de 1.1 a 1.9
-              // console.log(
-              //   `${defender.p.i.name} (Crítico * ${multiplier.toFixed(
-              //     2
-              //   )}): Débil contra ${attackerType}.`
-              // );
-              return damage * multiplier;
+
+              const totalDamage = Math.round(damage * multiplier);
+              const multiplierFixed = multiplier.toFixed(2);
+
+              attacker.battleData.lastDamage.inflicted.total = totalDamage;
+              attacker.battleData.lastDamage.inflicted.critic = multiplierFixed;
+              attacker.log.moves.critic.inflicted++;
+
+              defender.battleData.lastDamage.received.total = totalDamage;
+              defender.battleData.lastDamage.received.critic = multiplierFixed;
+              defender.log.moves.critic.received++;
+
+              return totalDamage;
             }
           }
         }
       }
     }
+    attacker.battleData.lastDamage.inflicted.total = damage;
+    attacker.battleData.lastDamage.inflicted.critic = false;
+
+    defender.battleData.lastDamage.received.total = damage;
+    defender.battleData.lastDamage.received.critic = false;
     return damage;
   }
 
