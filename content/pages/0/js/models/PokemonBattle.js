@@ -80,10 +80,10 @@ class Pokemon {
     this.#data.properties.copy.special_defense = special_defense;
     this.#data.properties.copy.speed = speed;
 
-    this.initializeHotVariables();
+    this.#initializeHotVariables();
   }
 
-  initializeHotVariables() {
+  #initializeHotVariables() {
     this.p = {
       i: {
         name: this.#data.properties.immutable.name,
@@ -113,21 +113,21 @@ class Pokemon {
   }
 
   //? Sumar registro de movimientos
-  addNormalAttack() {
+  #addNormalAttack() {
     this.log.moves.attacks.normal++;
     this.p.c.fatigue += 5;
 
     // console.log(`${this.p.i.name} incrementa su fatiga a ${this.p.c.fatigue}`);
   }
 
-  addSpecialAttack() {
+  #addSpecialAttack() {
     this.log.moves.attacks.special++;
     this.p.c.fatigue += 10;
 
     // console.log(`${this.p.i.name} incrementa su fatiga a ${this.p.c.fatigue}`);
   }
 
-  addNormalDefense() {
+  #addNormalDefense() {
     this.log.moves.defenses.normal++;
     if (!this.isDefeated()) {
       const fatigueRecovery = 5;
@@ -142,7 +142,7 @@ class Pokemon {
 
   //? Métodos para atacar
   normalAttack() {
-    this.addNormalAttack();
+    this.#addNormalAttack();
     return {
       type: "normal",
       value: this.p.c.attack,
@@ -150,7 +150,7 @@ class Pokemon {
   }
 
   specialAttack() {
-    this.addSpecialAttack();
+    this.#addSpecialAttack();
     return {
       type: "special",
       value: this.p.c.special_attack,
@@ -169,7 +169,7 @@ class Pokemon {
 
     // Reducir daño con defensa normal si está disponible
     if (this.p.c.defense > 0) {
-      this.addNormalDefense();
+      this.#addNormalDefense();
       reducedDamage = Math.max(0, damage - this.p.c.defense);
       this.p.c.defense = Math.max(0, this.p.c.defense - damage);
     } else if (this.p.c.special_defense > 0) {
@@ -219,22 +219,22 @@ class Pokemon {
     return this.p.c.hp <= 0;
   }
 
-  getPercentOfProperty(nameProperty) {
+  #getPercentOfProperty(nameProperty) {
     return Math.round((this.p.c[nameProperty] * 100) / this.p.b[nameProperty]);
   }
 
   state() {
     console.log(`${this.p.i.name}:`);
-    console.log(`- HP: ${this.p.c.hp} (${this.getPercentOfProperty("hp")}%)`);
+    console.log(`- HP: ${this.p.c.hp} (${this.#getPercentOfProperty("hp")}%)`);
     console.log(
-      `- Defensa: ${this.p.c.defense} (${this.getPercentOfProperty(
+      `- Defensa: ${this.p.c.defense} (${this.#getPercentOfProperty(
         "defense"
       )}%)`
     );
     console.log(
       `- Defensa Especial: ${
         this.p.c.special_defense
-      } (${this.getPercentOfProperty("special_defense")}%)`
+      } (${this.#getPercentOfProperty("special_defense")}%)`
     );
     console.log(`- Fatiga: ${this.p.c.fatigue}`);
     console.log(`- Recuperación de Fatiga: ${this.log.recovery.fatigue}`);
@@ -259,7 +259,7 @@ class PokemonBattle {
    * @param {boolean} isFirst - Indica si es la primera vez que se determina el atacante.
    * @returns {Pokemon} - El Pokémon que atacará en este turno.
    */
-  determineAttacker(isFirst = false) {
+  #determineAttacker(isFirst = false) {
     // Diferencia de velocidad entre los Pokémon
     const speedDiff = this.pokemon1.p.c.speed - this.pokemon2.p.c.speed;
 
@@ -305,7 +305,7 @@ class PokemonBattle {
    * @param {number} damage - La cantidad de daño del ataque.
    * @returns {number} - La cantidad de daño ajustada si hay una debilidad.
    */
-  applyWeaknessBonus(defender, attacker, damage) {
+  #applyWeaknessBonus(defender, attacker, damage) {
     const defenderTypes = defender.p.i.type.map((type) => type.toLowerCase());
     const attackerTypes = attacker.p.i.type.map((type) => type.toLowerCase());
 
@@ -330,7 +330,7 @@ class PokemonBattle {
   }
 
   // Método para ejecutar un turno de ataque
-  executeTurn(attacker, defender) {
+  #executeTurn(attacker, defender) {
     // Determinar el tipo de ataque (normal o especial)
     let attackType = Math.random() < 0.2 ? "special" : "normal";
     let attackValue =
@@ -345,7 +345,7 @@ class PokemonBattle {
     );
 
     // Aplicar la debilidad
-    attackValue = this.applyWeaknessBonus(defender, attacker, attackValue);
+    attackValue = this.#applyWeaknessBonus(defender, attacker, attackValue);
 
     // Aplicar la defensa correspondiente
     if (attackType === "special") {
@@ -369,18 +369,18 @@ class PokemonBattle {
    * alternando ataques hasta que uno de los Pokémon sea derrotado.
    */
   startBattle() {
-    let firstAttacker = this.determineAttacker(true);
+    let firstAttacker = this.#determineAttacker(true);
     let secondAttacker =
       firstAttacker === this.pokemon1 ? this.pokemon2 : this.pokemon1;
 
     let battleOver = false;
     while (!battleOver) {
       // Primer atacante ataca
-      battleOver = this.executeTurn(firstAttacker, secondAttacker);
+      battleOver = this.#executeTurn(firstAttacker, secondAttacker);
       if (battleOver) break;
 
       // Determinar el siguiente atacante
-      firstAttacker = this.determineAttacker();
+      firstAttacker = this.#determineAttacker();
       secondAttacker =
         firstAttacker === this.pokemon1 ? this.pokemon2 : this.pokemon1;
     }
