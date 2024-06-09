@@ -286,10 +286,12 @@ class Pokemon {
   }
 
   /**
-   * Muestra el estado actual del Pokémon incluyendo sus estadísticas y movimientos realizados.
+   * Muestra el estado actual del Pokémon, incluyendo sus estadísticas y movimientos realizados.
    */
   state() {
-    console.log(`${this.p.i.name}:`);
+    console.log(
+      `${this.p.i.name}: (${this.isDefeated() ? "Derrotado" : "Ganador"})`
+    );
     console.log(`- HP: ${this.p.c.hp} (${this.#getPercentOfProperty("hp")}%)`);
     console.log(
       `- Defensa: ${this.p.c.defense} (${this.#getPercentOfProperty(
@@ -303,11 +305,15 @@ class Pokemon {
     );
     console.log(`- Fatiga: ${this.p.c.fatigue}`);
     console.log(`- Recuperación de Fatiga: ${this.log.recovery.fatigue}`);
-    console.log(`- Estado: ${this.isDefeated() ? "Derrotado" : "Ganador"}`);
 
     console.log(`- Movimientos Realizados:`);
-    if (Object.values(this.log.moves.attacks).some((value) => value > 0)) {
-      console.log(`  - Ataques:`);
+
+    // Verificar si hay ataques realizados y contar los que tienen valores mayores a 0
+    let attackValues = Object.values(this.log.moves.attacks);
+    let attackCount = attackValues.filter((value) => value > 0).length;
+
+    if (attackCount > 0) {
+      console.log(`  - Ataques: (${attackCount})`);
       if (this.log.moves.attacks.normal > 0) {
         console.log(`    - Normales: ${this.log.moves.attacks.normal}`);
       }
@@ -319,8 +325,12 @@ class Pokemon {
       }
     }
 
-    if (Object.values(this.log.moves.defenses).some((value) => value > 0)) {
-      console.log(`  - Defensas:`);
+    // Verificar si hay defensas realizadas y contar los que tienen valores mayores a 0
+    let defenseValues = Object.values(this.log.moves.defenses);
+    let defenseCount = defenseValues.filter((value) => value > 0).length;
+
+    if (defenseCount > 0) {
+      console.log(`  - Defensas: (${defenseCount})`);
       if (this.log.moves.defenses.normal > 0) {
         console.log(`    - Normales: ${this.log.moves.defenses.normal}`);
       }
