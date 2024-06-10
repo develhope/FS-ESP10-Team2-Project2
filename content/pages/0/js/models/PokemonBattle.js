@@ -264,6 +264,7 @@ class Pokemon {
     this.p.c.special_defense = this.#pcReduce("special_defense", damage);
 
     this.p.c.hp = this.#pcReduce("hp", reducedDamage);
+    this.battleData.lastDamage.received.total = reducedDamage;
     this.#defenseConsoleLog("special");
   }
 
