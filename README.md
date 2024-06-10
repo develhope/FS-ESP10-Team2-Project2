@@ -12,6 +12,8 @@
 
 - [x] **2.** Implementar un filtro de búsqueda por nombre/id.
 
+- [ ] **3.** Implementar un sistema automático de paginación para la lista de todos los Pokémon.
+
 ### Ideas
 
 - [x] **1.** Implementar un sistema automático de evaluación de precio en monedas para cada Pokémon basado en sus propiedades más relevantes.
@@ -25,8 +27,6 @@
   - [ ] **2.1** Implementar insignias especiales por cada Pokémon por ejemplo -> Evolución máxima (MaxEvo), Legendario (Legendary), Mítico (Mythical) o/y Una insignia de evolución que muestre su número de evolución actual y cambie su estilo CSS según el progreso del Pokémon; Ejem: (50% de progreso = 2/4 evoluciones alcanzadas).
 
   - [x] **2.2** Crear un elemento PopUp de más información importante como (hp, attack, …), la información adicional se mostrara al pasar el cursor por encima de este.
-
-- [ ] **3.** Implementar un sistema automático de paginación para la lista de todos los Pokémon.
 
 - [ ] **?.1** Crear un módulo de batalla básica para poder enfrentar a dos Pokémon (en principio solo se podrán enfrentar Pokémon que existan en el carrito de compra).
 

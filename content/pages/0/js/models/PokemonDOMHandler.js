@@ -1,3 +1,5 @@
+import { addToCart } from "./../../../2/js/carrito.js";
+
 export class PokemonDOMHandler {
   /**
    * Constructor de la clase PokemonDOMHandler.
@@ -109,13 +111,10 @@ export class PokemonDOMHandler {
     // Calcular el precio y el porcentaje de descuento
     const basePrice = poke.market.price;
     const offerPrice = poke.market.discount;
-    const offerPercentage = offerPrice
-      ? this.#calculateOfferPercentage(basePrice, offerPrice)
-      : null;
+
     const market = offerPrice
       ? `<p class="price">${offerPrice}€</p>
-       <p class="offer">${basePrice}€</p>
-       <p class="offerPercentage">${offerPercentage}%</p>`
+       <p class="offer">${basePrice}€</p>`
       : `<p class="price">${basePrice}€</p>`;
 
     // Determinar la calidad del Pokémon
@@ -124,6 +123,19 @@ export class PokemonDOMHandler {
       : poke.value.isLegendary
       ? "pokemon-name-legendary"
       : "";
+
+    let offer;
+    if (offerPrice) {
+      const offerPercentage = this.#calculateOfferPercentage(
+        basePrice,
+        offerPrice
+      );
+      offer = `
+        <div class="div-offerPercentage">
+          <p class="offerPercentage">${offerPercentage}%</p>
+        </div>
+      `;
+    }
 
     /**
      * Función para obtener el color de fondo según el porcentaje.
@@ -151,6 +163,7 @@ export class PokemonDOMHandler {
     div.classList.add("pokemon");
     div.style.userSelect = "none"; // Bloquear la selección del elemento
     div.innerHTML = `
+    ${offer ? offer : ""}
     <p class="pokemon-id-back">#${pokeId}</p>
     <div class="pokemon-image">
       <img src="${poke.images.illustration.default}" alt="${poke.name}">
@@ -173,13 +186,15 @@ export class PokemonDOMHandler {
     </div>
   `;
 
+    if (!offer) div.style.paddingTop = "1rem";
+
     // Crear el elemento de PopUp con información adicional
     const divPopUp = document.createElement("div");
     divPopUp.classList.add("div-pokemon-popup");
-    divPopUp.style.userSelect = "none"; // Bloquear la selección del elemento
 
     divPopUp.innerHTML = `
-    <svg class="info-icon-svg" width="30" height="30" viewBox="0 0 512 512">
+    <svg class="icon-svg-info" width="30" height="30" viewBox="0 0 512 512">
+      <title>Estadisticas</title>
       <path
           d="M256,6.234C118.059,6.234,6.234,118.059,6.234,256.001c0,137.94,111.824,249.765,249.766,249.765  s249.766-111.824,249.766-249.765C505.766,118.059,393.941,6.234,256,6.234z M489.966,258  C487.828,385.396,383.907,488.017,256,488.017c-127.907,0-231.829-102.62-233.966-230.017h-0.051c0-0.669,0.02-1.333,0.025-2  c-0.006-0.667-0.025-1.331-0.025-2h0.051C24.171,126.603,128.093,23.983,256,23.983c127.907,0,231.829,102.62,233.966,230.017h0.051  c0,0.669-0.02,1.333-0.025,2c0.006,0.667,0.025,1.331,0.025,2H489.966z" />
       <path
@@ -268,15 +283,48 @@ export class PokemonDOMHandler {
 
     div.appendChild(divPopUp);
 
+    // Crear el elemento de boton
+    const buttonAddCart = document.createElement("div");
+    buttonAddCart.classList.add("div-addCart");
+    buttonAddCart.innerHTML = `
+
+    <svg class="icon-svg-addCart" viewBox="0 0 74.5 73.03">
+      <title>Añadir al Carrito</title>
+      <g id="Capa_2" data-name="Capa 2">
+          <g id="Capa_1-2" data-name="Capa 1">
+              <rect class="icon-svg-addCart-cls-1" width="74.5" height="73.03" rx="16.46" />
+              <path class="icon-svg-addCart-cls-2"
+                  d="M47.33,39.61l2-8.85h2.12V27.21H45.36L38.79,15.7l-3.08,1.76,5.57,9.75H26.13l5.57-9.75L28.62,15.7,22.05,27.21H16v3.55h2.12l3.24,14.55a1.77,1.77,0,0,0,1.73,1.39H39V43.16H24.5l-2.76-12.4H45.67l-2,8.85Z" />
+              <polygon class="icon-svg-addCart-cls-2"
+                  points="58.51 48.47 53.19 48.47 53.19 43.16 49.65 43.16 49.65 48.47 44.34 48.47 44.34 52.02 49.65 52.02 49.65 57.33 53.19 57.33 53.19 52.02 58.51 52.02 58.51 48.47" />
+          </g>
+      </g>
+    </svg>
+  
+  `;
+    div.appendChild(buttonAddCart);
+
     // Añadir eventos de hover para mostrar y ocultar el PopUp
     divPopUp.addEventListener("mouseenter", () => {
       divPopUp.querySelector(".info-pokemon-popup").classList.add("show");
+      buttonAddCart.style.zIndex = -1;
     });
 
     divPopUp.addEventListener("mouseleave", () => {
       divPopUp.querySelector(".info-pokemon-popup").classList.remove("show");
+      buttonAddCart.style.zIndex = null;
     });
 
+    buttonAddCart.addEventListener("click", (event) => {
+      event.stopPropagation(); // Evita la propagación del evento
+      addToCart(poke);
+
+      // buttonAddCart.classList.add("adding-to-cart");
+      // // Remover la clase después de la animación
+      // setTimeout(() => {
+      //   buttonAddCart.classList.remove("adding-to-cart");
+      // }, 400); // Duración de la animación en milisegundos
+    });
     return div;
   }
 
