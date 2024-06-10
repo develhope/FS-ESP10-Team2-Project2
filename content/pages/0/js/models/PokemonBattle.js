@@ -51,6 +51,7 @@ class Pokemon {
         critic: { received: 0, inflicted: 0 },
       },
       recovery: { fatigue: 0 },
+      history: [],
     },
   };
 
@@ -113,6 +114,7 @@ class Pokemon {
    * Establece las propiedades "copy" a sus valores "base".
    */
   resetStats() {
+    this.log.history = [];
     this.p.c = {
       hp: this.p.b.hp,
       attack: this.p.b.attack,
@@ -124,48 +126,85 @@ class Pokemon {
     };
   }
 
+  /**
+   * Método para determinar si el Pokémon es el primer atacante.
+   * @private
+   * @returns {boolean} - true si es el primer atacante, false en caso contrario.
+   */
   #isFirstAttacker() {
-    if (this.battleData.isFirstAttacker) {
-      this.battleData.isFirstAttacker = false;
-      return true;
-    } else {
-      return false;
-    }
+    const isFirst = this.battleData.isFirstAttacker;
+    this.battleData.isFirstAttacker = false;
+    return isFirst;
   }
 
+  /**
+   * Método para registrar un ataque normal.
+   * Incrementa el contador de ataques normales y actualiza la fatiga.
+   * @private
+   */
   #addNormalAttack() {
     this.log.moves.attacks.normal++;
-    const fatigueIncrease = this.#isFirstAttacker() ? 0 : 5;
-    this.p.c.fatigue += fatigueIncrease;
-    this.#fatigueConsoleLog(fatigueIncrease, "+");
+    this.#fatigueLog(this.#isFirstAttacker() ? 0 : 5, "+");
   }
 
+  /**
+   * Método para registrar un ataque especial.
+   * Incrementa el contador de ataques especiales y actualiza la fatiga.
+   * @private
+   */
   #addSpecialAttack() {
     this.log.moves.attacks.special++;
-    const fatigueIncrease = this.#isFirstAttacker() ? 5 : 10;
-    this.p.c.fatigue += fatigueIncrease;
-    this.#fatigueConsoleLog(fatigueIncrease, "+");
+    this.#fatigueLog(this.#isFirstAttacker() ? 5 : 10, "+");
   }
 
+  /**
+   * Método para registrar una defensa normal.
+   * Incrementa el contador de defensas normales.
+   * @private
+   */
   #addNormalDefense() {
     this.log.moves.defenses.normal++;
-    if (!this.isDefeated()) {
-      const fatigueRecovery = 5;
-      this.p.c.fatigue -= fatigueRecovery;
-      this.log.recovery.fatigue += fatigueRecovery;
-      this.#fatigueConsoleLog(fatigueRecovery, "-");
+  }
+
+  /**
+   * Método para registrar una defensa especial.
+   * Incrementa el contador de defensas especiales y actualiza la fatiga.
+   * @private
+   */
+  #addSpecialDefense() {
+    this.log.moves.defenses.special++;
+    this.#fatigueLog(5, "-");
+  }
+
+  /**
+   * Método para actualizar y registrar la fatiga.
+   * @private
+   * @param {number} value - El valor de la fatiga a modificar.
+   * @param {string} operator - El operador para modificar la fatiga ('+' o '-').
+   */
+  #fatigueLog(value, operator) {
+    if (value !== 0 && !this.isDefeated()) {
+      if (operator === "+") {
+        this.p.c.fatigue += value;
+      } else {
+        const fatigueRecovery = value;
+        this.p.c.fatigue -= fatigueRecovery;
+        this.log.recovery.fatigue += fatigueRecovery;
+      }
+
+      const log = `   ${this.p.i.name}: Fatiga ${operator}${value} (${this.p.c.fatigue})`;
+      this.#pushConsoleLog(log);
     }
   }
 
-  #addSpecialDefense() {
-    this.log.moves.defenses.special++;
-  }
-
-  #fatigueConsoleLog(value, operator) {
-    if (value != 0)
-      console.log(
-        `   ${this.p.i.name}: Fatiga ${operator}${value} (${this.p.c.fatigue})`
-      );
+  /**
+   * Método para registrar un mensaje en el log y en la consola.
+   * @private
+   * @param {string} log - El mensaje a registrar.
+   */
+  #pushConsoleLog(log) {
+    console.log(log);
+    this.log.history.push(log);
   }
 
   #attackConsoleLog(attackType) {
@@ -180,9 +219,9 @@ class Pokemon {
       ? ` * ${attackCritic} = ${attackTotal}`
       : "";
 
-    console.log(
-      `- ${this.p.i.name}: ${attackMessage}. Valor del ataque: ${attackBase}${attackCriticMessage}`
-    );
+    let log = `- ${this.p.i.name}: ${attackMessage}. Valor del ataque: ${attackBase}${attackCriticMessage}`;
+
+    this.#pushConsoleLog(log);
   }
 
   /**
@@ -196,17 +235,19 @@ class Pokemon {
     const cHP = this.p.c.hp;
     const bHP = this.p.b.hp;
 
+    let log;
+
     if (this.p.c.hp === 0) {
-      console.log(`${this.p.i.name} No puedo soportar el ataque.`);
+      log = `${this.p.i.name} No puedo soportar el ataque.`;
+      this.#pushConsoleLog(log);
     } else {
       const defenseMessage =
         defenseType === "special" ? "Defensa especial" : "Defensa normal";
 
       const defenseCriticMessage = defenseCritic ? `(Crítico) ` : "";
 
-      console.log(
-        `- ${this.p.i.name}: ${defenseMessage}. ${defenseCriticMessage}Daño reducido a ${defenseTotal}. HP restante: ${cHP}/${bHP}`
-      );
+      log = `- ${this.p.i.name}: ${defenseMessage}. ${defenseCriticMessage}Daño reducido a ${defenseTotal}. HP restante: ${cHP}/${bHP}`;
+      this.#pushConsoleLog(log);
 
       if (defenseType === "normal") {
         this.#addNormalDefense();
@@ -564,9 +605,17 @@ class PokemonBattle {
         firstAttacker === this.pokemon1 ? this.pokemon2 : this.pokemon1;
       console.log("");
     }
-
     this.#saveBattleResult();
     this.showBattleResult();
+    console.log(
+      "\n-------------------------pokemon.log.history-------------------------"
+    );
+    console.log(this.pokemon1.log.history.join("\n"));
+    console.log("-------------------------------------------------");
+    console.log(this.pokemon2.log.history.join("\n"));
+    console.log(
+      "----------------------------------------------------------------------"
+    );
   }
 
   /**
@@ -581,7 +630,23 @@ class PokemonBattle {
   }
 
   #saveBattleResult() {
+    // // Combinar los logs alternando los movimientos de cada Pokémon
+    // const pokemon1Log = this.pokemon1.log.history;
+    // const pokemon2Log = this.pokemon2.log.history;
+    // const combinedLog = [];
+    // const maxLength = Math.max(pokemon1Log.length, pokemon2Log.length);
+
+    // for (let i = 0; i < maxLength; i++) {
+    //   if (i < pokemon1Log.length) {
+    //     combinedLog.push(pokemon1Log[i]);
+    //   }
+    //   if (i < pokemon2Log.length) {
+    //     combinedLog.push(pokemon2Log[i]);
+    //   }
+    // }
+
     const battleResult = {
+      // log: combinedLog.join("\n"),
       pokemon1: {
         name: this.pokemon1.p.i.name,
         type: this.pokemon1.p.i.type,
@@ -664,10 +729,16 @@ const pokemonCollection = {
 };
 
 let battle = new PokemonBattle(
-  pokemonCollection.wishiwashiSolo,
-  pokemonCollection.caterpie
+  pokemonCollection.eternatus,
+  pokemonCollection.dragonite
 );
+console.log("###INIT###");
 battle.startBattle();
+console.log("###END###");
+// battle.startBattle();
+// console.log("########");
 
-// console.log("\n#Registro del resuuldato la ultima batalla:");
-// console.log(PokemonBattle.getBattleLog());
+// console.log("\n#Registro del resultado la ultima batalla:");
+// console.log(PokemonBattle.getBattleLog(1).log);
+// console.log("");
+// console.log(PokemonBattle.getBattleLog(2).log);
