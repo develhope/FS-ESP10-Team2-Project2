@@ -326,7 +326,7 @@ class Pokemon {
 
     // Verificar si hay ataques realizados y contar los que tienen valores mayores a 0
     let attackValues = Object.values(this.log.moves.attacks);
-    let attackCount = attackValues.filter((value) => value > 0).length;
+    let attackCount = attackValues.reduce((acc, curr) => acc + curr, 0);
 
     if (attackCount > 0) {
       console.log(`  - Ataques: (${attackCount})`);
@@ -343,7 +343,7 @@ class Pokemon {
 
     // Verificar si hay defensas realizadas y contar los que tienen valores mayores a 0
     let defenseValues = Object.values(this.log.moves.defenses);
-    let defenseCount = defenseValues.filter((value) => value > 0).length;
+    let defenseCount = defenseValues.reduce((acc, curr) => acc + curr, 0);
 
     if (defenseCount > 0) {
       console.log(`  - Defensas: (${defenseCount})`);
@@ -616,6 +616,17 @@ class PokemonBattle {
 
 // Ejemplo de uso
 const pokemonCollection = {
+  wishiwashiSolo: new Pokemon(
+    "Wishiwashi-Solo",
+    ["Water"],
+    45,
+    20,
+    25,
+    20,
+    25,
+    40
+  ),
+
   caterpie: new Pokemon("Caterpie", ["Bug"], 45, 30, 20, 35, 20, 45),
 
   weedle: new Pokemon("Weedle", ["Bug", "Poison"], 40, 35, 20, 30, 20, 50),
@@ -638,13 +649,24 @@ const pokemonCollection = {
   ),
 
   mewtwo: new Pokemon("Mewtwo", ["Psychic"], 106, 110, 154, 90, 90, 130),
+
+  eternatus: new Pokemon(
+    "Eternatus",
+    ["Poison", "Dragon"],
+    140,
+    85,
+    145,
+    95,
+    95,
+    130
+  ),
 };
 
 let battle = new PokemonBattle(
-  pokemonCollection.squirtle,
-  pokemonCollection.charmander
+  pokemonCollection.wishiwashiSolo,
+  pokemonCollection.caterpie
 );
 battle.startBattle();
 
-console.log("\n#Registro del resuuldato la ultima batalla:");
-console.log(PokemonBattle.getBattleLog());
+// console.log("\n#Registro del resuuldato la ultima batalla:");
+// console.log(PokemonBattle.getBattleLog());
