@@ -20,7 +20,7 @@ const weaknesses = {
   flying: ["rock", "ice", "electric"],
 };
 
-// Clase Pokemon
+//todo: Clase Pokemon
 class Pokemon {
   #data = {
     properties: {
@@ -34,17 +34,10 @@ class Pokemon {
         speed: undefined,
         fatigue: 0,
       },
-      copy: {
-        hp: undefined,
-        attack: undefined,
-        special_attack: undefined,
-        defense: undefined,
-        special_defense: undefined,
-        speed: undefined,
-        fatigue: 0,
-      },
+      copy: {},
     },
     battleData: {
+      isReady: true,
       isFirstAttacker: undefined,
       lastDamage: {
         received: { base: undefined, critic: undefined, total: undefined },
@@ -81,14 +74,8 @@ class Pokemon {
     this.#data.properties.base.special_defense = special_defense;
     this.#data.properties.base.speed = speed;
 
-    this.#data.properties.copy.hp = hp;
-    this.#data.properties.copy.attack = attack;
-    this.#data.properties.copy.special_attack = special_attack;
-    this.#data.properties.copy.defense = defense;
-    this.#data.properties.copy.special_defense = special_defense;
-    this.#data.properties.copy.speed = speed;
-
     this.#initializeHotVariables();
+    this.resetStats();
   }
 
   #initializeHotVariables() {
@@ -119,6 +106,22 @@ class Pokemon {
 
     this.log = this.#data.log;
     this.battleData = this.#data.battleData;
+  }
+
+  /**
+   * Método para resetear las estadísticas de un Pokémon.
+   * Establece las propiedades "copy" a sus valores "base".
+   */
+  resetStats() {
+    this.p.c = {
+      hp: this.p.b.hp,
+      attack: this.p.b.attack,
+      special_attack: this.p.b.special_attack,
+      defense: this.p.b.defense,
+      special_defense: this.p.b.special_defense,
+      speed: this.p.b.speed,
+      fatigue: this.p.b.fatigue,
+    };
   }
 
   #isFirstAttacker() {
@@ -357,11 +360,49 @@ class Pokemon {
   }
 }
 
-// Clase PokemonBattle
+//todo: Clase PokemonBattle
 class PokemonBattle {
+  static #data = { battleHistory: [] };
+
   constructor(pokemon1, pokemon2) {
     this.pokemon1 = pokemon1;
     this.pokemon2 = pokemon2;
+  }
+
+  /**
+   * Método estático para obtener el historial de batallas.
+   * @returns {Array} - El historial de batallas.
+   */
+  static get #battleHistory() {
+    return PokemonBattle.#data.battleHistory;
+  }
+
+  /**
+   * Método estático para obtener una batalla específica del historial por su número.
+   * Si no se proporciona un número, devuelve la última batalla del historial.
+   *
+   * @param {number} [battleNumber] - El número de la batalla a obtener (opcional).
+   * @returns {Object|null} - La batalla especificada o la última batalla, o null si no hay batallas en el historial.
+   */
+  static getBattleLog(battleNumber = null) {
+    if (PokemonBattle.#battleHistory.length === 0) {
+      return null;
+    }
+
+    if (battleNumber === null) {
+      return PokemonBattle.#battleHistory[
+        PokemonBattle.#battleHistory.length - 1
+      ];
+    }
+
+    if (
+      battleNumber < 1 ||
+      battleNumber > PokemonBattle.#battleHistory.length
+    ) {
+      return null; // Fuera de rango
+    }
+
+    return PokemonBattle.#battleHistory[battleNumber - 1];
   }
 
   /**
@@ -457,7 +498,12 @@ class PokemonBattle {
     return damage;
   }
 
-  // Método para ejecutar un turno de ataque
+  /**
+   * Método para ejecutar un turno de ataque.
+   * @param {Pokemon} attacker - El Pokémon que ataca.
+   * @param {Pokemon} defender - El Pokémon que defiende.
+   * @returns {boolean} - Indica si el defensor ha sido derrotado.
+   */
   #executeTurn(attacker, defender) {
     // Determinar el tipo de ataque (normal o especial)
     let attackType = Math.random() <= 0.3 ? "special" : "normal";
@@ -493,7 +539,12 @@ class PokemonBattle {
    * alternando ataques hasta que uno de los Pokémon sea derrotado.
    */
   startBattle() {
-    console.log("\n# Iniio de la Batalla:\n");
+    if (!this.pokemon1.battleData.isReady) this.pokemon1.resetStats();
+    if (!this.pokemon2.battleData.isReady) this.pokemon2.resetStats();
+    this.pokemon1.battleData.isReady = false;
+    this.pokemon2.battleData.isReady = false;
+
+    console.log("\n# Inicio de la Batalla:\n");
     let firstAttacker = this.#determineAttacker(true);
     firstAttacker.battleData.isFirstAttacker = true;
 
@@ -512,6 +563,8 @@ class PokemonBattle {
         firstAttacker === this.pokemon1 ? this.pokemon2 : this.pokemon1;
       console.log("");
     }
+
+    this.#saveBattleResult();
     this.showBattleResult();
   }
 
@@ -524,6 +577,40 @@ class PokemonBattle {
     this.pokemon1.state();
     console.log("");
     this.pokemon2.state();
+  }
+
+  #saveBattleResult() {
+    const battleResult = {
+      pokemon1: {
+        name: this.pokemon1.p.i.name,
+        type: this.pokemon1.p.i.type,
+        stats: {
+          hp: this.pokemon1.p.c.hp,
+          attack: this.pokemon1.p.c.attack,
+          special_attack: this.pokemon1.p.c.special_attack,
+          defense: this.pokemon1.p.c.defense,
+          special_defense: this.pokemon1.p.c.special_defense,
+          speed: this.pokemon1.p.c.speed,
+          fatigue: this.pokemon1.p.c.fatigue,
+        },
+      },
+      pokemon2: {
+        name: this.pokemon2.p.i.name,
+        type: this.pokemon2.p.i.type,
+        stats: {
+          hp: this.pokemon2.p.c.hp,
+          attack: this.pokemon2.p.c.attack,
+          special_attack: this.pokemon2.p.c.special_attack,
+          defense: this.pokemon2.p.c.defense,
+          special_defense: this.pokemon2.p.c.special_defense,
+          speed: this.pokemon2.p.c.speed,
+          fatigue: this.pokemon2.p.c.fatigue,
+        },
+      },
+      timestamp: new Date().toISOString(),
+    };
+
+    PokemonBattle.#data.battleHistory.push(battleResult);
   }
 }
 
@@ -558,3 +645,6 @@ let battle = new PokemonBattle(
   pokemonCollection.charmander
 );
 battle.startBattle();
+
+console.log("\n#Registro del resuuldato la ultima batalla:");
+console.log(PokemonBattle.getBattleLog());
