@@ -682,6 +682,9 @@ class PokemonBattle {
 
 // Ejemplo de uso
 const pokemonCollection = {
+  hitmontop: new Pokemon("Hitmontop", ["fighting"], 50, 95, 35, 95, 110, 70),
+  finneon: new Pokemon("Finneon", ["water"], 49, 49, 49, 56, 61, 66),
+
   wishiwashiSolo: new Pokemon(
     "Wishiwashi-Solo",
     ["Water"],
@@ -729,8 +732,8 @@ const pokemonCollection = {
 };
 
 let battle = new PokemonBattle(
-  pokemonCollection.squirtle,
-  pokemonCollection.charmander
+  pokemonCollection.hitmontop,
+  pokemonCollection.finneon
 );
 console.log("###INIT###");
 battle.startBattle();

@@ -195,13 +195,18 @@ export class PokemonFilter {
    */
   getPokemonByNameOrId(pokemonList, query) {
     if (!query) return pokemonList;
-    query = query.trim();
+
+    // Dividir la query en partes separadas por coma
+    const queries = query.trim().split(",");
 
     return pokemonList.filter((pokemon) => {
-      return (
-        pokemon.name.toLowerCase().includes(query.toLowerCase()) ||
-        pokemon.pokeId == query
-      );
+      return queries.some((part) => {
+        part = part.trim();
+        return (
+          pokemon.name.toLowerCase().includes(part.toLowerCase()) ||
+          pokemon.pokeId == part
+        );
+      });
     });
   }
 }
