@@ -315,6 +315,7 @@ export class PokemonDOMHandler {
 
     divAddCart.addEventListener("click", (event) => {
       event.stopPropagation(); // Evita la propagación del evento
+      //? Llama a la función externa para guardar el pokemon en el carrito
       addToCart(poke);
 
       divAddCart.classList.add("adding-to-cart");
