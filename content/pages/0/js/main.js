@@ -22,5 +22,5 @@ async function initializePokemonManager(count, reload) {
 }
 
 //! Inicia la carga de los Pokémon (puedes cambiar el número por el numero de Pokémon que desees descargar)
-initializePokemonManager(10);
+initializePokemonManager(151);
 // initializePokemonManager(151, true);

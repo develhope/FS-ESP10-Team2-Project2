@@ -126,14 +126,11 @@ export class PokemonDOMHandler {
 
     let offer;
     if (offerPrice) {
-      const offerPercentage = this.#calculateOfferPercentage(
-        basePrice,
-        offerPrice
+      const offerPercentage = Math.round(
+        this.#calculateOfferPercentage(basePrice, offerPrice)
       );
       offer = `
-        <div class="div-offerPercentage">
           <p class="offerPercentage">${offerPercentage}%</p>
-        </div>
       `;
     }
 
@@ -163,7 +160,9 @@ export class PokemonDOMHandler {
     div.classList.add("pokemon");
     div.style.userSelect = "none"; // Bloquear la selección del elemento
     div.innerHTML = `
-    ${offer ? offer : ""}
+    <div class="div-offerPercentage">
+      ${offer ? offer : ""}
+    </div>
     <p class="pokemon-id-back">#${pokeId}</p>
     <div class="pokemon-image">
       <img src="${poke.images.illustration.default}" alt="${poke.name}">
@@ -176,17 +175,34 @@ export class PokemonDOMHandler {
       <div class="pokemon-types">
         ${types}
       </div>
-      <div class="pokemon-stats">
+      <div class="div-pokemon-stats">
         <p class="stat">${height}</p>
         <p class="stat">${weight}</p>
       </div>
-      <div class="pokemon-price">
+      <div class="div-pokemon-below">
+        <div class="div-pokemon-price">
         ${market}
+        </div>
+        <div class="div-addCart">
+            <svg class="icon-svg-addCart" viewBox="0 0 74.5 73.03">
+                <title>Añadir al Carrito</title>
+                <g id="Capa_2" data-name="Capa 2">
+                    <g id="Capa_1-2" data-name="Capa 1">
+                        <rect class="icon-svg-addCart-cls-1" width="74.5" height="73.03" rx="16.46" />
+                        <path class="icon-svg-addCart-cls-2"
+                            d="M47.33,39.61l2-8.85h2.12V27.21H45.36L38.79,15.7l-3.08,1.76,5.57,9.75H26.13l5.57-9.75L28.62,15.7,22.05,27.21H16v3.55h2.12l3.24,14.55a1.77,1.77,0,0,0,1.73,1.39H39V43.16H24.5l-2.76-12.4H45.67l-2,8.85Z" />
+                        <polygon class="icon-svg-addCart-cls-2"
+                            points="58.51 48.47 53.19 48.47 53.19 43.16 49.65 43.16 49.65 48.47 44.34 48.47 44.34 52.02 49.65 52.02 49.65 57.33 53.19 57.33 53.19 52.02 58.51 52.02 58.51 48.47" />
+                    </g>
+                </g>
+            </svg>
+        </div>
       </div>
     </div>
   `;
 
-    if (!offer) div.style.paddingTop = "1rem";
+    if (offer)
+      div.querySelector(".div-offerPercentage").style.paddingBottom = "0";
 
     // Crear el elemento de PopUp con información adicional
     const divPopUp = document.createElement("div");
@@ -283,47 +299,29 @@ export class PokemonDOMHandler {
 
     div.appendChild(divPopUp);
 
-    // Crear el elemento de boton
-    const buttonAddCart = document.createElement("div");
-    buttonAddCart.classList.add("div-addCart");
-    buttonAddCart.innerHTML = `
-
-    <svg class="icon-svg-addCart" viewBox="0 0 74.5 73.03">
-      <title>Añadir al Carrito</title>
-      <g id="Capa_2" data-name="Capa 2">
-          <g id="Capa_1-2" data-name="Capa 1">
-              <rect class="icon-svg-addCart-cls-1" width="74.5" height="73.03" rx="16.46" />
-              <path class="icon-svg-addCart-cls-2"
-                  d="M47.33,39.61l2-8.85h2.12V27.21H45.36L38.79,15.7l-3.08,1.76,5.57,9.75H26.13l5.57-9.75L28.62,15.7,22.05,27.21H16v3.55h2.12l3.24,14.55a1.77,1.77,0,0,0,1.73,1.39H39V43.16H24.5l-2.76-12.4H45.67l-2,8.85Z" />
-              <polygon class="icon-svg-addCart-cls-2"
-                  points="58.51 48.47 53.19 48.47 53.19 43.16 49.65 43.16 49.65 48.47 44.34 48.47 44.34 52.02 49.65 52.02 49.65 57.33 53.19 57.33 53.19 52.02 58.51 52.02 58.51 48.47" />
-          </g>
-      </g>
-    </svg>
-  
-  `;
-    div.appendChild(buttonAddCart);
+    // Agrega el botón al elemento .div-addCart
+    const divAddCart = div.querySelector(".div-addCart");
 
     // Añadir eventos de hover para mostrar y ocultar el PopUp
     divPopUp.addEventListener("mouseenter", () => {
       divPopUp.querySelector(".info-pokemon-popup").classList.add("show");
-      buttonAddCart.style.zIndex = -1;
+      divAddCart.style.zIndex = -1;
     });
 
     divPopUp.addEventListener("mouseleave", () => {
       divPopUp.querySelector(".info-pokemon-popup").classList.remove("show");
-      buttonAddCart.style.zIndex = null;
+      divAddCart.style.zIndex = null;
     });
 
-    buttonAddCart.addEventListener("click", (event) => {
+    divAddCart.addEventListener("click", (event) => {
       event.stopPropagation(); // Evita la propagación del evento
       addToCart(poke);
 
-      // buttonAddCart.classList.add("adding-to-cart");
-      // // Remover la clase después de la animación
-      // setTimeout(() => {
-      //   buttonAddCart.classList.remove("adding-to-cart");
-      // }, 400); // Duración de la animación en milisegundos
+      divAddCart.classList.add("adding-to-cart");
+      // Remover la clase después de la animación
+      setTimeout(() => {
+        divAddCart.classList.remove("adding-to-cart");
+      }, 400); // Duración de la animación en milisegundos
     });
     return div;
   }
