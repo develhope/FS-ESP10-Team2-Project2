@@ -729,8 +729,8 @@ const pokemonCollection = {
 };
 
 let battle = new PokemonBattle(
-  pokemonCollection.eternatus,
-  pokemonCollection.dragonite
+  pokemonCollection.squirtle,
+  pokemonCollection.charmander
 );
 console.log("###INIT###");
 battle.startBattle();
