@@ -20,7 +20,44 @@ const weaknesses = {
   flying: ["rock", "ice", "electric"],
 };
 
+/**
+ * Genera un número aleatorio entre un rango dado.
+ * @param {number} min - El valor mínimo del rango.
+ * @param {number} max - El valor máximo del rango.
+ * @param {boolean} [isDecimal=false] - Indica si se debe devolver un número decimal.
+ * @returns {number} - El número aleatorio generado.
+ */
+function getRandomNum(min, max, isDecimal = false) {
+  if (isDecimal) {
+    return Math.random() * (max - min) + min;
+  } else {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+}
+
+/**
+ * Función para calcular una probabilidad y devolver un resultado booleano.
+ * @param {number} probabilityPercentage - El porcentaje de probabilidad de que el resultado sea true (de 0 a 100).
+ * @returns {boolean} - true si el resultado está dentro del rango de probabilidad, de lo contrario, false.
+ */
+function calculateProbability(probabilityPercentage) {
+  // Verificar si el porcentaje de probabilidad es válido (de 0 a 100)
+  if (probabilityPercentage < 0 || probabilityPercentage > 100) {
+    throw new Error("El porcentaje de probabilidad debe estar entre 0 y 100.");
+  }
+
+  // Generar un número aleatorio entre 0 y 100
+  const randomNumber = Math.random() * 100;
+
+  // Verificar si el número aleatorio está dentro del rango de probabilidad
+  return randomNumber <= probabilityPercentage;
+}
+
+//todo:---------------------------------------------------------------------------------------------
 //todo: Clase Pokemon
+//todo:---------------------------------------------------------------------------------------------
 class Pokemon {
   #data = {
     properties: {
@@ -48,6 +85,7 @@ class Pokemon {
       moves: {
         attacks: { normal: 0, special: 0 },
         defenses: { normal: 0, special: 0 },
+        evading: 0,
         critic: { received: 0, inflicted: 0 },
       },
       recovery: { fatigue: 0 },
@@ -164,6 +202,7 @@ class Pokemon {
    */
   #addNormalDefense() {
     this.log.moves.defenses.normal++;
+    this.#fatigueLog(5, "-");
   }
 
   /**
@@ -173,7 +212,17 @@ class Pokemon {
    */
   #addSpecialDefense() {
     this.log.moves.defenses.special++;
-    this.#fatigueLog(5, "-");
+    this.#fatigueLog(10, "-");
+  }
+
+  /**
+   * Método para registrar una defensa especial.
+   * Incrementa el contador de defensas especiales y actualiza la fatiga.
+   * @private
+   */
+  #addEvading() {
+    this.log.moves.evading++;
+    this.#fatigueLog(getRandomNum(1, 3), "+");
   }
 
   /**
@@ -192,7 +241,7 @@ class Pokemon {
         this.log.recovery.fatigue += fatigueRecovery;
       }
 
-      const log = `   ${this.p.i.name}: Fatiga ${operator}${value} (${this.p.c.fatigue})`;
+      const log = `   Fatiga ${operator}${value} (${this.p.c.fatigue})`;
       this.#pushConsoleLog(log);
     }
   }
@@ -229,32 +278,79 @@ class Pokemon {
    * @param {string} defenseType - El tipo de defensa utilizada, puede ser "normal" o "special".
    */
   #defenseConsoleLog(defenseType) {
-    // const defenseBase = this.battleData.lastDamage.received.base;
-    const defenseCritic = this.battleData.lastDamage.received.critic;
-    const defenseTotal = this.battleData.lastDamage.received.total;
+    const { critic: defenseCritic, total: defenseTotal } =
+      this.battleData.lastDamage.received;
     const cHP = this.p.c.hp;
-    const bHP = this.p.b.hp;
 
-    let log;
-
-    if (this.p.c.hp === 0) {
-      log = `${this.p.i.name} No puedo soportar el ataque.`;
-      this.#pushConsoleLog(log);
-    } else {
-      const defenseMessage =
-        defenseType === "special" ? "Defensa especial" : "Defensa normal";
-
-      const defenseCriticMessage = defenseCritic ? `(Crítico) ` : "";
-
-      log = `- ${this.p.i.name}: ${defenseMessage}. ${defenseCriticMessage}Daño reducido a ${defenseTotal}. HP restante: ${cHP}/${bHP}`;
-      this.#pushConsoleLog(log);
-
-      if (defenseType === "normal") {
-        this.#addNormalDefense();
-      } else {
-        this.#addSpecialDefense();
-      }
+    if (cHP === 0) {
+      this.#pushConsoleLog(`${this.p.i.name} No puedo soportar el ataque.`);
+      return;
     }
+
+    const defenseMessage =
+      defenseType === "special" ? "Defensa especial" : "Defensa normal";
+    const defenseCriticMessage = defenseCritic ? "(Crítico) " : "";
+    const log = `- ${this.p.i.name}: ${defenseMessage}. ${defenseCriticMessage}Daño reducido a ${defenseTotal}.`;
+
+    const logStats = `${this.#getStats("hp")}\n${
+      defenseType === "normal"
+        ? `${this.#getStats("defense")}`
+        : `${this.#getStats("special_defense")}`
+    }`.trimEnd();
+
+    this.#pushConsoleLog(log);
+    this.#pushConsoleLog(logStats);
+
+    defenseType === "normal"
+      ? this.#addNormalDefense()
+      : this.#addSpecialDefense();
+  }
+
+  /**
+   * Registra el resultado de la evasión en la consola y actualiza los contadores de evasión.
+   */
+  #evadingConsoleLog() {
+    const evadingTotal = this.battleData.lastDamage.received.total;
+    const { hp: cHP } = this.p.c.hp;
+
+    if (cHP === 0) {
+      this.#pushConsoleLog(
+        `${this.p.i.name} No puedo esquivar el ataque y no lo soporto.`
+      );
+      return;
+    }
+
+    const evadingMessage =
+      evadingTotal === 0
+        ? "Esquivó el ataque y no recibió daños"
+        : `No logró esquivar todo el ataque. Daño recibido: ${evadingTotal}`;
+
+    const log = `- ${this.p.i.name}: ${evadingMessage}.`;
+
+    this.#pushConsoleLog(log);
+    this.#pushConsoleLog(this.#getStats("hp"));
+    this.#addEvading();
+  }
+
+  /**
+   * Optiene la estadística actual que se introduzcan formateada correctamente.
+   * @param {string} nameStat - El nombre de la propiedad.
+   * @returns {string} - La cadena formateada con la estadística actual.
+   */
+  #getStats(nameStat) {
+    const nameStatsES = {
+      hp: "HP",
+      defense: "Defensa Normal",
+      special_defense: "Defensa Especial",
+      attack: "Ataque Normal",
+      special_attack: "Ataque Especial", // Corregido el nombre de la propiedad
+    };
+
+    const currentValue = this.p.c[nameStat];
+    const baseValue = this.p.b[nameStat];
+    const percentage = this.#getPercentOfProperty(nameStat);
+
+    return `   ${nameStatsES[nameStat]}: ${currentValue}/${baseValue} (${percentage}%)`;
   }
 
   //? Métodos para atacar
@@ -310,6 +406,34 @@ class Pokemon {
   }
 
   /**
+   * Realiza la evacion, reduciendo el daño recibido en función de factores que aun no e decidido del Pokémon por ahora es 0.
+   * @param {number} damage - La cantidad de daño recibida.
+   */
+  evading(damage) {
+    damage = Math.round(damage);
+
+    let reducedDamage = 0;
+
+    this.p.c.hp = this.#pcReduce("hp", reducedDamage);
+    this.battleData.lastDamage.received.total = reducedDamage;
+
+    this.#evadingConsoleLog();
+  }
+
+  //? Oros metodos
+  isDefeated() {
+    return this.p.c.hp <= 0;
+  }
+
+  isExhausted() {
+    return this.p.c.fatigue >= 30;
+  }
+
+  isAngry() {
+    return this.p.c.fatigue <= 10;
+  }
+
+  /**
    * Reduce el valor de una propiedad del Pokémon asegurando que no sea negativo.
    * @param {string} nameProperty - El nombre de la propiedad a reducir.
    * @param {number} value - El valor a restar de la propiedad.
@@ -329,11 +453,6 @@ class Pokemon {
     return Math.max(0, minuend - subtrahend);
   }
 
-  //? Oros metodos
-  isDefeated() {
-    return this.p.c.hp <= 0;
-  }
-
   /**
    * Obtiene el porcentaje de una propiedad en relación a su valor base.
    * @param {string} nameProperty - El nombre de la propiedad.
@@ -347,62 +466,80 @@ class Pokemon {
    * Muestra el estado actual del Pokémon, incluyendo sus estadísticas y movimientos realizados.
    */
   state() {
+    const iName = this.p.i.name;
+    const cHP = this.p.c.hp;
+    const bHP = this.p.b.hp;
+
+    const cDefense = this.p.c.defense;
+    const bDefense = this.p.b.defense;
+
+    const cSpecial_defense = this.p.c.special_defense;
+    const bSpecial_defense = this.p.b.special_defense;
+
+    const cFatigue = this.p.c.fatigue;
+
+    const log = this.log;
+
+    console.log(`${iName}: (${this.isDefeated() ? "Derrotado" : "Ganador"})`);
+    console.log(`- HP: ${cHP}/${bHP} (${this.#getPercentOfProperty("hp")}%)`);
     console.log(
-      `${this.p.i.name}: (${this.isDefeated() ? "Derrotado" : "Ganador"})`
-    );
-    console.log(`- HP: ${this.p.c.hp} (${this.#getPercentOfProperty("hp")}%)`);
-    console.log(
-      `- Defensa: ${this.p.c.defense} (${this.#getPercentOfProperty(
+      `- Defensa: ${cDefense}/${bDefense} (${this.#getPercentOfProperty(
         "defense"
       )}%)`
     );
     console.log(
-      `- Defensa Especial: ${
-        this.p.c.special_defense
-      } (${this.#getPercentOfProperty("special_defense")}%)`
+      `- Defensa Especial: ${cSpecial_defense}/${bSpecial_defense} (${this.#getPercentOfProperty(
+        "special_defense"
+      )}%)`
     );
-    console.log(`- Fatiga: ${this.p.c.fatigue}`);
-    console.log(`- Recuperación de Fatiga: ${this.log.recovery.fatigue}`);
+    console.log(`- Fatiga: ${cFatigue}`);
+    console.log(`- Recuperación de Fatiga: ${log.recovery.fatigue}`);
 
     console.log(`- Movimientos Realizados:`);
 
     // Verificar si hay ataques realizados y contar los que tienen valores mayores a 0
-    let attackValues = Object.values(this.log.moves.attacks);
+    let attackValues = Object.values(log.moves.attacks);
     let attackCount = attackValues.reduce((acc, curr) => acc + curr, 0);
 
     if (attackCount > 0) {
       console.log(`  - Ataques: (${attackCount})`);
-      if (this.log.moves.attacks.normal > 0) {
-        console.log(`    - Normales: ${this.log.moves.attacks.normal}`);
+      if (log.moves.attacks.normal > 0) {
+        console.log(`    - Normales: ${log.moves.attacks.normal}`);
       }
-      if (this.log.moves.attacks.special > 0) {
-        console.log(`    - Especiales: ${this.log.moves.attacks.special}`);
+      if (log.moves.attacks.special > 0) {
+        console.log(`    - Especiales: ${log.moves.attacks.special}`);
       }
-      if (this.log.moves.critic.inflicted > 0) {
-        console.log(`    - Críticos: ${this.log.moves.critic.inflicted}`);
+      if (log.moves.critic.inflicted > 0) {
+        console.log(`    - Críticos: ${log.moves.critic.inflicted}`);
       }
     }
 
     // Verificar si hay defensas realizadas y contar los que tienen valores mayores a 0
-    let defenseValues = Object.values(this.log.moves.defenses);
+    let defenseValues = Object.values(log.moves.defenses);
     let defenseCount = defenseValues.reduce((acc, curr) => acc + curr, 0);
 
     if (defenseCount > 0) {
       console.log(`  - Defensas: (${defenseCount})`);
-      if (this.log.moves.defenses.normal > 0) {
-        console.log(`    - Normales: ${this.log.moves.defenses.normal}`);
+      if (log.moves.defenses.normal > 0) {
+        console.log(`    - Normales: ${log.moves.defenses.normal}`);
       }
-      if (this.log.moves.defenses.special > 0) {
-        console.log(`    - Especiales: ${this.log.moves.defenses.special}`);
+      if (log.moves.defenses.special > 0) {
+        console.log(`    - Especiales: ${log.moves.defenses.special}`);
       }
-      if (this.log.moves.critic.received > 0) {
-        console.log(`    - Críticas: ${this.log.moves.critic.received}`);
+      if (log.moves.critic.received > 0) {
+        console.log(`    - Críticas: ${log.moves.critic.received}`);
       }
+    }
+
+    if (log.moves.evading > 0) {
+      console.log(`  - Evacion: ${log.moves.evading}`);
     }
   }
 }
 
+//todo:---------------------------------------------------------------------------------------------
 //todo: Clase PokemonBattle
+//todo:---------------------------------------------------------------------------------------------
 class PokemonBattle {
   static #data = { battleHistory: [] };
 
@@ -453,41 +590,36 @@ class PokemonBattle {
    * @returns {Pokemon} - El Pokémon que atacará en este turno.
    */
   #determineAttacker(isFirst = false) {
-    // Diferencia de velocidad entre los Pokémon
-    const speedDiff = this.pokemon1.p.c.speed - this.pokemon2.p.c.speed;
+    const pokemon1 = this.pokemon1;
+    const pokemon2 = this.pokemon2;
+    const speedDiff = pokemon1.p.c.speed - pokemon2.p.c.speed;
 
     if (isFirst) {
       // Si es la primera vez, el Pokémon más rápido ataca primero
-      return speedDiff > 0
-        ? this.pokemon1
-        : speedDiff < 0
-        ? this.pokemon2
-        : Math.random() < 0.5
-        ? this.pokemon1
-        : this.pokemon2;
-    } else {
-      // Si no es la primera vez, se considera la fatiga y se introduce un factor de aleatoriedad
-      if (this.pokemon1.p.c.fatigue < 0 || this.pokemon2.p.c.fatigue >= 30) {
-        return this.pokemon1;
-      } else if (
-        this.pokemon2.p.c.fatigue < 0 ||
-        this.pokemon1.p.c.fatigue >= 30
-      ) {
-        return this.pokemon2;
+      if (speedDiff !== 0) {
+        return speedDiff > 0 ? pokemon1 : pokemon2;
       }
-
-      return speedDiff > 0
-        ? Math.random() < 0.7
-          ? this.pokemon1
-          : this.pokemon2
-        : speedDiff < 0
-        ? Math.random() < 0.8
-          ? this.pokemon2
-          : this.pokemon1
-        : Math.random() < 0.5
-        ? this.pokemon1
-        : this.pokemon2;
+      // Si tienen la misma velocidad, se elige aleatoriamente
+      return calculateProbability(50) ? pokemon1 : pokemon2;
     }
+
+    // Verificar condiciones de fatiga
+    if (pokemon1.p.c.fatigue < 0 || pokemon2.isExhausted()) {
+      return pokemon1;
+    }
+    if (pokemon2.p.c.fatigue < 0 || pokemon1.isExhausted()) {
+      return pokemon2;
+    }
+
+    // Aplicar probabilidad basada en la diferencia de velocidad
+    if (speedDiff !== 0) {
+      return calculateProbability(speedDiff > 0 ? 70 : 30)
+        ? pokemon1
+        : pokemon2;
+    }
+
+    // Si la velocidad es la misma, se elige aleatoriamente
+    return calculateProbability(50) ? pokemon1 : pokemon2;
   }
 
   /**
@@ -509,8 +641,8 @@ class PokemonBattle {
       if (weaknesses[defenderType]) {
         for (const attackerType of attackerTypes) {
           if (weaknesses[defenderType].includes(attackerType)) {
-            if (Math.random() < 0.5) {
-              const multiplier = 1.1 + Math.random() * 0.8; // Rango de 1.1 a 1.9
+            if (calculateProbability(50)) {
+              const multiplier = getRandomNum(1.1, 2, true); // Rango de 1.1 a 2
 
               const totalDamage = Math.round(damage * multiplier);
               const multiplierFixed = multiplier.toFixed(2);
@@ -548,22 +680,52 @@ class PokemonBattle {
    */
   #executeTurn(attacker, defender) {
     // Determinar el tipo de ataque (normal o especial)
-    let attackType = Math.random() <= 0.3 ? "special" : "normal";
-    let attackValue =
+    const attackType = calculateProbability(30) ? "special" : "normal";
+    const attackValue =
       attackType === "special"
         ? attacker.p.c.special_attack
         : attacker.p.c.attack;
 
     // Aplicar la debilidad
-    attackValue = this.#applyWeaknessBonus(defender, attacker, attackValue);
+    let modifiedAttackValue = this.#applyWeaknessBonus(
+      defender,
+      attacker,
+      attackValue
+    );
 
-    // Aplicar la defensa correspondiente
+    // Realizar el ataque
     if (attackType === "special") {
-      attacker.specialAttack(attackValue);
-      defender.specialDefense(attackValue);
+      attacker.specialAttack(modifiedAttackValue);
     } else {
-      attacker.normalAttack(attackValue);
-      defender.normalDefense(attackValue);
+      attacker.normalAttack(modifiedAttackValue);
+    }
+
+    //? Sistema de probabilidad equilibrado según la diferencia de velocidad de cada Pokémon
+    const maxSpeed = Math.max(attacker.p.c.speed, defender.p.c.speed);
+    const limitMax = Math.max(10, maxSpeed - 30); // Utilizar la velocidad máxima real de los Pokémon
+
+    // Calcular los porcentajes de velocidad relativos al límite máximo
+    const attackerSpeedPercent = (attacker.p.c.speed / limitMax) * 100;
+    const defenderSpeedPercent = (defender.p.c.speed / limitMax) * 100;
+
+    // Calcular la probabilidad de evasión basada en la diferencia de porcentajes de velocidad
+    let evasionProbability = defenderSpeedPercent - attackerSpeedPercent;
+
+    // Ajustar la probabilidad para que esté en el rango de 10% a 90%
+    evasionProbability = Math.max(30, Math.min(75, evasionProbability + 25)); // Ajuste para equilibrar
+    //! Tets log
+    // console.error(defender.p.i.name, evasionProbability);
+
+    // Verificar si el defensor NO está agotado y calcular la probabilidad de evasión
+    if (!defender.isExhausted() && calculateProbability(evasionProbability)) {
+      defender.evading(modifiedAttackValue);
+    } else {
+      // Aplicar la defensa correspondiente después de verificar la evasión
+      if (attackType === "special") {
+        defender.specialDefense(modifiedAttackValue);
+      } else {
+        defender.normalDefense(modifiedAttackValue);
+      }
     }
 
     // Comprobar si el defensor ha sido derrotado
@@ -680,7 +842,10 @@ class PokemonBattle {
   }
 }
 
-// Ejemplo de uso
+//todo:---------------------------------------------------------------------------------------------
+//todo: Ejemplo de uso
+//todo:---------------------------------------------------------------------------------------------
+
 const pokemonCollection = {
   hitmontop: new Pokemon("Hitmontop", ["fighting"], 50, 95, 35, 95, 110, 70),
   finneon: new Pokemon("Finneon", ["water"], 49, 49, 49, 56, 61, 66),
