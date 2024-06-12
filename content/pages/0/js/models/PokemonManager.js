@@ -14,6 +14,31 @@ export class PokemonManager {
 
     // Obtener referencias a elementos del DOM
     this.#getDOMElements();
+    this.#addCartButtonListener();
+  }
+
+  /**
+   * Añade un event listener al botón del carrito una vez que el elemento esté disponible en el DOM.
+   */
+  async #addCartButtonListener() {
+    // Espera hasta que el documento esté completamente cargado
+    document.addEventListener("DOMContentLoaded", async () => {
+      // Espera a obtener el elemento del DOM
+      const cartButton = document.querySelector("#carritoButton");
+
+      // Añade el event listener al botón del carrito
+      if (cartButton) {
+        cartButton.addEventListener(
+          "click",
+          () => {
+            this.#handleSessionStorage();
+          },
+          { capture: true }
+        ); // Usa el modo de captura para dar prioridad
+      } else {
+        console.error("El elemento #carritoButton no se encontró en el DOM.");
+      }
+    });
   }
 
   // Datos y configuraciones internas del Pokémon Manager
@@ -107,6 +132,30 @@ export class PokemonManager {
     console.log("Clear Session Storage\npokemonManager_data, pokemonPreview");
     sessionStorage.removeItem("pokemonManager_data");
     sessionStorage.removeItem("pokemonPreview");
+  }
+
+  /**
+   * Maneja el evento de clic en un elemento Pokémon.
+   * @param {object} poke - El objeto Pokémon seleccionado.
+   */
+  #handleSessionStorage(poke = null) {
+    // Eliminar el event listener antes de salir de la página
+    window.removeEventListener("beforeunload", this.#clearSessionStorage);
+
+    // Guardar el estado completo de los datos en sessionStorage
+    this.#saveToSessionStorage("pokemonManager_data", this.#data);
+
+    // Obtener y almacenar el objeto Pokémon seleccionado en sessionStorage
+    if (poke) this.#saveToSessionStorage("pokemonPreview", poke);
+  }
+
+  /**
+   * Método para guardar datos en sessionStorage.
+   * @param {string} key - La clave bajo la cual se almacenarán los datos.
+   * @param {object} value - El valor a almacenar.
+   */
+  #saveToSessionStorage(key, value) {
+    sessionStorage.setItem(key, JSON.stringify(value));
   }
 
   /**
@@ -474,6 +523,38 @@ export class PokemonManager {
     });
   }
 
+  // /**
+  //  * Añade event listeners a los elementos de la lista de Pokémon.
+  //  * @param {Array} pokemonDivDataList - Lista de objetos Pokémon para los que se añadirán event listeners.
+  //  */
+  // #__addEventListenersPokemonCards(pokemonDivDataList) {
+  //   // Itera sobre cada objeto Pokémon en la lista proporcionada
+  //   pokemonDivDataList.forEach((poke) => {
+  //     // Selecciona el elemento del DOM correspondiente al Pokémon actual
+  //     const pokemonElement = document.querySelector(`#pokemon-${poke.pokeId}`);
+
+  //     // Añade un event listener de tipo 'click' al elemento seleccionado
+  //     pokemonElement.addEventListener("click", () => {
+  //       // Eliminar el event listener
+  //       window.removeEventListener("beforeunload", this.#clearSessionStorage);
+
+  //       // Guarda el estado completo de los datos en sessionStorage
+  //       sessionStorage.setItem(
+  //         "pokemonManager_data",
+  //         JSON.stringify(this.#data)
+  //       );
+  //       // console.log(poke);
+  //       console.log(this.#data.dom.elements);
+
+  //       // Almacena el objeto Pokémon seleccionado en sessionStorage
+  //       sessionStorage.setItem("pokemonPreview", JSON.stringify(poke));
+
+  //       // Redirige a la página de detalles del Pokémon
+  //       window.location.href = `../1/pokemonDetail.html`;
+  //     });
+  //   });
+  // }
+
   /**
    * Añade event listeners a los elementos de la lista de Pokémon.
    * @param {Array} pokemonDivDataList - Lista de objetos Pokémon para los que se añadirán event listeners.
@@ -486,21 +567,8 @@ export class PokemonManager {
 
       // Añade un event listener de tipo 'click' al elemento seleccionado
       pokemonElement.addEventListener("click", () => {
-        // Eliminar el event listener
-        window.removeEventListener("beforeunload", this.#clearSessionStorage);
-
-        // Guarda el estado completo de los datos en sessionStorage
-        sessionStorage.setItem(
-          "pokemonManager_data",
-          JSON.stringify(this.#data)
-        );
-        // console.log(poke);
-        console.log(this.#data.dom.elements);
-
-        // Almacena el objeto Pokémon seleccionado en sessionStorage
-        sessionStorage.setItem("pokemonPreview", JSON.stringify(poke));
-
-        // Redirige a la página de detalles del Pokémon
+        this.#handleSessionStorage(poke);
+        // Redirigir a la página de detalles del Pokémon
         window.location.href = `../1/pokemonDetail.html`;
       });
     });
