@@ -1,25 +1,3 @@
-// Lista de debilidades de Pokémon
-const weaknesses = {
-  steel: ["fighting", "fire", "ground"],
-  water: ["grass", "electric"],
-  bug: ["flying", "fire", "rock"],
-  dragon: ["fairy", "ice", "dragon"],
-  electric: ["ground"],
-  ghost: ["ghost", "dark"],
-  fire: ["ground", "water", "rock"],
-  fairy: ["steel", "poison"],
-  ice: ["fighting", "steel", "rock", "fire"],
-  fighting: ["psychic", "flying", "fairy"],
-  normal: ["fighting"],
-  grass: ["flying", "bug", "poison", "ice", "fire"],
-  psychic: ["bug", "ghost", "dark"],
-  rock: ["fighting", "ground", "steel", "water", "grass"],
-  dark: ["fighting", "fairy", "bug"],
-  ground: ["water", "grass", "ice"],
-  poison: ["ground", "psychic"],
-  flying: ["rock", "ice", "electric"],
-};
-
 /**
  * Genera un número aleatorio entre un rango dado.
  * @param {number} min - El valor mínimo del rango.
@@ -104,7 +82,7 @@ class Pokemon {
     speed
   ) {
     this.#data.properties.immutable.name = name;
-    this.#data.properties.immutable.type = type;
+    this.#data.properties.immutable.type = type.map((t) => t.toLowerCase());
 
     this.#data.properties.base.hp = hp;
     this.#data.properties.base.attack = attack;
@@ -426,11 +404,57 @@ class Pokemon {
   }
 
   isExhausted() {
-    return this.p.c.fatigue >= 30;
+    return this.p.c.fatigue >= 25;
   }
 
   isAngry() {
     return this.p.c.fatigue <= 10;
+  }
+
+  /**
+   * Verifica si el Pokémon es vulnerable a alguno de los tipos de ataque proporcionados.
+   * @param {Array<string>} attackTypes - Un array de tipos de ataque.
+   * @returns {Array|null} - Un array con los tipos vulnerables, null si no existen.
+   */
+  isVulnerableTo(attackTypes) {
+    attackTypes = attackTypes.map((v) => v.toLowerCase());
+    const weaknesses = {
+      steel: ["fighting", "fire", "ground"],
+      water: ["grass", "electric"],
+      bug: ["flying", "fire", "rock"],
+      dragon: ["fairy", "ice", "dragon"],
+      electric: ["ground"],
+      ghost: ["ghost", "dark"],
+      fire: ["ground", "water", "rock"],
+      fairy: ["steel", "poison"],
+      ice: ["fighting", "steel", "rock", "fire"],
+      fighting: ["psychic", "flying", "fairy"],
+      normal: ["fighting"],
+      grass: ["flying", "bug", "poison", "ice", "fire"],
+      psychic: ["bug", "ghost", "dark"],
+      rock: ["fighting", "ground", "steel", "water", "grass"],
+      dark: ["fighting", "fairy", "bug"],
+      ground: ["water", "grass", "ice"],
+      poison: ["ground", "psychic"],
+      flying: ["rock", "ice", "electric"],
+    };
+
+    // Obtener los tipos del Pokémon
+    const pokemonTypes = this.p.i.type;
+    const vulnerableTypes = [];
+
+    // Verificar si alguno de los tipos del Pokémon es vulnerable a los tipos de ataque proporcionados
+    for (let attackType of attackTypes) {
+      for (let type of pokemonTypes) {
+        if (weaknesses[type] && weaknesses[type].includes(attackType)) {
+          vulnerableTypes.push(attackType);
+        }
+      }
+    }
+
+    const out =
+      vulnerableTypes.length > 0 ? [...new Set(vulnerableTypes)] : null; // Eliminar duplicados
+    return out;
   }
 
   /**
@@ -592,41 +616,69 @@ class PokemonBattle {
   #determineAttacker(isFirst = false) {
     const pokemon1 = this.pokemon1;
     const pokemon2 = this.pokemon2;
-    const speedDiff = pokemon1.p.c.speed - pokemon2.p.c.speed;
+    const speed1 = pokemon1.p.c.speed;
+    const speed2 = pokemon2.p.c.speed;
+    const fatigue1 = pokemon1.p.c.fatigue;
+    const fatigue2 = pokemon2.p.c.fatigue;
+
+    // Determinar el Pokémon con mayor y menor velocidad
+    const [maxSpeedPokemon, minSpeedPokemon] =
+      speed1 > speed2 ? [pokemon1, pokemon2] : [pokemon2, pokemon1];
+    // Determinar el Pokémon con mayor y menor velocidad
+    const [maxFatigePokemon, minFatigePokemon] =
+      fatigue1 > fatigue2 ? [pokemon1, pokemon2] : [pokemon2, pokemon1];
 
     if (isFirst) {
       // Si es la primera vez, el Pokémon más rápido ataca primero
-      if (speedDiff !== 0) {
-        return speedDiff > 0 ? pokemon1 : pokemon2;
+      if (speed1 !== speed2) {
+        return maxSpeedPokemon;
       }
       // Si tienen la misma velocidad, se elige aleatoriamente
       return calculateProbability(50) ? pokemon1 : pokemon2;
     }
 
+    // Verificar condiciones de agotamiento
+    if (pokemon1.isExhausted() && pokemon2.isExhausted()) {
+      return calculateProbability(50) ? pokemon1 : pokemon2;
+    }
+
+    if (
+      fatigue1 < 0 ||
+      (pokemon2.isExhausted() && fatigue2 < 0) ||
+      pokemon1.isExhausted()
+    ) {
+      if (fatigue1 !== fatigue2) {
+        return minFatigePokemon;
+      } else {
+        return calculateProbability(50) ? pokemon1 : pokemon2;
+      }
+    }
+
     // Verificar condiciones de fatiga
-    if (pokemon1.p.c.fatigue < 0 || pokemon2.isExhausted()) {
+    if (fatigue1 < 0 || pokemon2.isExhausted()) {
       return pokemon1;
     }
-    if (pokemon2.p.c.fatigue < 0 || pokemon1.isExhausted()) {
+    if (fatigue2 < 0 || pokemon1.isExhausted()) {
       return pokemon2;
     }
 
-    // Aplicar probabilidad basada en la diferencia de velocidad
-    if (speedDiff !== 0) {
-      return calculateProbability(speedDiff > 0 ? 70 : 30)
-        ? pokemon1
-        : pokemon2;
-    }
+    // Aplicar probabilidad basada en la diferencia de velocidad utilizando #balancedProbabilitySystem
+    const probability = this.#balancedProbabilitySystem(
+      maxSpeedPokemon.p.c.speed,
+      minSpeedPokemon.p.c.speed
+    );
 
-    // Si la velocidad es la misma, se elige aleatoriamente
-    return calculateProbability(50) ? pokemon1 : pokemon2;
+    // Para que no se pase de ventaja establecemos como mínimo 60% de probabilidad para lanzar un ataque.
+    return calculateProbability(Math.min(60, probability))
+      ? maxSpeedPokemon
+      : minSpeedPokemon;
   }
 
   /**
    * Método para verificar debilidades y aplicar daño adicional.
    * Si el defensor es débil contra alguno de los tipos del atacante,
    * existe un 50% de probabilidad de que el daño se multiplique por un
-   * valor aleatorio entre 1.1 y 1.9.
+   * valor aleatorio entre 1.1 y 2.
    *
    * @param {Pokemon} defender - El Pokémon que recibe el ataque.
    * @param {Pokemon} attacker - El Pokémon que lanza el ataque.
@@ -634,42 +686,63 @@ class PokemonBattle {
    * @returns {number} - La cantidad de daño ajustada si hay una debilidad.
    */
   #applyWeaknessBonus(defender, attacker, damage) {
-    const defenderTypes = defender.p.i.type.map((type) => type.toLowerCase());
     const attackerTypes = attacker.p.i.type.map((type) => type.toLowerCase());
 
-    for (const defenderType of defenderTypes) {
-      if (weaknesses[defenderType]) {
-        for (const attackerType of attackerTypes) {
-          if (weaknesses[defenderType].includes(attackerType)) {
-            if (calculateProbability(50)) {
-              const multiplier = getRandomNum(1.1, 2, true); // Rango de 1.1 a 2
+    const vulnerabilityInfo = defender.isVulnerableTo(attackerTypes);
 
-              const totalDamage = Math.round(damage * multiplier);
-              const multiplierFixed = multiplier.toFixed(2);
+    if (vulnerabilityInfo) {
+      if (calculateProbability(50)) {
+        const multiplier = getRandomNum(1.1, 2, true); // Rango de 1.1 a 2
 
-              attacker.battleData.lastDamage.inflicted.base = damage;
-              attacker.battleData.lastDamage.inflicted.critic = multiplierFixed;
-              attacker.battleData.lastDamage.inflicted.total = totalDamage;
-              attacker.log.moves.critic.inflicted++;
+        const totalDamage = Math.round(damage * multiplier);
+        const multiplierFixed = multiplier.toFixed(2);
 
-              defender.battleData.lastDamage.received.base = damage;
-              defender.battleData.lastDamage.received.critic = multiplierFixed;
-              defender.battleData.lastDamage.received.total = totalDamage;
-              defender.log.moves.critic.received++;
+        attacker.battleData.lastDamage.inflicted.base = damage;
+        attacker.battleData.lastDamage.inflicted.critic = multiplierFixed;
+        attacker.battleData.lastDamage.inflicted.total = totalDamage;
+        attacker.log.moves.critic.inflicted++;
 
-              return totalDamage;
-            }
-          }
-        }
+        defender.battleData.lastDamage.received.base = damage;
+        defender.battleData.lastDamage.received.critic = multiplierFixed;
+        defender.battleData.lastDamage.received.total = totalDamage;
+        defender.log.moves.critic.received++;
+
+        return totalDamage;
       }
     }
+
     attacker.battleData.lastDamage.inflicted.base = damage;
     attacker.battleData.lastDamage.inflicted.critic = false;
     attacker.battleData.lastDamage.inflicted.total = damage;
 
     defender.battleData.lastDamage.received.base = damage;
     defender.battleData.lastDamage.received.critic = false;
+    defender.battleData.lastDamage.received.total = damage;
+
     return damage;
+  }
+
+  /**
+   * Sistema de probabilidad equilibrado según la diferencia de una propiedad de cada Pokémon.
+   * @param {number} value1 - El valor de la propiedad del primer Pokémon.
+   * @param {number} value2 - El valor de la propiedad del segundo Pokémon.
+   * @param {number} maxValue - Máximo valor posible para cualquier propiedad (por defecto es 255).
+   * @returns {number} - La probabilidad calculada en un rango del 30% al 75%.
+   */
+  #balancedProbabilitySystem(value1, value2, maxValue = 255) {
+    if (value2 === value1) return 50;
+
+    // Calcular los porcentajes relativos al valor máximo
+    const valuePercent2 = (value2 / maxValue) * 100;
+    const valuePercent1 = (value1 / maxValue) * 100;
+
+    // Calcular la probabilidad basada en la diferencia de porcentajes
+    let probability = valuePercent1 - valuePercent2;
+
+    // Ajustar la probabilidad para que esté en el rango de 30% a 75%
+    probability = Math.max(30, Math.min(75, 50 + probability / 2)); // Ajuste para equilibrar
+
+    return probability;
   }
 
   /**
@@ -700,20 +773,12 @@ class PokemonBattle {
       attacker.normalAttack(modifiedAttackValue);
     }
 
-    //? Sistema de probabilidad equilibrado según la diferencia de velocidad de cada Pokémon
-    const maxSpeed = Math.max(attacker.p.c.speed, defender.p.c.speed);
-    const limitMax = Math.max(10, maxSpeed - 30); // Utilizar la velocidad máxima real de los Pokémon
+    // Optenemos la probabilidad de evasion.
+    const evasionProbability = this.#balancedProbabilitySystem(
+      defender.p.c.speed,
+      attacker.p.c.speed
+    );
 
-    // Calcular los porcentajes de velocidad relativos al límite máximo
-    const attackerSpeedPercent = (attacker.p.c.speed / limitMax) * 100;
-    const defenderSpeedPercent = (defender.p.c.speed / limitMax) * 100;
-
-    // Calcular la probabilidad de evasión basada en la diferencia de porcentajes de velocidad
-    let evasionProbability = defenderSpeedPercent - attackerSpeedPercent;
-
-    // Ajustar la probabilidad para que esté en el rango de 10% a 90%
-    evasionProbability = Math.max(30, Math.min(75, evasionProbability + 25)); // Ajuste para equilibrar
-    //! Tets log
     // console.error(defender.p.i.name, evasionProbability);
 
     // Verificar si el defensor NO está agotado y calcular la probabilidad de evasión
@@ -847,9 +912,6 @@ class PokemonBattle {
 //todo:---------------------------------------------------------------------------------------------
 
 const pokemonCollection = {
-  hitmontop: new Pokemon("Hitmontop", ["fighting"], 50, 95, 35, 95, 110, 70),
-  finneon: new Pokemon("Finneon", ["water"], 49, 49, 49, 56, 61, 66),
-
   wishiwashiSolo: new Pokemon(
     "Wishiwashi-Solo",
     ["Water"],
@@ -860,17 +922,17 @@ const pokemonCollection = {
     25,
     40
   ),
-
   caterpie: new Pokemon("Caterpie", ["Bug"], 45, 30, 20, 35, 20, 45),
 
   weedle: new Pokemon("Weedle", ["Bug", "Poison"], 40, 35, 20, 30, 20, 50),
 
+  charmander: new Pokemon("Charmander", ["Fire"], 39, 52, 60, 43, 50, 65),
   squirtle: new Pokemon("Squirtle", ["Water"], 44, 48, 50, 65, 64, 43),
 
-  charmander: new Pokemon("Charmander", ["Fire"], 39, 52, 60, 43, 50, 65),
+  finneon: new Pokemon("Finneon", ["water"], 49, 49, 49, 56, 61, 66),
+  hitmontop: new Pokemon("Hitmontop", ["fighting"], 50, 95, 35, 95, 110, 70),
 
   scyther: new Pokemon("Scyther", ["Bug", "Flying"], 70, 110, 55, 80, 80, 105),
-
   dragonite: new Pokemon(
     "Dragonite",
     ["Dragon", "Flying"],
@@ -883,7 +945,6 @@ const pokemonCollection = {
   ),
 
   mewtwo: new Pokemon("Mewtwo", ["Psychic"], 106, 110, 154, 90, 90, 130),
-
   eternatus: new Pokemon(
     "Eternatus",
     ["Poison", "Dragon"],
@@ -894,12 +955,16 @@ const pokemonCollection = {
     95,
     130
   ),
+
+  a: new Pokemon("Test1", ["Water"], 30, 10, 20, 15, 20, 10),
+  b: new Pokemon("Test2", ["Fire"], 30, 10, 20, 15, 20, 20),
 };
 
 let battle = new PokemonBattle(
-  pokemonCollection.hitmontop,
-  pokemonCollection.finneon
+  pokemonCollection.wishiwashiSolo,
+  pokemonCollection.caterpie
 );
+
 console.log("###INIT###");
 battle.startBattle();
 console.log("###END###");
@@ -910,3 +975,7 @@ console.log("###END###");
 // console.log(PokemonBattle.getBattleLog(1).log);
 // console.log("");
 // console.log(PokemonBattle.getBattleLog(2).log);
+
+// console.log(
+//   pokemonCollection.charmander.isVulnerableTo(["water", "bug", "water"])
+// );
