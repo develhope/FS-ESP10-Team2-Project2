@@ -609,6 +609,18 @@ class PokemonBattle {
   }
 
   /**
+   * Método para registrar un mensaje en el log y en la consola.
+   * @private
+   * @param {string} log - El mensaje a registrar.
+   */
+  #pushConsoleLog(log) {
+    const prefix = "\n#-> ";
+    const subfix = " <-#";
+    console.log(prefix + log + subfix);
+    // this.log.history.push(log);
+  }
+
+  /**
    * Método para determinar el Pokémon que atacará en este turno.
    * @param {boolean} isFirst - Indica si es la primera vez que se determina el atacante.
    * @returns {Pokemon} - El Pokémon que atacará en este turno.
@@ -624,41 +636,73 @@ class PokemonBattle {
     // Determinar el Pokémon con mayor y menor velocidad
     const [maxSpeedPokemon, minSpeedPokemon] =
       speed1 > speed2 ? [pokemon1, pokemon2] : [pokemon2, pokemon1];
-    // Determinar el Pokémon con mayor y menor velocidad
+    // Determinar el Pokémon con mayor y menor fatiga
     const [maxFatigePokemon, minFatigePokemon] =
       fatigue1 > fatigue2 ? [pokemon1, pokemon2] : [pokemon2, pokemon1];
 
     if (isFirst) {
       // Si es la primera vez, el Pokémon más rápido ataca primero
       if (speed1 !== speed2) {
+        this.#pushConsoleLog(
+          `${maxSpeedPokemon.p.i.name} ataca primero por su mayor velocidad.`
+        );
         return maxSpeedPokemon;
       }
+      this.#pushConsoleLog(
+        `No hay diferencia de velocidad, cualquiera puede atacar primero.`
+      );
       // Si tienen la misma velocidad, se elige aleatoriamente
       return calculateProbability(50) ? pokemon1 : pokemon2;
     }
 
     // Verificar condiciones de agotamiento
     if (pokemon1.isExhausted() && pokemon2.isExhausted()) {
+      this.#pushConsoleLog(
+        `Ambos Pokémon están agotados, cualquiera puede atacar.`
+      );
       return calculateProbability(50) ? pokemon1 : pokemon2;
     }
 
-    if (
-      fatigue1 < 0 ||
-      (pokemon2.isExhausted() && fatigue2 < 0) ||
-      pokemon1.isExhausted()
-    ) {
+    if (pokemon1.isExhausted()) {
+      this.#pushConsoleLog(
+        `${pokemon1.p.i.name} está agotado, no puede atacar.`
+      );
+      return pokemon2;
+    }
+
+    if (pokemon2.isExhausted()) {
+      this.#pushConsoleLog(
+        `${pokemon2.p.i.name} está agotado, no puede atacar.`
+      );
+      return pokemon1;
+    }
+
+    // Verificar condiciones de fatiga, si ambos estan descansados
+    if (fatigue1 < 0 && fatigue2 < 0) {
       if (fatigue1 !== fatigue2) {
+        this.#pushConsoleLog(
+          `${minFatigePokemon.p.i.name} ataca por menor fatiga.`
+        );
         return minFatigePokemon;
-      } else {
-        return calculateProbability(50) ? pokemon1 : pokemon2;
+      } else if (fatigue1 === fatigue2) {
+        this.#pushConsoleLog(
+          `${maxSpeedPokemon.p.i.name} ataca por su mayor velocidad.`
+        );
+        return maxSpeedPokemon;
       }
     }
 
-    // Verificar condiciones de fatiga
-    if (fatigue1 < 0 || pokemon2.isExhausted()) {
+    if (fatigue1 < 0) {
+      this.#pushConsoleLog(
+        `${pokemon1.p.i.name} está descansado, puede atacar.`
+      );
       return pokemon1;
     }
-    if (fatigue2 < 0 || pokemon1.isExhausted()) {
+
+    if (fatigue2 < 0) {
+      this.#pushConsoleLog(
+        `${pokemon2.p.i.name} está descansado, puede atacar.`
+      );
       return pokemon2;
     }
 
@@ -667,9 +711,16 @@ class PokemonBattle {
       maxSpeedPokemon.p.c.speed,
       minSpeedPokemon.p.c.speed
     );
+    const clearProbability = Math.min(60, probability);
+
+    this.#pushConsoleLog(
+      `Cualquiera puede atacar, aunque ${
+        maxSpeedPokemon.p.i.name
+      } tiene un ${Math.round(clearProbability)}% más de probabilidad.`
+    );
 
     // Para que no se pase de ventaja establecemos como mínimo 60% de probabilidad para lanzar un ataque.
-    return calculateProbability(Math.min(60, probability))
+    return calculateProbability(clearProbability)
       ? maxSpeedPokemon
       : minSpeedPokemon;
   }
@@ -795,7 +846,7 @@ class PokemonBattle {
 
     // Comprobar si el defensor ha sido derrotado
     if (defender.isDefeated()) {
-      console.log(`${defender.p.i.name} ha sido derrotado.`);
+      this.#pushConsoleLog(`${defender.p.i.name} ha sido derrotado`);
       return true;
     }
 
@@ -813,7 +864,7 @@ class PokemonBattle {
     this.pokemon1.battleData.isReady = false;
     this.pokemon2.battleData.isReady = false;
 
-    console.log("\n# Inicio de la Batalla:\n");
+    console.log("\n$ Inicio de la Batalla:\n");
     let firstAttacker = this.#determineAttacker(true);
     firstAttacker.battleData.isFirstAttacker = true;
 
@@ -830,7 +881,7 @@ class PokemonBattle {
       firstAttacker = this.#determineAttacker();
       secondAttacker =
         firstAttacker === this.pokemon1 ? this.pokemon2 : this.pokemon1;
-      console.log("");
+      // console.log("");
     }
     this.#saveBattleResult();
     this.showBattleResult();
@@ -850,7 +901,7 @@ class PokemonBattle {
    * Muestra gráficamente por consola los datos relevantes del resultado final de cada Pokémon.
    */
   showBattleResult() {
-    console.log("\n# Resultado Final de la Batalla:\n");
+    console.log("\n$ Resultado Final de la Batalla:\n");
     this.pokemon1.state();
     console.log("");
     this.pokemon2.state();
@@ -911,6 +962,7 @@ class PokemonBattle {
 //todo: Ejemplo de uso
 //todo:---------------------------------------------------------------------------------------------
 
+//* wishiwashi-Solo,caterpie,squirtle,mewtwo,eternatus,dragonite,finneon,hitmontop,scyther,weedle,charmander,Beedrill,Sandslash
 const pokemonCollection = {
   wishiwashiSolo: new Pokemon(
     "Wishiwashi-Solo",
@@ -930,6 +982,9 @@ const pokemonCollection = {
   squirtle: new Pokemon("Squirtle", ["Water"], 44, 48, 50, 65, 64, 43),
 
   finneon: new Pokemon("Finneon", ["water"], 49, 49, 49, 56, 61, 66),
+  beedrill: new Pokemon("Beedrill", ["Bug", "Poison"], 65, 90, 45, 40, 60, 75),
+
+  sandslash: new Pokemon("Sandslash", ["Ground"], 75, 100, 45, 110, 55, 65),
   hitmontop: new Pokemon("Hitmontop", ["fighting"], 50, 95, 35, 95, 110, 70),
 
   scyther: new Pokemon("Scyther", ["Bug", "Flying"], 70, 110, 55, 80, 80, 105),
@@ -961,8 +1016,8 @@ const pokemonCollection = {
 };
 
 let battle = new PokemonBattle(
-  pokemonCollection.wishiwashiSolo,
-  pokemonCollection.caterpie
+  pokemonCollection.beedrill,
+  pokemonCollection.sandslash
 );
 
 console.log("###INIT###");
