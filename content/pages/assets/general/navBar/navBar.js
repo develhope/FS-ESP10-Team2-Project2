@@ -71,9 +71,9 @@ function initDarkMode() {
  * Inicializa los eventos de navegación.
  */
 function initNavEvents() {
-  const logoNavbar = document.querySelector(".logo-navbar img");
-  const homeNavbar = document.querySelector(".home-nav-btn");
-  const carritoButton = document.querySelector("#carritoButton");
+  const nbLogo = document.querySelector(".logo-navbar img");
+  const nbHome = document.querySelector(".home-nav-btn");
+  const nbCartButton = document.querySelector("#carritoButton");
 
   const gotoHomePage = () => {
     // Redirige a la página de inicio
@@ -86,16 +86,16 @@ function initNavEvents() {
   };
 
   // Añadir event listeners para navegación
-  if (logoNavbar) {
-    logoNavbar.addEventListener("click", gotoHomePage);
+  if (nbLogo) {
+    nbLogo.addEventListener("click", gotoHomePage);
   }
 
-  if (homeNavbar) {
-    homeNavbar.addEventListener("click", gotoHomePage);
+  if (nbHome) {
+    nbHome.addEventListener("click", gotoHomePage);
   }
 
-  if (carritoButton) {
-    carritoButton.addEventListener("click", gotoCartPage);
+  if (nbCartButton) {
+    nbCartButton.addEventListener("click", gotoCartPage);
   }
 }
 
