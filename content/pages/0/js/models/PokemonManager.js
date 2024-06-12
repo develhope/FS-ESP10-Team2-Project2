@@ -2,6 +2,32 @@ import { PokemonDataHandler } from "./PokemonDataHandler.js";
 import { PokemonDOMHandler } from "./PokemonDOMHandler.js";
 import { PokemonFilter } from "./PokemonFilter.js";
 
+/**
+ * Espera a que un elemento esté disponible en el DOM.
+ * @param {string} selector - El selector del elemento a esperar.
+ * @param {number} timeout - El tiempo máximo de espera en milisegundos.
+ * @returns {Promise<Element>} - Una promesa que se resuelve con el elemento DOM.
+ */
+function waitForElement(selector, timeout = 5000) {
+  return new Promise((resolve, reject) => {
+    const interval = 100;
+    let elapsed = 0;
+    const checkInterval = setInterval(() => {
+      const element = document.querySelector(selector);
+      if (element) {
+        clearInterval(checkInterval);
+        resolve(element);
+      } else if (elapsed >= timeout) {
+        clearInterval(checkInterval);
+        reject(
+          new Error(`El elemento '${selector}' no se encontró en el DOM.`)
+        );
+      }
+      elapsed += interval;
+    }, interval);
+  });
+}
+
 export class PokemonManager {
   /**
    * Constructor de la clase PokemonManager.
@@ -14,29 +40,32 @@ export class PokemonManager {
 
     // Obtener referencias a elementos del DOM
     this.#getDOMElements();
-    this.#addCartButtonListener();
+    this.#listenerAutoSavedSessionStorage();
   }
 
   /**
-   * Añade un event listener al botón del carrito una vez que el elemento esté disponible en el DOM.
+   * Añade event listeners a los elementos especificados una vez que estén disponibles en el DOM.
    */
-  async #addCartButtonListener() {
+  async #listenerAutoSavedSessionStorage() {
     // Espera hasta que el documento esté completamente cargado
     document.addEventListener("DOMContentLoaded", async () => {
-      // Espera a obtener el elemento del DOM
-      const cartButton = document.querySelector("#carritoButton");
+      // Elementos a los que se les añadirá un event listener
+      const elements = [".logo-navbar img", ".home-nav-btn", "#carritoButton"];
 
-      // Añade el event listener al botón del carrito
-      if (cartButton) {
-        cartButton.addEventListener(
-          "click",
-          () => {
-            this.#handleSessionStorage();
-          },
-          { capture: true }
-        ); // Usa el modo de captura para dar prioridad
-      } else {
-        console.error("El elemento #carritoButton no se encontró en el DOM.");
+      // Itera sobre cada elemento y espera hasta que esté disponible en el DOM
+      for (const element of elements) {
+        try {
+          const domElement = await waitForElement(element);
+          domElement.addEventListener(
+            "click",
+            () => {
+              this.#handleSessionStorage();
+            },
+            { capture: true } // Usa el modo de captura para dar prioridad
+          );
+        } catch (error) {
+          console.error(error.message);
+        }
       }
     });
   }
@@ -156,6 +185,17 @@ export class PokemonManager {
    */
   #saveToSessionStorage(key, value) {
     sessionStorage.setItem(key, JSON.stringify(value));
+    console.log(`${key} Guardado en el SessionStorage`);
+  }
+
+  /**
+   * Método para guardar datos en localStorage.
+   * @param {string} key - La clave bajo la cual se almacenarán los datos.
+   * @param {object} value - El valor a almacenar.
+   */
+  #saveToLocalStorage(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+    console.log(`${key} Guardado en el LocalStorage`);
   }
 
   /**
@@ -233,6 +273,8 @@ export class PokemonManager {
         this.#data.dom.filters.byNameOrId
       );
 
+      if (!pokemonManager_data_JSON)
+        this.#saveToSessionStorage("pokemonManager_data", this.#data);
       // Añadir los event listeners
       this.#addEventListeners();
     } catch (error) {
