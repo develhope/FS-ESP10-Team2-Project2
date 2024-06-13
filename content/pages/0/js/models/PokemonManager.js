@@ -79,10 +79,12 @@ export class PokemonManager {
         byProperty: ["pokeId", "asc"],
         byMaxPrice: "max",
         byNameOrId: undefined,
+        isInventory: false,
       },
       pokemonDivDataList: [],
     },
     pokemonDataList: [],
+    pokemonDataListInventory: [],
   };
 
   /**
@@ -146,8 +148,11 @@ export class PokemonManager {
     - order: ${this.#data.dom.filters.byProperty[1]}
     - maxPrice: ${this.#data.dom.filters.byMaxPrice}
     - nameOrId: ${this.#data.dom.filters.byNameOrId}
+    - inventory: ${this.#data.dom.filters.isInventory}
   - pokemonDivDataList length: ${this.#data.dom.pokemonDivDataList.length}
-- pokemonDataList length: ${this.#data.pokemonDataList.length}`
+- pokemonDataList length: ${this.#data.pokemonDataList.length}
+- pokemonDataListInventory length: ${this.#data.pokemonDataListInventory.length}
+`
     );
   }
 
@@ -275,6 +280,7 @@ export class PokemonManager {
 
       if (!pokemonManager_data_JSON)
         this.#saveToSessionStorage("pokemonManager_data", this.#data);
+
       // Añadir los event listeners
       this.#addEventListeners();
     } catch (error) {
@@ -403,6 +409,16 @@ export class PokemonManager {
   }
 
   /**
+   * Filtra la lista de Pokémon que se encuentren en el inventario.
+   * @param {boolean} isInventory -
+   * @returns {void}
+   */
+  filtersByIsInventory(isInventory) {
+    this.#data.dom.filters.isInventory = isInventory;
+    this.#updateViewPokemon();
+  }
+
+  /**
    * Actualiza y muestra la lista de Pokémon en el DOM.
    * @throws {Error} - Si ocurre un error al actualizar y mostrar los datos de los Pokémon.
    * @private
@@ -410,7 +426,12 @@ export class PokemonManager {
   #updateViewPokemon() {
     this.#checkDataLoaded();
 
-    let pokemonData = this.#data.pokemonDataList;
+    let pokemonData;
+    if (this.#data.dom.filters.isInventory) {
+      pokemonData = this.#data.pokemonDataListInventory;
+    } else {
+      pokemonData = this.#data.pokemonDataList;
+    }
 
     // Iterar sobre los filtros y aplicarlos secuencialmente
     for (let [filterType, filterValue] of Object.entries(
@@ -562,6 +583,12 @@ export class PokemonManager {
 
     this.#data.dom.elements.searchInput.addEventListener("input", (event) => {
       debouncedFilterByNameOrId(event.target.value);
+    });
+
+    const switchButton = document.querySelector("#inventorySwitch");
+
+    switchButton.addEventListener("click", () => {
+      this.filtersByIsInventory(switchButton.checked);
     });
   }
 
