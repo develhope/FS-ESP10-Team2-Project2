@@ -28,9 +28,14 @@
 
   - [x] **2.2** Crear un elemento PopUp de más información importante como (hp, attack, …), la información adicional se mostrara al pasar el cursor por encima de este.
 
-- [ ] **?.1** Crear un módulo de batalla básica para poder enfrentar a dos Pokémon (en principio solo se podrán enfrentar Pokémon que existan en el carrito de compra).
+- [ ] **?.** Crear un módulo de batalla básica para enfrentar a dos Pokémon. Los Pokémon almacenados en el inventario serán los únicos que podrás enfrentar contra otros. Habrá dos tipos de batallas:
 
-<!-- - Más información: El sistema de batalla se ejecutará de la siguiente manera, utilizando estas propiedades de cada Pokémon: Propiedades normales (`HP`, `attack`, `special_attack`, `defense`, `special_defense`, `speed`) y Propiedades en combate (`fatigue`).
+  1. **Batalla Amistosa**: En estas batallas, dos Pokémon de tu inventario se enfrentarán entre sí. Estas batallas no tendrán consecuencias negativas y podrás realizarlas tantas veces como desees.
+
+  2. **Batalla Normal**: En estas batallas, un Pokémon de tu inventario se enfrentará contra otro que no posees. Si pierdes, tu Pokémon estará sujeto a un tiempo de espera antes de poder volver a usarlo. Si ganas, tendrás la posibilidad de capturar al Pokémon derrotado. La probabilidad de captura se calculará en base al porcentaje de captura de cada Pokémon.
+
+  <!-- - Más información: El sistema de batalla se ejecutará de la siguiente manera, utilizando estas propiedades de cada Pokémon: Propiedades normales (`HP`, `attack`, `special_attack`, `defense`, `special_defense`, `speed`) y Propiedades en combate (`fatigue`).
+
 
   - **Primer ataque**: El Pokémon con más velocidad (`speed`) será el primero en lanzar un ataque. Si ambos tienen los mismos puntos de velocidad, el primer ataque se decidirá aleatoriamente.
 
