@@ -428,7 +428,11 @@ export class PokemonManager {
 
     let pokemonData;
     if (this.#data.dom.filters.isInventory) {
-      pokemonData = this.#data.pokemonDataListInventory;
+      // pokemonData = this.#data.pokemonDataListInventory;
+
+      //! Prueba con el carrito
+      const cart = JSON.parse(localStorage.getItem("carrito"));
+      pokemonData = cart ? cart : [];
     } else {
       pokemonData = this.#data.pokemonDataList;
     }
