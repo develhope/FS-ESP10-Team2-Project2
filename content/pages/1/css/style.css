@@ -1,22 +1,106 @@
-#buy-button{
+#buy-button {
     border: 1px rgb(224, 224, 87) solid;
     border-radius: 5px;
     padding: 5px;
     margin-top: 10px;
-    background-color: yellow;
+    background-color: rgb(251, 227, 45);
     box-shadow: 0rem 0.2rem 0.2rem -0.1rem rgba(122, 122, 30, 0.607);
     cursor: pointer;
 }
 
-#buy-button:hover{
+#buy-button:hover {
     transform: scale(1.1);
 }
 
-.pokemon-container{
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center ;
-margin-top: 100px;
-gap: 20px;
+.pokemon-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 100px;
+    gap: 20px;
+    align-items: center;
+
 }
+
+.pokemon-container-img {
+
+    width: 30%;
+    display: grid;
+    grid-template-columns: 80% 5%;
+    grid-template-rows: 1fr;
+    box-sizing: border-box;
+    position: relative;
+    background-color: grey;
+}
+
+#img-shiny {
+    display: flex;
+
+    width: 100%;
+}
+
+#gif {
+    text-align: right;
+    height: 5vh;
+    margin-right: 5vw;
+    margin-top: 2vw;
+}
+
+#h1 {
+    display: flex;
+    margin-right: 5vw;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 2vw;
+}
+
+.pokemon-container-text {
+    display: flex;
+    flex-direction: column;
+    align-items: normal;
+    width: 50%;
+
+gap:1vw;
+}
+
+.pokemon-container-img-text {
+    margin-top: 2vw;
+    width: 60%;
+    display: flex;
+    gap: 3vw;
+    justify-content: center;
+
+}
+
+.p-type{
+    margin-top: 1vw;
+}
+
+.span-details-pokemon-container-text{
+    color:yellow
+}
+.p-details-pokemon-container-text{
+    display: flex;
+    flex-direction: column;
+}
+#hability-p-details-pokemon-container-tex{
+    display: flex;
+    align-items: flex-start;
+    width: 30%;
+   
+
+}
+
+.pokemon-text-container{
+    width: 40%;
+height: min-content;
+    padding: 1vw 3vw;
+    background-color: #f366b9;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+.habilitiy-span-details-pokemon-container-text{
+    
+    color:yellow;
+   justify-content: center;}

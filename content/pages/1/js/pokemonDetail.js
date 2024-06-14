@@ -21,16 +21,48 @@ function displayPokemonDetails(pokemon) {
     price = pokemon.market.price;
   }
 
-  container.innerHTML = `
-    <h1>${pokemon.name}</h1>
-    <img src="${pokemon.images.gif.front_default}" alt="${pokemon.name} front">
-    <img src="${pokemon.images.gif.back_default}" alt="${pokemon.name} back">
-    <p>ID: ${pokemon.pokeId}</p>
-    <p>Type: ${pokemon.type.join(", ")}</p>
-    <p>Height: ${pokemon.statistics.height.meters} meters</p>
-    <p>Weight: ${pokemon.statistics.weight.kilograms} kilograms</p>
-    <p>Price: ${price}€</p>
+let container1=document.createElement("div")
+container1.className="pokemon-container-img-text"
+
+let container2=document.createElement("div")
+container2.className="pokemon-container-img"
+let h1=document.createElement("h1")
+h1.id="h1"
+h1.innerText=`${pokemon.name} No: ${pokemon.pokeId}`
+container.appendChild(h1)
+container.appendChild(container1)
+container1.appendChild(container2)
+
+// isLegendary: false, // Si es legendario
+// isMythical: false, // Si es mítico
+// isFinalEvolution: true, // Si es su evolucion final
+function habilitiesPokemon(pokemon){
+  if(pokemon.value.isLegendary===false){
+    return "Legendary"
+  }
+  else if(pokemon.value.isMythical===false)
+    return "Mythical"
+
+}
+  container2.innerHTML = `
+    <img src="${pokemon.images.illustration.shiny}" alt="${pokemon.name} front" id="img-shiny">
+   <img src="${pokemon.images.gif.front_shiny}" alt="${pokemon.name} front" id="gif">
+
   `;
+  let container3=document.createElement("div")
+  container3.className="pokemon-text-container"
+  container1.appendChild(container3)
+container3.innerHTML = `
+<section class=pokemon-container-text>
+  <p class=p-details-pokemon-container-text>Height:<span class=span-details-pokemon-container-text>${pokemon.statistics.height.meters} meters</span></p>
+  <p class=p-details-pokemon-container-text>Weight:<span class=span-details-pokemon-container-text>${pokemon.statistics.weight.kilograms}kilograms</span></p>
+  <p class=p-details-pokemon-container-text>Price:<span class=span-details-pokemon-container-text>${price}€ </span> </p>
+  </section>
+  <p id="hability-p-details-pokemon-container-tex"class=p-details-pokemon-container-text>Hability:<span class=habilitiy-span-details-pokemon-container-text> ${habilitiesPokemon(pokemon)} </span> </p>
+
+ 
+  `
+  // <p class="p-type">Type: ${pokemon.type.join(", ")}</p>
 }
 
 // Función para crear el Botón Comprar
