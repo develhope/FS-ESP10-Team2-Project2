@@ -47,7 +47,7 @@ function habilitiesPokemon(pokemon){
   container2.innerHTML = `
     <img src="${pokemon.images.illustration.shiny}" alt="${pokemon.name} front" id="img-shiny">
    <img src="${pokemon.images.gif.front_shiny}" alt="${pokemon.name} front" id="gif">
-
+<p id="price-p-details-pokemon-container-text"class=p-details-pokemon-container-text><span class=span-details-pokemon-container-text>${price}€ </span> </p>
   `;
   let container3=document.createElement("div")
   container3.className="pokemon-text-container"
@@ -56,7 +56,7 @@ container3.innerHTML = `
 <section class=pokemon-container-text>
   <p class=p-details-pokemon-container-text>Height:<span class=span-details-pokemon-container-text>${pokemon.statistics.height.meters} meters</span></p>
   <p class=p-details-pokemon-container-text>Weight:<span class=span-details-pokemon-container-text>${pokemon.statistics.weight.kilograms}kilograms</span></p>
-  <p class=p-details-pokemon-container-text>Price:<span class=span-details-pokemon-container-text>${price}€ </span> </p>
+  
   </section>
   <p id="hability-p-details-pokemon-container-tex"class=p-details-pokemon-container-text>Hability:<span class=habilitiy-span-details-pokemon-container-text> ${habilitiesPokemon(pokemon)} </span> </p>
 
