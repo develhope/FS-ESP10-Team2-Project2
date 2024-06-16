@@ -5,7 +5,7 @@
 const navBarPath = "../assets/general/navBar/navBar.html";
 const pages = {
   home: "../0/home.html",
-  cart: undefined,
+  cart: "../2/carritoIndex.html",
 };
 
 /**

@@ -29,7 +29,20 @@
     </div>
 
 
-    <script src="js/carrito.js"></script>
+    <script src="js/carrito.js" type="module" >
+        // Función para obtener y mostrar el carrito guardado en localStorage
+
+
+  carritoStorageJs.map((itemCarrito) => {
+    const divCarrito = document.createElement("div");
+    divCarrito.innerHTML = `
+    <h2>${itemCarrito.name}</h2>
+    <p>${itemCarrito.market.price}</p>
+    <img src=${itemCarrito.images.rendering.default} alt=Imagen de ${itemCarrito.name}>
+    `;
+    containerCarritoId.appendChild(divCarrito);
+  });
+    </script>
 </body>
 
 </html>

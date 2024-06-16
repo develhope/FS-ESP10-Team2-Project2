@@ -1,5 +1,6 @@
 import { addToCart } from "./../../2/js/carrito.js";
 
+
 // Función principal para enlazar toda la lógica del código
 function pokemonMain(pokemon) {
   // Llama a las funciones para mostrar detalles y crear el botón Comprar
