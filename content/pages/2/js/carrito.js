@@ -12,9 +12,6 @@
 //   cargarContenido(location.pathname); //carga el contenido correcto al iniciar
 // });
 
-  
-let carrito = [];
-
 /**
  * Añade un Pokémon al carrito de compras.
  *
@@ -22,93 +19,85 @@ let carrito = [];
  * @throws {Error} Si el objeto Pokémon no está definido o es null.
  * @param {Array} carrito - El array del carrito de compras que se va a guardar.
  * @returns {Array} El array del carrito de compras recuperado.
- * @throws {Error} Si el carrito no está guardado en el almacenamiento local. 
-*/
+ * @throws {Error} Si el carrito no está guardado en el almacenamiento local.
+ */
+let carrito = [];
 
 export function addToCart(pokemon) {
   if (!pokemon) {
     console.error("Error: Pokémon no detectado");
     return;
   }
-  carrito.push(pokemon);
-  console.log(carrito);
-  //llamar a la funcion
-  carritoStorage(carrito);
+    // Objeto sólo con las propiedades necesarias del pokemon para hacer carrito más ligero
+    const carritoItem = {
+      name: pokemon.name,
+      price: pokemon.market.price,
+      image: pokemon.images.rendering.default,
+      quantity: 1 // Agregar una propiedad de cantidad
+    };
   
+    carrito.push(carritoItem);
+    console.log(carritoItem);
+  //llamar a la funcion para guardar en localStorage
+  carritoStorage(carrito);
 }
 
-let carritoStore = getCarritoStorage();
-console.log(carritoStore);
-// funcion guardar carrito en localstorage
 
+// Funcion para guardar el carrito en localStorage
 function carritoStorage(carrito) {
   const carritoStorageJSON = JSON.stringify(carrito);
   localStorage.setItem("carrito", carritoStorageJSON);
 }
 
-function getCarritoStorage(){
-const carritoStorageJSON = localStorage.getItem("carrito");
+// Contenedor del carrito
+const containerCarritoId = document.getElementById("carritoDeCompraId");
 
-if (!carritoStorageJSON) {
-  console.error("Array CARRITO no guardado en localStorage");
-  return[];
-}
+//Recuperar el carrito del localStorage
+const carritoStorageJSON = localStorage.getItem("carrito");
+const carritoStorageJs = JSON.parse(carritoStorageJSON);
+
+// Función para obtener y mostrar el carrito guardado en localStorage
+function getCarritoStorage() {
+  if (!carritoStorageJSON) {
+    console.error("Array CARRITO no guardado en localStorage");
+    return [];
+  }
+
+  //COmentad esto y aparecerá vuestra parte
+
+  carritoStorageJs.map((itemCarrito) => {
+    const divCarrito = document.createElement("div");
+    divCarrito.innerHTML = `
+    <h2>${itemCarrito.name}</h2>
+    <p>${itemCarrito.market.price}</p>
+    <img src=${itemCarrito.images.rendering.default} alt=Imagen de ${itemCarrito.name}>
+    `;
+    containerCarritoId.appendChild(divCarrito);
+    // console.log("Esto es item carrito", {
+    //   nombre: itemCarrito.name,
+    //   id: itemCarrito.id,
+    //   precio: itemCarrito.market.price,
+    //   foto: itemCarrito.images.rendering.default
+    // });
+  });
+
+  
+ 
   carrito = JSON.parse(carritoStorageJSON);
+ 
   console.log("Array CARRITO guardado el localStorage: ", carrito);
   return carrito;
 }
 
+getCarritoStorage();
 
-// Obtener el objeto Pokémon de sessionStorage y llamamos a la función principal
-// const storedPokemon = sessionStorage.getItem("pokemonPreview");
-// if (storedPokemon) {
-//   const pokemon = JSON.parse(storedPokemon);
-//   pokemonMain(pokemon);
-// } else {
-//   console.error(
-//     "No se encontró ningún Pokémon seleccionado en sessionStorage."
-//   );
+// function conjuntoPrecios (carritoStorageJSON){
+//   const sumaPrecios = 0;
+
 // }
-
-// function pokemonCarrito(pokemon) {
-//   console.log(pokemon);
-// }
-
-// function mostrarPRoductos(pokemon) {
-//   const listaProductos = document.getElementById("carritoDeCompraId");
-//   listaProductos.innerHTML = "";
-
-//   pokemon.forEach((producto) => {
-//     const productoElemento = document.createElement("div");
-//     productoElemento.className = "pokemonCarrito";
-
-//     productoElemento.innerHTML = `
-//         <p class="pokemon-id-back">#${pokeId}</p>
-//         <div class="pokemon-image">
-//           <img src="${poke.images.illustration.default}" alt="${poke.name}">
-//         </div>
-//         <div class="pokemon-info">
-//           <div class="name-container">
-//             <p class="pokemon-id">#${pokeId}</p>
-//             <h2 class="pokemon-name" id="${quality}">${name}</h2>
-//             <!-- <img class="pokemon-img_maxEvo" src="assets/images/pokeballMaxEvo.png" alt="pokeballMaxEvo}"> -->
-//           </div>
-//           <div class="pokemon-types">
-//             ${types}
-//           </div>
-//           <div class="pokemon-stats">
-//             <p class="stat">${height}</p>
-//             <p class="stat">${weight}</p>
-//           </div>
-//           <div class="pokemon-price">
-//             ${market}
-//           </div>
-//         </div>
-//         `;
-
-//     listaProductos.appendChild(productoElemento);
-//   });
-// }
+// document.cart.addEventListener("click", () => {
+//   carritoContentHtml =
+// });
 
 // function agregarAlCarrito(idProducto) {
 //   const producto = carrito.find((item) => item.id === idProducto);
