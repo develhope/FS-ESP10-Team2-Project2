@@ -23,21 +23,24 @@
  */
 let carrito = [];
 
+// localStorage.clear();
+// sessionStorage.clear();
+
 export function addToCart(pokemon) {
   if (!pokemon) {
     console.error("Error: Pokémon no detectado");
     return;
   }
     // Objeto sólo con las propiedades necesarias del pokemon para hacer carrito más ligero
-    const carritoItem = {
-      name: pokemon.name,
-      price: pokemon.market.price,
-      image: pokemon.images.rendering.default,
-      quantity: 1 // Agregar una propiedad de cantidad
-    };
+    // const carritoItem = {
+    //   name: pokemon.name,
+    //   price: pokemon.price,
+    //   image: pokemon.image,
+    //   quantity: 1 // Agregar una propiedad de cantidad
+    // };
   
-    carrito.push(carritoItem);
-    console.log(carritoItem);
+    carrito.push(carrito);
+    console.log(carrito);
   //llamar a la funcion para guardar en localStorage
   carritoStorage(carrito);
 }
@@ -69,8 +72,8 @@ function getCarritoStorage() {
     const divCarrito = document.createElement("div");
     divCarrito.innerHTML = `
     <h2>${itemCarrito.name}</h2>
-    <p>${itemCarrito.market.price}</p>
-    <img src=${itemCarrito.images.rendering.default} alt=Imagen de ${itemCarrito.name}>
+    <p>${itemCarrito.price}</p>
+    <img src=${itemCarrito.image} alt=Imagen de ${itemCarrito.name}>
     `;
     containerCarritoId.appendChild(divCarrito);
     // console.log("Esto es item carrito", {

@@ -37,8 +37,8 @@
     const divCarrito = document.createElement("div");
     divCarrito.innerHTML = `
     <h2>${itemCarrito.name}</h2>
-    <p>${itemCarrito.market.price}</p>
-    <img src=${itemCarrito.images.rendering.default} alt=Imagen de ${itemCarrito.name}>
+    <p>${itemCarrito.price}</p>
+    <img src=${itemCarrito.image} alt=Imagen de ${itemCarrito.name}>
     `;
     containerCarritoId.appendChild(divCarrito);
   });
