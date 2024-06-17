@@ -16,6 +16,8 @@ let carrito = [];
 //! Por esa razón encapsulamos toda la logica funcional del carrito en una funcion principal que ejecutara toda la logica.
 //? Funcion para inicializar el funcionamiento del archivo "carrito.js"
 export function initCarrito() {
+  //? El codigo de esta función puedes dividirlo en varias funciones para una mejor organización, eso te lo dejo en tus manos (Decisión opcional)
+
   console.log("'carrito.js' función principal 'initCarrito' ejecutada");
 
   //Recuperar el carrito del localStorage
