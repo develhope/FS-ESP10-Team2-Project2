@@ -45,16 +45,28 @@ export function initCarrito() {
     <p>${itemCarrito.price}</p>
     <img src=${itemCarrito.image} alt=Imagen de ${itemCarrito.name}>
     `;
+
+    // const inputCantidad = divCarrito.querySelector(`#quantity-${index}`);
+    // inputCantidad.addEventListener('change', (event => {
+    //   const nuevaCantidad = event.target.value;
+    //   actualizarCantidadCarrito(index, nuevaCantidad);
+    // }))
+
     containerCarritoId.appendChild(divCarrito);
-    // console.log("Esto es item carrito", {
-    //   nombre: itemCarrito.name,
-    //   id: itemCarrito.id,
-    //   precio: itemCarrito.price,
-    //   foto: itemCarrito.image,
-    // });
   });
 }
 
+{/* <div class=contador>
+      <label for=quantity-${index}>Cantidad:</label>
+      <input type=number id=quantity-${index} name=quantity-${index} value=${itemCarrito.quantity} min=1>
+      </div> */}
+
+// function actualizarCantidadCarrito(index, nuevaCantidad) {
+//   carrito[index].quantity = parseInt(nuevaCantidad, 10);
+//   setCarritoStorage(carrito);
+// }
+
+//!Buscar el pokemon en el array del carrito y si lo encuentra que sume la camtidad a 1
 export function addToCart(pokemon) {
   if (!pokemon) {
     console.error("Error: Pokémon no detectado");
@@ -99,6 +111,8 @@ function getCarritoStorage() {
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //todo||| CODIGO ANTERIOR |||
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 
 // // document.getElementById("carritoButton").addEventListener("click", () => {
 // //   history.pushState(null, "", "/carrito"); // Crea una nueva ruta
