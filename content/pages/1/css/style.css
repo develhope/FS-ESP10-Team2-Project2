@@ -91,6 +91,7 @@
     display: flex;
     flex-direction: column;
     width: 6vw;
+    margin-left: 1vw;
 }
 #hability-p-details-pokemon-container-tex{
     display: flex;
@@ -144,4 +145,19 @@ width: min-content;
     display: flex;
     flex-direction: row;
     background-color:var(--clr-type-) ;
+}
+
+.evolutions-pokemon-container{
+    margin: 4.5vw 0 4.5vw 0;
+    width: 50%;
+    height: 30%;
+    text-align: center;
+    background-color: gray;
+    border: 2px solid transparent;
+    display: flex;
+    flex-direction: row;
+    gap:2vw;
+}
+.img-evolutions-pokemon{
+    width: 40%;
 }

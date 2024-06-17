@@ -48,28 +48,28 @@ function displayPokemonDetails(pokemon) {
   container2.innerHTML = `
     <img src="${pokemon.images.illustration.shiny}" alt="${pokemon.name} front" id="img-shiny">
    <img src="${pokemon.images.gif.front_shiny}" alt="${pokemon.name} front" id="gif">
-<p id="price-p-details-pokemon-container-text"class=p-details-pokemon-container-text><span class=span-details-pokemon-container-text>${price}€ </span> </p>
+<p id="price-p-details-pokemon-container-text"class="p-details-pokemon-container-text"><span class="span-details-pokemon-container-text">${price}€ </span> </p>
   `;
   let container3 = document.createElement("section");
   container3.className = "pokemon-text-container";
 
   container3.innerHTML = `
 <div class=pokemon-container-text>
- <div class=text-div-details-pokemon-container>
-  <p class=p-details-pokemon-container-text>Height:<span class=span-details-pokemon-container-text>${pokemon.statistics.height.meters} ${metersFnc(pokemon)} </span></p>
-  <p class=p-details-pokemon-container-text>Weight:<span class=span-details-pokemon-container-text>${pokemon.statistics.weight.kilograms} ${gramsFnc(pokemon)}</span></p></div>
-   <div class=text-div-details-pokemon-container-text>
-   <p id="hability-p-details-pokemon-container-tex"class=p-details-pokemon-container-text>Hability:<span class=habilitiy-span-details-pokemon-container-text> ${habilitiesPokemon(pokemon)} </span> </p> <div>
+ <div class="text-div-details-pokemon-container">
+  <p class="p-details-pokemon-container-text">Height:<span class="span-details-pokemon-container-text">${pokemon.statistics.height.meters} ${metersFnc(pokemon)} </span></p>
+  <p class="p-details-pokemon-container-text">Weight:<span class="span-details-pokemon-container-text">${pokemon.statistics.weight.kilograms} ${gramsFnc(pokemon)}</span></p></div>
+   <div class="text-div-details-pokemon-container-text">
+   <p id="hability-p-details-pokemon-container-tex"class="p-details-pokemon-container-text">Hability:<span class="habilitiy-span-details-pokemon-container-text"> ${habilitiesPokemon(pokemon)} </span> </p> <div>
 
   </div>
 
   `
   function metersFnc(pokemon){
-if(pokemon.statistics.height.meters<=1){return "meter"}
+if(pokemon.statistics.height.meters===1){return "meter"}
 else{return "meters"}
   }
   function gramsFnc(pokemon){
-    if(pokemon.statistics.weight.kilograms<=1){return "gram"}
+    if(pokemon.statistics.weight.kilograms===1){return "gram"}
     else{return "grams"}
       }
   container1.appendChild(container3);
@@ -87,27 +87,37 @@ else{return "meters"}
       return typeText.innerHTML = `
       <p>Type</p>
       <div class=type-div-container3-pokemon>
-        <button class=button-type-div-container3-pokemon>${pokemon.type[1]}</button>
+        <button class="button-type-div-container3-pokemon">${pokemon.type[1]}</button>
+        
         </div>
        `
     } else if (pokemon.type[1] === undefined) {
       return typeText.innerHTML = `
       <p>Type</p>
       <div class=type-div-container3-pokemon>
-       <button class=button-type-div-container3-pokemon>${pokemon.type[0]}</button>
+       <button class="button-type-div-container3-pokemon" >${pokemon.type[0]}</button>
         </div>
        `
     } else {
      return typeText.innerHTML = `
       <p>Type</p>
       <div class=type-div-container3-pokemon>
-       <button class=button-type-div-container3-pokemon>${pokemon.type[0]}</button>
-        <button class=button-type-div-container3-pokemon>${pokemon.type[1]}</button>
+       <button class="button-type-div-container3-pokemon" >${pokemon.type[0]}</button>
+        <button class="button-type-div-container3-pokemon" >${pokemon.type[1]}</button>
         </div>
        `
     }
     // <p class="p-type">Type: ${pokemon.type.join(", ")}</p>
-  }
+  };
+let container4=document.createElement("section")
+container4.className="evolutions-pokemon-container"
+container4.innerHTML=`
+<div>
+<img class="img-evolutions-pokemon" src="${pokemon.images.illustration.shiny}" alt="${pokemon.name} front"
+</div>
+
+`
+container.appendChild(container4)
 }
 // Función para crear el Botón Comprar
 function createBuyButton(pokemon) {
