@@ -1,6 +1,7 @@
 //!!!!!!!!!!!!!!!!!!!!!!!!
 //todo||| CODIGO NUEVO |||
 //!!!!!!!!!!!!!!!!!!!!!!!!
+
 //? He editado este archivo y el HTML para solucionar el problema del "appendChild".
 //? Este problema ocurría porque el elemento "containerCarritoId" se estaba intentando establecer
 //? antes de que se ejecutase el HTML del carrito, es decir, tanto en la página principal (página 0)
@@ -20,31 +21,23 @@
 // localStorage.clear();
 // sessionStorage.clear();
 
-//? El codigo que este fuera de cualquier funcion, se ejecutara cada vez que se ejecute un archivo JS que importe cualquier funcion de este.
-//! Por ende este codigo se ejecutara siempre que un archivo JS que contenga un (import <Cualquier funcion de este archivo>) se ejecute.
-let carrito = []; //* Se ejecuta cada vez, porque esta en el ambito global del arvhivo.
+//? El código que está fuera de cualquier función se ejecutará cada vez que se importe cualquier función de este archivo.
+console.log("'carrito.js' ámbito global ejecutado");
 
-//! Por esa razón encapsulamos toda la logica funcional del carrito en una funcion principal que ejecutara toda la logica.
-//? Funcion para inicializar el funcionamiento del archivo "carrito.js"
+//! Esta línea debe estar en el ámbito global para que se establezca en cada página que importe la función "addToCart" y para que la variable esté preparada y establecida para la función "addToCart".
+let carrito = getCarritoStorage();
+
+//? Encapsulamos toda la lógica funcional del carrito en una función principal que ejecutará toda la lógica.
 export function initCarrito() {
-  //? El codigo de esta función puedes dividirlo en varias funciones para una mejor organización, eso te lo dejo en tus manos (Decisión opcional)
-
+  //? El código de esta función puedes dividirlo en varias funciones para una mejor organización, eso te lo dejo en tus manos (Decisión opcional).
   console.log("'carrito.js' función principal 'initCarrito' ejecutada");
 
-  //Recuperar el carrito del localStorage
-  const carritoStorageJSON = localStorage.getItem("carrito");
-  const carritoStorageJs = JSON.parse(carritoStorageJSON);
-
-  if (!carritoStorageJs) {
-    console.error("Array CARRITO no guardado en localStorage");
-    carrito = [];
-  }
-  carrito = carritoStorageJs;
+  const carritoStorageJs = carrito;
 
   // Contenedor del carrito
   const containerCarritoId = document.getElementById("carritoDeCompraId");
 
-  //! No es necesario "map" ya que tiene otros usos que no se requieren para una simple iteración, en su lugar usa mejor "forEach"
+  //! No es necesario usar "map" ya que tiene otros usos que no se requieren para una simple iteración, en su lugar usa mejor "forEach".
   carritoStorageJs.forEach((itemCarrito) => {
     const divCarrito = document.createElement("div");
     divCarrito.innerHTML = `
@@ -79,18 +72,34 @@ export function addToCart(pokemon) {
   console.log(carritoItem);
 
   //llamar a la funcion para guardar en localStorage
-  saveCarritoStorage(carrito);
+  setCarritoStorage(carrito);
 }
 
 // Funcion para guardar el carrito en localStorage
-function saveCarritoStorage(carrito) {
+function setCarritoStorage(carrito) {
   const carritoStorageJSON = JSON.stringify(carrito);
   localStorage.setItem("carrito", carritoStorageJSON);
+}
+
+// Funcion para optener el carrito del localStorage
+function getCarritoStorage() {
+  //Recuperar el carrito del localStorage
+  const carritoStorageJSON = localStorage.getItem("carrito");
+
+  if (!carritoStorageJSON) {
+    console.error("Array CARRITO no guardado en localStorage");
+    return [];
+  }
+
+  const carritoStorageJs = JSON.parse(carritoStorageJSON);
+
+  return carritoStorageJs;
 }
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //todo||| CODIGO ANTERIOR |||
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 // // document.getElementById("carritoButton").addEventListener("click", () => {
 // //   history.pushState(null, "", "/carrito"); // Crea una nueva ruta
 // //   cargarContenido("/carrito"); // carga contenido en la nueva ruta
