@@ -24,7 +24,7 @@
 //? El código que está fuera de cualquier función se ejecutará cada vez que se importe cualquier función de este archivo.
 console.log("'carrito.js' ámbito global ejecutado");
 
-//! Esta línea debe estar en el ámbito global para que se establezca en cada página que importe la función "addToCart" y para que la variable esté preparada y establecida para la función "addToCart".
+//! Esta línea debe estar en el ámbito global para que se establezca en cada página que importe la función "addToCart" o/y "initCarrito" y para que la variable esté preparada y establecida para la función "addToCart" y "initCarrito".
 let carrito = getCarritoStorage();
 
 //? Encapsulamos toda la lógica funcional del carrito en una función principal que ejecutará toda la lógica.
