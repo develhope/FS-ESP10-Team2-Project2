@@ -1,10 +1,21 @@
 // !!!!!!!!!!!!!!!!!!!!!!!!
 // todo||| CODIGO NUEVO |||
 // !!!!!!!!!!!!!!!!!!!!!!!!
-//? He editado el este archivo y el html, para solucionar el problema del "appendChild", esto pasaba porque el elemento "containerCarritoId" se estaba intentando establecer cuando aun no se abia ejecutado el html del carrito, osea en la pagina 0 (principal) y tambien en la pagina 1
-//? Esto ocurre por que el codigo JS que este fuera de cualquier funcion se ejecuta en el momento que otro archivo JS ejecute un import de cualquier funcion de este
-//? Para solucionar esto he buscado informacion y la solucion mas facil ha sido encapsular todo el codigo necesario del carrito en una funcion principal que ejecuta toda la logica necesaria, luego esa funcion se llama unicamente cuando se carga el archivo html del carrito
-//? Toda la logica de tu codigo esta "practicamente" igual que lo tenias ya, solo he editado lo necesario para solucionar este problema
+//? He editado este archivo y el HTML para solucionar el problema del "appendChild".
+//? Este problema ocurría porque el elemento "containerCarritoId" se estaba intentando establecer
+//? antes de que se ejecutase el HTML del carrito, es decir, tanto en la página principal (página 0)
+//? como en la página 1.
+
+//? Esto sucedía porque el código JS fuera de cualquier función se ejecuta inmediatamente
+//? cuando otro archivo JS importa cualquier función de este archivo.
+
+//? Para solucionar esto, investigué y encontré que la solución más sencilla es encapsular
+//? todo el código necesario del carrito en una función principal que ejecuta toda la lógica requerida.
+//? Luego, esa función se llama únicamente cuando se carga el archivo HTML del carrito.
+
+//? La lógica de tu código está "prácticamente" igual a como la tenías, solo he editado lo necesario para solucionar este problema.
+
+//* Vas por buen camino, tu código se ve bien, sigue así :)
 
 // localStorage.clear();
 // sessionStorage.clear();
