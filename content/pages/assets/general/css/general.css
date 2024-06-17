@@ -6,6 +6,7 @@
 }
 
 
+/*? Podeis añadir mas colores en la clase "root" y en "dark-mode" */
 :root {
     /* Define los colores para el modo claro */
     --clr-black: #1c1c1c;
@@ -41,19 +42,30 @@
     --clr-offerBG: #f2ff80;
     --clr-offer: #914600;
 
+    /*? Añade tus colores personalizados de MODO CLARO aqui */
+    --clr-chachi-pistachi1: violet;
+    --clr-OtroMas: #98D8D8;
+    /* <mas codigo de colores...> */
 }
 
+/*? Clase "dark-mode" */
 .dark-mode {
     /* Cambia los colores para el modo oscuro */
     --clr-white: #2b2b2b;
     --clr-gray: #666666;
     --clr-gray2: #a1a1a1;
     --clr-black: #f7f7f7;
+
+    /*? Añade tus colores personalizados de MODO OSCURO aqui */
+    --clr-chachi-pistachi1: blueviolet;
+    --clr-OtroMas: #6890F0;
+    /* <mas codigo de colores...> */
 }
 
 
 
 /*todo || GENERAL STYLES */
+/*? Si necesitais cambiar o añadir algo aqui podeis hacerlo siempre que aviseis de ello */
 
 * {
     margin: 0;
@@ -62,7 +74,6 @@
     color: var(--clr-black);
     /* font-family: 'Rubik', sans-serif; */
     font-family: 'Aldrich';
-
 }
 
 ul {
