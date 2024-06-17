@@ -22,7 +22,7 @@
 
 //? El codigo que este fuera de cualquier funcion, se ejecutara cada vez que se ejecute un archivo JS que importe cualquier funcion de este.
 //! Por ende este codigo se ejecutara siempre que un archivo JS que contenga un (import <Cualquier funcion de este archivo>) se ejecute.
-let carrito = [];
+let carrito = []; //* Se ejecuta cada vez, porque esta en el ambito global del arvhivo.
 
 //! Por esa razón encapsulamos toda la logica funcional del carrito en una funcion principal que ejecutara toda la logica.
 //? Funcion para inicializar el funcionamiento del archivo "carrito.js"
