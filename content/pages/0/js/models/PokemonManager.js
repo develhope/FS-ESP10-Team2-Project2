@@ -68,6 +68,13 @@ export class PokemonManager {
         }
       }
     });
+
+    // Añadir el event listener
+    window.addEventListener("beforeunload", this.#clearSessionStorage);
+
+    // window.addEventListener("beforeunload", (e) => {
+    //   this.#handleSessionStorage();
+    // });
   }
 
   // Datos y configuraciones internas del Pokémon Manager
@@ -161,11 +168,14 @@ export class PokemonManager {
    * @param {Event} event - El evento 'beforeunload'.
    */
   #clearSessionStorage(event = null) {
-    if (event) event.preventDefault();
+    //! detectar la recarga de la pagina, (Solo la RECARGA), soy consciente de que no funciona muy bien, pero es lo unico que he encontrado para que funcione solo al recargar la pagina.
+    if (window.performance.navigation.type == 1) {
+      if (event) event.preventDefault();
 
-    console.log("Clear Session Storage\npokemonManager_data, pokemonPreview");
-    sessionStorage.removeItem("pokemonManager_data");
-    sessionStorage.removeItem("pokemonPreview");
+      console.log("Clear Session Storage\npokemonManager_data, pokemonPreview");
+      sessionStorage.removeItem("pokemonManager_data");
+      sessionStorage.removeItem("pokemonPreview");
+    }
   }
 
   /**
@@ -211,9 +221,6 @@ export class PokemonManager {
    * @throws {Error} - Si ocurre un error durante la carga de los datos.
    */
   async init(count, reload = false) {
-    // Añadir el event listener
-    window.addEventListener("beforeunload", this.#clearSessionStorage);
-
     // Muestra el div de carga mientras se procesan los datos
     this.PokemonDOMHandler.toggleLoading(true);
 

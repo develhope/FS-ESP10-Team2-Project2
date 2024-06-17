@@ -711,16 +711,15 @@ class PokemonBattle {
       maxSpeedPokemon.p.c.speed,
       minSpeedPokemon.p.c.speed
     );
-    const clearProbability = Math.min(60, probability);
 
     this.#pushConsoleLog(
       `Cualquiera puede atacar, aunque ${
         maxSpeedPokemon.p.i.name
-      } tiene un ${Math.round(clearProbability)}% más de probabilidad.`
+      } tiene un ${Math.round(probability)}% más de probabilidad.`
     );
 
     // Para que no se pase de ventaja establecemos como mínimo 60% de probabilidad para lanzar un ataque.
-    return calculateProbability(clearProbability)
+    return calculateProbability(probability)
       ? maxSpeedPokemon
       : minSpeedPokemon;
   }
@@ -790,8 +789,8 @@ class PokemonBattle {
     // Calcular la probabilidad basada en la diferencia de porcentajes
     let probability = valuePercent1 - valuePercent2;
 
-    // Ajustar la probabilidad para que esté en el rango de 30% a 75%
-    probability = Math.max(30, Math.min(75, 50 + probability / 2)); // Ajuste para equilibrar
+    // Ajustar la probabilidad para que esté en el rango de 5% a 95%
+    probability = Math.max(5, Math.min(95, 50 + probability / 2)); // Ajuste para equilibrar
 
     return probability;
   }
@@ -885,15 +884,15 @@ class PokemonBattle {
     }
     this.#saveBattleResult();
     this.showBattleResult();
-    console.log(
-      "\n-------------------------pokemon.log.history-------------------------"
-    );
-    console.log(this.pokemon1.log.history.join("\n"));
-    console.log("-------------------------------------------------");
-    console.log(this.pokemon2.log.history.join("\n"));
-    console.log(
-      "----------------------------------------------------------------------"
-    );
+    // console.log(
+    //   "\n-------------------------pokemon.log.history-------------------------"
+    // );
+    // console.log(this.pokemon1.log.history.join("\n"));
+    // console.log("-------------------------------------------------");
+    // console.log(this.pokemon2.log.history.join("\n"));
+    // console.log(
+    //   "----------------------------------------------------------------------"
+    // );
   }
 
   /**
@@ -1011,14 +1010,11 @@ const pokemonCollection = {
     130
   ),
 
-  a: new Pokemon("Test1", ["Water"], 30, 10, 20, 15, 20, 10),
-  b: new Pokemon("Test2", ["Fire"], 30, 10, 20, 15, 20, 20),
+  a: new Pokemon("Test1", ["Water"], 50, 10, 20, 15, 20, 255),
+  b: new Pokemon("Test2", ["Fire"], 255, 10, 20, 15, 20, 1),
 };
 
-let battle = new PokemonBattle(
-  pokemonCollection.beedrill,
-  pokemonCollection.sandslash
-);
+let battle = new PokemonBattle(pokemonCollection.a, pokemonCollection.b);
 
 console.log("###INIT###");
 battle.startBattle();
