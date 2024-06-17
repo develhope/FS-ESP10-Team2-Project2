@@ -1,6 +1,6 @@
-// !!!!!!!!!!!!!!!!!!!!!!!!
-// todo||| CODIGO NUEVO |||
-// !!!!!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!
+//todo||| CODIGO NUEVO |||
+//!!!!!!!!!!!!!!!!!!!!!!!!
 //? He editado este archivo y el HTML para solucionar el problema del "appendChild".
 //? Este problema ocurría porque el elemento "containerCarritoId" se estaba intentando establecer
 //? antes de que se ejecutase el HTML del carrito, es decir, tanto en la página principal (página 0)
@@ -88,9 +88,9 @@ function saveCarritoStorage(carrito) {
   localStorage.setItem("carrito", carritoStorageJSON);
 }
 
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!
-// todo||| CODIGO ANTERIOR |||
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//todo||| CODIGO ANTERIOR |||
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // // document.getElementById("carritoButton").addEventListener("click", () => {
 // //   history.pushState(null, "", "/carrito"); // Crea una nueva ruta
 // //   cargarContenido("/carrito"); // carga contenido en la nueva ruta
