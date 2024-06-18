@@ -46,9 +46,10 @@ function displayPokemonDetails(pokemon) {
 
   }
   container2.innerHTML = `
-    <img src="${pokemon.images.illustration.shiny}" alt="${pokemon.name} front" id="img-shiny">
+   <div class=imgs> <img src="${pokemon.images.illustration.shiny}" alt="${pokemon.name} front" id="img-shiny">
    <img src="${pokemon.images.gif.front_shiny}" alt="${pokemon.name} front" id="gif">
-<p id="price-p-details-pokemon-container-text"class="p-details-pokemon-container-text"><span class="span-details-pokemon-container-text">${price}€ </span> </p>
+   </div>
+   <span id="price-span-imgs"class="span-details-pokemon-container-text">${price}€ </span> 
   `;
   let container3 = document.createElement("section");
   container3.className = "pokemon-text-container";
@@ -79,47 +80,35 @@ function displayPokemonDetails(pokemon) {
   container3.appendChild(typeSection)
   let typeText = document.createElement("p")
   typeText.className = "text-type-section-container3-pokemon";
-  typeText.innerHTML = typeInnerText(pokemon)
-  typeSection.appendChild(typeText)
+  typeText.innerText = "Type"
+  let buttonType = document.createElement("button")
+  buttonType.className += " button-type-section-container3-pokemon";
+  // buttonType.className +=  ` ${type}`;
 
 
-  function typeInnerText(pokemon) {
-    if (pokemon.type[0] === undefined) {
-      return typeText.innerHTML = `
-      <p>Type</p>
-      <div class=type-div-container3-pokemon>
-        <button class=${type} class="button-type-div-container3-pokemon">${pokemon.type[1]}</button>
-        
-        </div>
-       `
-    } else if (pokemon.type[1] === undefined) {
-      return typeText.innerHTML = `
-      <p>Type</p>
-      <div class=type-div-container3-pokemon>
-       <button class=${type}class="button-type-div-container3-pokemon" >${pokemon.type[0]}</button>
-       button.style=
-        </div>
-       `
-    } else {
-      return typeText.innerHTML = `
-      <p>Type</p>
-      <div class=type-div-container3-pokemon>
-       <button class=${type} class="button-type-div-container3-pokemon" >${pokemon.type[0]}</button>
-       <button class=${type} class="button-type-div-container3-pokemon" >${pokemon.type[1]}</button>
-        </div>
-       `
-    }
-    // <p class="p-type">Type: ${pokemon.type.join(", ")}</p>
-  };
+  const types = pokemon.type.map((t) => `<p id="types-container3-pokemon" class="${t} t">${t} </p>`).join("");
+  console.log(types);
+
+  buttonType.innerHTML = types;
+
+  typeSection.appendChild(typeText);
+  typeSection.appendChild(buttonType);
+
+  // <p class="p-type">Type: ${pokemon.type.join(", ")}</p>
+
   let container4 = document.createElement("section")
   container4.className = "evolutions-pokemon-container"
   container4.innerHTML = `
 <div>
-<img class="img-evolutions-pokemon" src="${pokemon.images.illustration.shiny}" alt="${pokemon.name} front"
+<img class="img-evolutions-pokemon" src="${pokemon.images.illustration.shiny}" alt="${pokemon.name} front">
+<span class="class=arrow-span-evolutions-pokemon">&#9660 </span> 
+<img class="img-evolutions-pokemon" src="${pokemon.evolutions}" alt="${pokemon.name} front">
 </div>
 
 `
-  container.appendChild(container4)
+  container.appendChild(container4);
+
+
 }
 // Función para crear el Botón Comprar
 function createBuyButton(pokemon) {
