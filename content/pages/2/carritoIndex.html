@@ -7,53 +7,30 @@
     <title>Document</title>
     <link rel="stylesheet" href="../assets/general/css/general.css">
     <link rel="stylesheet" type="text/css" href="../assets/general/navBar/navBar.css">
+    <link rel="stylesheet" href="css/styleCarrito.css">
 </head>
 
 <body>
-    <div id="navbar-complete"></div>
-        <div class="carritoDeCompraClass" id="carritoDeCompraId">
-            <!-- nueva ruta -->
-            <!-- <div class="pokemonCarrito" id="pokemonCarrito"></div> -->
-        </div>
-    </div>
 
+    <div id="navbar-complete"></div>
+
+    <div class="carritoDeCompraClass" id="carritoDeCompraId">
+        <p><span class="carritoTitle">CARRITO</span>  </p>
+        <!-- nueva ruta -->
+        <!-- <div class="pokemonCarrito" id="pokemonCarrito"></div> -->
+    </div>
+    
     <script src="../assets/general/navBar/navBar.js"></script>
 
-    <!--!!!!!!!!!!!!!!!!!!!!!!!!-->
-    <!--todo||| CODIGO NUEVO |||-->
-    <!--!!!!!!!!!!!!!!!!!!!!!!!!-->
-
-    <!--? Usamos este sistema para importar el codigo necesario de "carrito.js" -->
+    <!-- Usamos este sistema para importar el codigo necesario de "carrito.js" --> -->
     <script type="module">
-        // <!--! Importamos aqui la funcion principal del "carrito.js" -->
+        // Importamos aqui la funcion principal del "carrito.js" 
         import { initCarrito } from "./js/carrito.js";
-        // <!--! Ejecutamos la funcion principal del carrito -->
+        // Ejecutamos la funcion principal del carrito 
         initCarrito()
     </script>
 
-    
 
-
-
-
-    <!--!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
-    <!--todo||| CODIGO ANTERIOR |||-->
-    <!--!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
-
-    <!-- <script src="js/carrito.js" type="module">
-        // Función para obtener y mostrar el carrito guardado en localStorage
-
-
-        carritoStorageJs.map((itemCarrito) => {
-            const divCarrito = document.createElement("div");
-            divCarrito.innerHTML = `
-<h2>${itemCarrito.name}</h2>
-<p>${itemCarrito.price}</p>
-<img src=${itemCarrito.image} alt=Imagen de ${itemCarrito.name}>
-`;
-            containerCarritoId.appendChild(divCarrito);
-        });
-    </script> -->
 
 </body>
 
