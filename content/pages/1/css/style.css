@@ -84,7 +84,7 @@ justify-content: center;
     display: flex;
     gap: 3vw;
     justify-content: center;
-
+margin-bottom: 15vw;
 }
 
 .p-type{
@@ -199,8 +199,21 @@ width: min-content;
 }
 .arrow-span-evolutions-pokemon{
     display: flex;
+    text-align: center;
+    justify-content: center;
     width: 5vw;
     font-size: 100vw;
     font-weight: bold;
     color: #f366b9;
 }
+/* .puntos-de-base{
+    display: flex;
+    width: 10vw;
+    padding: 2vw;
+   box-sizing: border-box;
+}
+.h2-table{
+    display: flex;
+    text-align: left; 
+    box-sizing: border-box;
+} */
