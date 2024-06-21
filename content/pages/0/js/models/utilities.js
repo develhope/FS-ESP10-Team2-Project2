@@ -70,10 +70,10 @@ class _ {
      * @returns {string} - La cadena con la primera letra en mayúscula.
      * @example
      * // Capitaliza la primera letra de la cadena.
-     * const capitalized = _.str.capitalizeFirstLetter('hola mundo');
+     * const capitalized = _.str.capitalize('hola mundo');
      * console.log(capitalized); // 'Hola mundo'
      */
-    capitalizeFirstLetter(string) {
+    capitalize(string) {
       if (typeof string !== "string" || string.length === 0) {
         return "";
       }
@@ -120,10 +120,10 @@ class _ {
      * @returns {boolean} - true si el resultado está dentro del rango de probabilidad, de lo contrario, false.
      * @example
      * // Calcula la probabilidad de 70% de que el resultado sea true.
-     * const result = _.bool.calculateProbability(70);
+     * const result = _.bool.isProbable(70);
      * console.log(result); // true o false
      */
-    calculateProbability(probabilityPercentage) {
+    isProbable(probabilityPercentage) {
       if (probabilityPercentage < 0 || probabilityPercentage > 100) {
         throw new Error(
           "El porcentaje de probabilidad debe estar entre 0 y 100."

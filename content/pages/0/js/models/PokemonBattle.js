@@ -52,7 +52,7 @@ class Pokemon {
     speed
   ) {
     // Convierte la primera letra a mayúsculas y las demás a minúsculas
-    this.#data.properties.immutable.name = _.str.capitalizeFirstLetter(name);
+    this.#data.properties.immutable.name = _.str.capitalize(name);
     // Convierte todos los tipos a minusculas
     this.#data.properties.immutable.type = type.map((t) => t.toLowerCase());
     this.#data.properties.base.hp = hp;
@@ -663,7 +663,7 @@ class PokemonBattle {
         `No hay diferencia de velocidad, cualquiera puede atacar primero.`
       );
       // Si tienen la misma velocidad, se elige aleatoriamente
-      return _.bool.calculateProbability(50) ? pokemon1 : pokemon2;
+      return _.bool.isProbable(50) ? pokemon1 : pokemon2;
     }
 
     // Verificar condiciones de agotamiento
@@ -671,7 +671,7 @@ class PokemonBattle {
       this.#pushConsoleLog(
         `Ambos Pokémon están agotados, cualquiera puede atacar.`
       );
-      return _.bool.calculateProbability(50) ? pokemon1 : pokemon2;
+      return _.bool.isProbable(50) ? pokemon1 : pokemon2;
     }
 
     if (pokemon1.isExhausted()) {
@@ -730,7 +730,7 @@ class PokemonBattle {
     );
 
     // Para que no se pase de ventaja establecemos como mínimo 60% de probabilidad para lanzar un ataque.
-    return _.bool.calculateProbability(probability)
+    return _.bool.isProbable(probability)
       ? maxSpeedPokemon
       : minSpeedPokemon;
   }
@@ -752,7 +752,7 @@ class PokemonBattle {
     const vulnerabilityInfo = defender.isVulnerableTo(attackerTypes);
 
     if (vulnerabilityInfo) {
-      if (_.bool.calculateProbability(50)) {
+      if (_.bool.isProbable(50)) {
         const multiplier = _.num.getRandomNum(1.1, 2, true); // Rango de 1.1 a 2
 
         const totalDamage = Math.round(damage * multiplier);
@@ -814,7 +814,7 @@ class PokemonBattle {
    */
   #executeTurn(attacker, defender) {
     // Determinar el tipo de ataque (normal o especial)
-    const attackType = _.bool.calculateProbability(30) ? "special" : "normal";
+    const attackType = _.bool.isProbable(30) ? "special" : "normal";
     const attackValue =
       attackType === "special"
         ? attacker.p.c.special_attack
@@ -845,7 +845,7 @@ class PokemonBattle {
     // Verificar si el defensor NO está agotado y calcular la probabilidad de evasión
     if (
       !defender.isExhausted() &&
-      _.bool.calculateProbability(evasionProbability)
+      _.bool.isProbable(evasionProbability)
     ) {
       defender.evading(modifiedAttackValue);
     } else {
@@ -1112,7 +1112,7 @@ class PokemonInventory {
     // Convertir nombres a índices
     identifiers.forEach((identifier) => {
       if (typeof identifier === "string") {
-        identifier = _.str.capitalizeFirstLetter(identifier);
+        identifier = _.str.capitalize(identifier);
 
         const index = this.#inventory.findIndex(
           (pokemon) => pokemon.p.i.name === identifier
