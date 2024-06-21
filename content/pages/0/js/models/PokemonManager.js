@@ -1,3 +1,6 @@
+//? Libreria personal de utilidades
+import _ from "./utilities.js";
+
 //? Manejador de datos Pokemon (Pokemon Data Handler)
 import P_DH from "./PokemonDataHandler.js";
 
@@ -7,31 +10,8 @@ import P_DOM_H from "./PokemonDOMHandler.js";
 //? Filtros de Pokemon (Pokemon Filter)
 import P_F from "./PokemonFilter.js";
 
-/**
- * Espera a que un elemento esté disponible en el DOM.
- * @param {string} selector - El selector del elemento a esperar.
- * @param {number} timeout - El tiempo máximo de espera en milisegundos.
- * @returns {Promise<Element>} - Una promesa que se resuelve con el elemento DOM.
- */
-function waitForElement(selector, timeout = 5000) {
-  return new Promise((resolve, reject) => {
-    const interval = 100;
-    let elapsed = 0;
-    const checkInterval = setInterval(() => {
-      const element = document.querySelector(selector);
-      if (element) {
-        clearInterval(checkInterval);
-        resolve(element);
-      } else if (elapsed >= timeout) {
-        clearInterval(checkInterval);
-        reject(
-          new Error(`El elemento '${selector}' no se encontró en el DOM.`)
-        );
-      }
-      elapsed += interval;
-    }, interval);
-  });
-}
+//? Modulos de (PokemonBattle.js)
+import { Pokemon, PokemonBattle, PokemonInventory } from "./PokemonBattle.js";
 
 export default class PokemonManager {
   /**
@@ -60,7 +40,7 @@ export default class PokemonManager {
       // Itera sobre cada elemento y espera hasta que esté disponible en el DOM
       for (const element of elements) {
         try {
-          const domElement = await waitForElement(element);
+          const domElement = await _.DOM.waitForElement(element);
           domElement.addEventListener(
             "click",
             () => {
@@ -192,30 +172,10 @@ export default class PokemonManager {
     window.removeEventListener("beforeunload", this.#clearSessionStorage);
 
     // Guardar el estado completo de los datos en sessionStorage
-    this.#saveToSessionStorage("pokemonManager_data", this.#data);
+    _.DOM.saveToSessionStorage("pokemonManager_data", this.#data);
 
     // Obtener y almacenar el objeto Pokémon seleccionado en sessionStorage
-    if (poke) this.#saveToSessionStorage("pokemonPreview", poke);
-  }
-
-  /**
-   * Método para guardar datos en sessionStorage.
-   * @param {string} key - La clave bajo la cual se almacenarán los datos.
-   * @param {object} value - El valor a almacenar.
-   */
-  #saveToSessionStorage(key, value) {
-    sessionStorage.setItem(key, JSON.stringify(value));
-    console.log(`${key} Guardado en el SessionStorage`);
-  }
-
-  /**
-   * Método para guardar datos en localStorage.
-   * @param {string} key - La clave bajo la cual se almacenarán los datos.
-   * @param {object} value - El valor a almacenar.
-   */
-  #saveToLocalStorage(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
-    console.log(`${key} Guardado en el LocalStorage`);
+    if (poke) _.DOM.saveToSessionStorage("pokemonPreview", poke);
   }
 
   /**
@@ -295,7 +255,7 @@ export default class PokemonManager {
       );
 
       if (!pokemonManager_data_JSON)
-        this.#saveToSessionStorage("pokemonManager_data", this.#data);
+        _.DOM.saveToSessionStorage("pokemonManager_data", this.#data);
 
       // Añadir los event listeners
       this.#addEventListeners();

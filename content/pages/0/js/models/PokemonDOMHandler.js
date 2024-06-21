@@ -1,3 +1,4 @@
+//? Funcion de la parte del carrito para añadir el Pokemon a este
 import { addToCart } from "./../../../2/js/carrito.js";
 
 export default class PokemonDOMHandler {

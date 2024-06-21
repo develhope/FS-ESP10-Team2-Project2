@@ -1,3 +1,6 @@
+//? Libreria personal de utilidades
+import _ from "./utilities.js";
+
 export default class PokemonDataHandler {
   static API_URLS = {
     POKEMON: "https://pokeapi.co/api/v2/pokemon/",
@@ -49,7 +52,7 @@ export default class PokemonDataHandler {
     }
 
     // Calcular el 5% de count y generar un número aleatorio entre 1 y ese valor
-    const offerCount = this.getRandomInt(1, Math.floor(count * 0.05));
+    const offerCount = _.num.getRandomNum(1, Math.floor(count * 0.05));
 
     // Añadir ofertas aleatorias a algunos Pokémon
     this.#addRandomOffers(results, offerCount, 60);
@@ -429,18 +432,6 @@ export default class PokemonDataHandler {
     const roundedOffer = Math.round(offerPrice * 100) / 100;
 
     return roundedOffer;
-  }
-
-  /**
-   * Genera un número entero aleatorio entre min (incluido) y max (incluido).
-   * @param {number} min - El valor mínimo.
-   * @param {number} max - El valor máximo.
-   * @returns {number} - Un número entero aleatorio entre min y max.
-   */
-  getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
   /**

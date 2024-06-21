@@ -1,57 +1,11 @@
-/**
- * Genera un número aleatorio entre un rango dado.
- * @param {number} min - El valor mínimo del rango.
- * @param {number} max - El valor máximo del rango.
- * @param {boolean} [isDecimal=false] - Indica si se debe devolver un número decimal.
- * @returns {number} - El número aleatorio generado.
- */
-function getRandomNum(min, max, isDecimal = false) {
-  if (isDecimal) {
-    return Math.random() * (max - min) + min;
-  } else {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  }
-}
-
-/**
- * Función para calcular una probabilidad y devolver un resultado booleano.
- * @param {number} probabilityPercentage - El porcentaje de probabilidad de que el resultado sea true (de 0 a 100).
- * @returns {boolean} - true si el resultado está dentro del rango de probabilidad, de lo contrario, false.
- */
-function calculateProbability(probabilityPercentage) {
-  // Verificar si el porcentaje de probabilidad es válido (de 0 a 100)
-  if (probabilityPercentage < 0 || probabilityPercentage > 100) {
-    throw new Error("El porcentaje de probabilidad debe estar entre 0 y 100.");
-  }
-
-  // Generar un número aleatorio entre 0 y 100
-  const randomNumber = Math.random() * 100;
-
-  // Verificar si el número aleatorio está dentro del rango de probabilidad
-  return randomNumber <= probabilityPercentage;
-}
-
-function capitalizeFirstLetter(string) {
-  if (typeof string !== "string" || string.length === 0) {
-    return "";
-  }
-
-  // Convertimos toda la cadena a minúsculas
-  string = string.toLowerCase();
-
-  // Convertimos la primera letra a mayúscula y la concatenamos con el resto de la cadena
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
+//? Libreria personal de utilidades
+import _ from "./utilities.js";
 
 //todo:---------------------------------------------------------------------------------------------
 //todo:---------------------------------------------------------------------------------------------
 //todo: Clase Pokemon
 //todo:---------------------------------------------------------------------------------------------
 //todo:---------------------------------------------------------------------------------------------
-//!#
-// export class Pokemon {
 class Pokemon {
   #data = {
     properties: {
@@ -98,7 +52,7 @@ class Pokemon {
     speed
   ) {
     // Convierte la primera letra a mayúsculas y las demás a minúsculas
-    this.#data.properties.immutable.name = capitalizeFirstLetter(name);
+    this.#data.properties.immutable.name = _.str.capitalizeFirstLetter(name);
     // Convierte todos los tipos a minusculas
     this.#data.properties.immutable.type = type.map((t) => t.toLowerCase());
     this.#data.properties.base.hp = hp;
@@ -217,7 +171,7 @@ class Pokemon {
    */
   #addEvading() {
     this.log.moves.evading++;
-    this.#fatigueLog(getRandomNum(1, 3), "+");
+    this.#fatigueLog(_.num.getRandomNum(1, 3), "+");
   }
 
   /**
@@ -709,7 +663,7 @@ class PokemonBattle {
         `No hay diferencia de velocidad, cualquiera puede atacar primero.`
       );
       // Si tienen la misma velocidad, se elige aleatoriamente
-      return calculateProbability(50) ? pokemon1 : pokemon2;
+      return _.bool.calculateProbability(50) ? pokemon1 : pokemon2;
     }
 
     // Verificar condiciones de agotamiento
@@ -717,7 +671,7 @@ class PokemonBattle {
       this.#pushConsoleLog(
         `Ambos Pokémon están agotados, cualquiera puede atacar.`
       );
-      return calculateProbability(50) ? pokemon1 : pokemon2;
+      return _.bool.calculateProbability(50) ? pokemon1 : pokemon2;
     }
 
     if (pokemon1.isExhausted()) {
@@ -776,7 +730,7 @@ class PokemonBattle {
     );
 
     // Para que no se pase de ventaja establecemos como mínimo 60% de probabilidad para lanzar un ataque.
-    return calculateProbability(probability)
+    return _.bool.calculateProbability(probability)
       ? maxSpeedPokemon
       : minSpeedPokemon;
   }
@@ -798,8 +752,8 @@ class PokemonBattle {
     const vulnerabilityInfo = defender.isVulnerableTo(attackerTypes);
 
     if (vulnerabilityInfo) {
-      if (calculateProbability(50)) {
-        const multiplier = getRandomNum(1.1, 2, true); // Rango de 1.1 a 2
+      if (_.bool.calculateProbability(50)) {
+        const multiplier = _.num.getRandomNum(1.1, 2, true); // Rango de 1.1 a 2
 
         const totalDamage = Math.round(damage * multiplier);
         const multiplierFixed = multiplier.toFixed(2);
@@ -860,7 +814,7 @@ class PokemonBattle {
    */
   #executeTurn(attacker, defender) {
     // Determinar el tipo de ataque (normal o especial)
-    const attackType = calculateProbability(30) ? "special" : "normal";
+    const attackType = _.bool.calculateProbability(30) ? "special" : "normal";
     const attackValue =
       attackType === "special"
         ? attacker.p.c.special_attack
@@ -889,7 +843,10 @@ class PokemonBattle {
     // console.error(defender.p.i.name, evasionProbability);
 
     // Verificar si el defensor NO está agotado y calcular la probabilidad de evasión
-    if (!defender.isExhausted() && calculateProbability(evasionProbability)) {
+    if (
+      !defender.isExhausted() &&
+      _.bool.calculateProbability(evasionProbability)
+    ) {
       defender.evading(modifiedAttackValue);
     } else {
       // Aplicar la defensa correspondiente después de verificar la evasión
@@ -1155,7 +1112,7 @@ class PokemonInventory {
     // Convertir nombres a índices
     identifiers.forEach((identifier) => {
       if (typeof identifier === "string") {
-        identifier = capitalizeFirstLetter(identifier);
+        identifier = _.str.capitalizeFirstLetter(identifier);
 
         const index = this.#inventory.findIndex(
           (pokemon) => pokemon.p.i.name === identifier
