@@ -5,62 +5,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" type="text/css" href="../assets/2/font-family/Aldrich-Regular.ttf">
+    <link rel="stylesheet" href="../assets/general/css/general.css">
+    <link rel="stylesheet" type="text/css" href="../assets/general/navBar/navBar.css">
+    <link rel="stylesheet" href="css/styleCarrito.css">
 </head>
 
 <body>
-    <div class="navbar-complete" id="navbar-complete">
-        <div class="logo-navbar">
-            <img src="../assets/2/images/logo-pokemon-79x45.png" alt="Logo Pokedex">
-        </div>
-        <div class="home-navbar" id="home-navbar">
-            <button class="home-nav-btn"> Home</button>
-        </div>
-        <div class="carritoImage" id="carritoImage">
-            <button class="carritoButton" id="carritoButton">
-                <img src="../assets/2/images/shopping_cart_24dp_FILL0_wght400_GRAD0_opsz24.png" alt="carrito de compra">
-            </button>
-        </div>
-        <div class="carritoDeCompraClass" id="carritoDeCompraId">
-            <!-- nueva ruta -->
-            <!-- <div class="pokemonCarrito" id="pokemonCarrito"></div> -->
-        </div>
+
+    <div id="navbar-complete"></div>
+
+    <div class="carritoDeCompraClass" id="carritoDeCompraId">
+        <p><span class="carritoTitle">CARRITO</span>  </p>
+        <!-- nueva ruta -->
+        <!-- <div class="pokemonCarrito" id="pokemonCarrito"></div> -->
     </div>
+    
+    <script src="../assets/general/navBar/navBar.js"></script>
 
-
-
-    <!--!!!!!!!!!!!!!!!!!!!!!!!!-->
-    <!--todo||| CODIGO NUEVO |||-->
-    <!--!!!!!!!!!!!!!!!!!!!!!!!!-->
-
-    <!--? Usamos este sistema para importar el codigo necesario de "carrito.js" -->
+    <!-- Usamos este sistema para importar el codigo necesario de "carrito.js" --> -->
     <script type="module">
-        // <!--! Importamos aqui la funcion principal del "carrito.js" -->
+        // Importamos aqui la funcion principal del "carrito.js" 
         import { initCarrito } from "./js/carrito.js";
-        // <!--! Ejecutamos la funcion principal del carrito -->
+        // Ejecutamos la funcion principal del carrito 
         initCarrito()
     </script>
 
 
-    <!--!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
-    <!--todo||| CODIGO ANTERIOR |||-->
-    <!--!!!!!!!!!!!!!!!!!!!!!!!!!!!-->
-
-    <!-- <script src="js/carrito.js" type="module">
-        // Función para obtener y mostrar el carrito guardado en localStorage
-
-
-        carritoStorageJs.map((itemCarrito) => {
-            const divCarrito = document.createElement("div");
-            divCarrito.innerHTML = `
-<h2>${itemCarrito.name}</h2>
-<p>${itemCarrito.price}</p>
-<img src=${itemCarrito.image} alt=Imagen de ${itemCarrito.name}>
-`;
-            containerCarritoId.appendChild(divCarrito);
-        });
-    </script> -->
 
 </body>
 

@@ -1,0 +1,40 @@
+
+.carritoDeCompraClass{
+display: flex;
+flex-direction: column;
+gap:1rem;
+justify-content: center;
+align-items: center;
+padding-top: 50px;
+}
+
+.carritoTitle{
+    font-size: 150%;
+}
+
+.carrito-items{
+    display: flex;
+    flex-direction: row;
+    padding: 1.7vw;
+    border: 3px solid rgba(187, 184, 184, 0.955);
+    border-radius: 10px;
+    background-color: rgba(187, 184, 184, 0.758);
+    width: 400px;
+    gap:4vw;
+    text-wrap: wrap;
+    align-items: center;
+}
+
+.carrito-items img{
+    width: 30%;
+}
+
+
+.contador > input{
+    width: 50px;
+    height: 30px;
+    text-align: center;
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: rgb(232, 228, 228);
+}
