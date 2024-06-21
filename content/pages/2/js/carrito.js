@@ -1,4 +1,6 @@
-
+// ! Suma de todas las cards
+// ! Función eliminar
+// ! Pasarela de pago
 
 // localStorage.clear();
 // sessionStorage.clear();
@@ -43,13 +45,7 @@ export function initCarrito() {
     containerCarritoId.appendChild(divCarrito);
   });
 
-  //! Arreglar suma de precios, se está multiplicando precio*nuevaCantidad,
-  //! pero el precio después de la primera vez ya no es el inicial 
-  //! y por eso da error, comentar mañana en clase
-
-  //!La flecha incrementar cantidad no funciona con el precio
   function actualizarCantidadCarrito(index, nuevaCantidad) {
-    const cantidadAnterior = carrito[index].quantity;
     const precioUnitario = carrito[index].price;
     carrito[index].quantity = parseInt(nuevaCantidad, 10);
 
@@ -112,7 +108,7 @@ function getCarritoStorage() {
   const carritoStorageJSON = localStorage.getItem("carrito");
 
   if (!carritoStorageJSON) {
-    console.error("Array CARRITO no guardado en localStorage");
+    console.log("CARRITO VACÍO");
     return [];
   }
 
