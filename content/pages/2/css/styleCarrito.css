@@ -25,6 +25,8 @@ padding-top: 50px;
     align-items: center;
 }
 
+/* Arreglar números del input modo oscuro */
+
 .carrito-items img{
     width: 30%;
 }
@@ -36,5 +38,5 @@ padding-top: 50px;
     text-align: center;
     border: 1px solid black;
     border-radius: 5px;
-    background-color: rgb(232, 228, 228);
+    background-color: rgba(252, 233, 124, 0.874);
 }
