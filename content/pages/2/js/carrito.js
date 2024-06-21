@@ -32,6 +32,11 @@ export function initCarrito() {
           <p id=precio-${index}> Total: ${itemCarrito.variablePrice.toFixed(2)}€</p>
         </div>
       </div>
+      <button id=remove-${index}>
+        <span class="material-symbols-outlined">
+         delete
+        </span> 
+      </button> 
     </div>
     `;
 
@@ -41,6 +46,11 @@ export function initCarrito() {
         actualizarCantidadCarrito(index, nuevaCantidad);
         }
       ) 
+    
+    const removeButton = divCarrito.querySelector(`#remove-${index}`);
+    removeButton.addEventListener('click', () => {
+      eliminarPokemonCard(index);
+    });
 
     containerCarritoId.appendChild(divCarrito);
   });
@@ -60,8 +70,22 @@ export function initCarrito() {
     precioElement.textContent = `Total: ${nuevoPrecio.toFixed(2)}€`;
     carrito[index].variablePrice = nuevoPrecio;
     setCarritoStorage(carrito);
+  } 
+  
+  function eliminarPokemonCard(index) {
+    carrito.splice(index, 1);
+    setCarritoStorage(carrito);
+    renderCarrito();
   }
+
+  function renderCarrito() {
+    containerCarritoId.innerHTML = ''; // Limpiar el contenido anterior
+    initCarrito(); // Vuelve a inicializar el carrito
+  }
+
 }
+
+ 
 
 export function addToCart(pokemon) {
   if (!pokemon) {

@@ -41,3 +41,13 @@ padding-top: 50px;
     background-color: rgba(252, 233, 124, 0.874);
     color: black;
 }
+
+/* Papelera */
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}
