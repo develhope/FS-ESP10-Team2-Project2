@@ -1,5 +1,5 @@
 //? Libreria personal de utilidades
-import _ from "./utilities.js";
+import _ from "../../../assets/general/js/lib/utilities.js";
 
 export default class PokemonDataHandler {
   static API_URLS = {

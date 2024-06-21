@@ -1,5 +1,5 @@
 //? Libreria personal de utilidades
-import _ from "./utilities.js";
+import _ from "../../../assets/general/js/lib/utilities.js";
 
 //? Manejador de datos Pokemon (Pokemon Data Handler)
 import P_DH from "./PokemonDataHandler.js";
