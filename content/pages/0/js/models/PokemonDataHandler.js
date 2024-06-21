@@ -1,4 +1,4 @@
-export class PokemonDataHandler {
+export default class PokemonDataHandler {
   static API_URLS = {
     POKEMON: "https://pokeapi.co/api/v2/pokemon/",
     SPECIES: "https://pokeapi.co/api/v2/pokemon-species/",

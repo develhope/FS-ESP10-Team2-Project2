@@ -230,7 +230,7 @@ main {
 
 /*? Estilos para el switch del Inventario */
 
-.switch-container {
+.switch-inventory-container {
     display: flex;
     align-items: center;
     gap: 10px;

@@ -1,4 +1,4 @@
-export class PokemonFilter {
+export default class PokemonFilter {
   /**
    * Método para obtener una lista de Pokémon que coincidan con los tipos especificados.
    * @param {object[]} pokemonDataList - La lista de datos de Pokémon a filtrar.

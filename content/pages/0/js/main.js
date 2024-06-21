@@ -1,6 +1,6 @@
-import { PokemonManager } from "./models/PokemonManager.js";
+import PokemonManager from "./models/PokemonManager.js";
 
-//! Eliminar todos los datos almacenados en localStorage
+//! Eliminar todos los datos almacenados en localStorage y en el sessionStorage
 // localStorage.clear();
 // sessionStorage.clear();
 // console.log(JSON.stringify(sessionStorage, null, 2));

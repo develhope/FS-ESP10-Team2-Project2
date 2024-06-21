@@ -1,6 +1,11 @@
-import { PokemonDataHandler } from "./PokemonDataHandler.js";
-import { PokemonDOMHandler } from "./PokemonDOMHandler.js";
-import { PokemonFilter } from "./PokemonFilter.js";
+//? Manejador de datos Pokemon (Pokemon Data Handler)
+import P_DH from "./PokemonDataHandler.js";
+
+//? Manejador de DOM Pokemon (Pokemon DOM Handler)
+import P_DOM_H from "./PokemonDOMHandler.js";
+
+//? Filtros de Pokemon (Pokemon Filter)
+import P_F from "./PokemonFilter.js";
 
 /**
  * Espera a que un elemento esté disponible en el DOM.
@@ -28,15 +33,15 @@ function waitForElement(selector, timeout = 5000) {
   });
 }
 
-export class PokemonManager {
+export default class PokemonManager {
   /**
    * Constructor de la clase PokemonManager.
    * @throws {Error} - Si ocurre algún error durante la inicialización.
    */
   constructor() {
     // Inicializar las instancias de las clases manejadoras
-    this.PokemonDataHandler = new PokemonDataHandler();
-    this.PokemonFilter = new PokemonFilter();
+    this.PokemonDataHandler = new P_DH();
+    this.PokemonFilter = new P_F();
 
     // Obtener referencias a elementos del DOM
     this.#getDOMElements();
@@ -285,6 +290,10 @@ export class PokemonManager {
         this.#data.dom.filters.byNameOrId
       );
 
+      this.PokemonDOMHandler.setSwitchInventoryValue(
+        this.#data.dom.filters.isInventory
+      );
+
       if (!pokemonManager_data_JSON)
         this.#saveToSessionStorage("pokemonManager_data", this.#data);
 
@@ -317,7 +326,7 @@ export class PokemonManager {
     );
 
     if (!reload) {
-      this.PokemonDOMHandler = new PokemonDOMHandler({
+      this.PokemonDOMHandler = new P_DOM_H({
         filterContainer: this.#data.dom.elements.filterContainer,
         pokemonDivList: this.#data.dom.elements.pokemonDivList,
       });
@@ -436,10 +445,11 @@ export class PokemonManager {
     let pokemonData;
     if (this.#data.dom.filters.isInventory) {
       // pokemonData = this.#data.pokemonDataListInventory;
+      pokemonData = [];
 
-      //! Prueba con el carrito
-      const cart = JSON.parse(localStorage.getItem("carrito"));
-      pokemonData = cart ? cart : [];
+      // //! Prueba con el carrito
+      // const cart = JSON.parse(localStorage.getItem("carrito"));
+      // pokemonData = cart ? cart : [];
     } else {
       pokemonData = this.#data.pokemonDataList;
     }

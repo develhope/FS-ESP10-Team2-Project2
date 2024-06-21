@@ -1,6 +1,6 @@
 import { addToCart } from "./../../../2/js/carrito.js";
 
-export class PokemonDOMHandler {
+export default class PokemonDOMHandler {
   /**
    * Constructor de la clase PokemonDOMHandler.
    * @param {object} options - Objeto de opciones con las propiedades necesarias.
@@ -12,6 +12,7 @@ export class PokemonDOMHandler {
     this.pokemonDivList = pokemonDivList;
     this.#createFilterSearchInput(filterContainer);
     this.#createFilterSelect(filterContainer);
+    this.#createSwitchInventory(filterContainer);
   }
 
   /**
@@ -573,6 +574,36 @@ export class PokemonDOMHandler {
 
     filterSlider.value = newValue;
     sliderValue.innerText = `${Math.floor(newValue)}€`;
+  }
+
+  /**
+   * Método para crear el Switch Inventory y añadirlo al DOM.
+   */
+  #createSwitchInventory() {
+    const SwitchInventoryContainer = document.querySelector(
+      ".switch-inventory-container"
+    );
+
+    SwitchInventoryContainer.innerHTML = `
+      <label class="switch">
+        <input type="checkbox" id="inventorySwitch">
+        <span class="slider"></span>
+      </label>
+      <span id="switchLabel">Inventario</span>
+  `;
+  }
+
+  /**
+   * Método para establecer el valor del Switch Inventory.
+   */
+  setSwitchInventoryValue(value) {
+    const inventorySwitch = document.querySelector("#inventorySwitch");
+
+    if (inventorySwitch) {
+      inventorySwitch.checked = value;
+    } else {
+      console.error("El elemento #inventorySwitch no se encontró en el DOM.");
+    }
   }
 
   /**
