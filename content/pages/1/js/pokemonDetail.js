@@ -30,10 +30,28 @@ function displayPokemonDetails(pokemon) {
   let h1 = document.createElement("h1")
   h1.id = "h1"
   h1.innerText = `${pokemon.name} No: ${pokemon.pokeId}`
+  let table=document.createElement("section")
+  table.className="puntos-de-base"
   container.appendChild(h1)
   container.appendChild(container1)
-  container1.appendChild(container2)
+  container.appendChild(table)
+  container1.appendChild(container2);
 
+  let h2Table=document.createElement("h2")
+  h2Table.className="h2-table"
+  h2Table.innerText="Puntos de base"
+    let ul0=document.createElement("ul")
+    ul0.className="ul0";
+    table.appendChild(h2Table)
+    table.appendChild(ul0)
+  
+    let statisticsAll=pokemon.statistics
+    console.log(statisticsAll)
+    // pokemon.statistics.forEach((a)=>{
+    // let li=document.createElement("li");
+    // li.innerText=a.power
+    // ul0.appendChild(li)
+    // })
   // isLegendary: false, // Si es legendario
   // isMythical: false, // Si es mítico
   // isFinalEvolution: true, // Si es su evolucion final
@@ -51,6 +69,8 @@ function displayPokemonDetails(pokemon) {
    </div>
    <span id="price-span-imgs"class="span-details-pokemon-container-text">${price}€ </span> 
   `;
+
+
   let container3 = document.createElement("section");
   container3.className = "pokemon-text-container";
 
@@ -94,19 +114,25 @@ function displayPokemonDetails(pokemon) {
   typeSection.appendChild(typeText);
   typeSection.appendChild(buttonType);
 
-  // <p class="p-type">Type: ${pokemon.type.join(", ")}</p>
-
   let container4 = document.createElement("section")
   container4.className = "evolutions-pokemon-container"
   container4.innerHTML = `
-<div>
+<div class=imgs-evolutions>
 <img class="img-evolutions-pokemon" src="${pokemon.images.illustration.shiny}" alt="${pokemon.name} front">
-<span class="class=arrow-span-evolutions-pokemon">&#9660 </span> 
-<img class="img-evolutions-pokemon" src="${pokemon.evolutions}" alt="${pokemon.name} front">
-</div>
+<span class="class=arrow-span-evolutions-pokemon"> > </span> 
 
+</div>
+<div id="map-evoltions"></div>
 `
   container.appendChild(container4);
+
+  let mapEvo = document.getElementById("map-evoltions")
+  const evolutionsPoke = pokemon.evolutions.map((a) => `<p id="img-evolutions">${a.evolves_to}</p>`).join("");
+  mapEvo.innerHTML = evolutionsPoke
+  let evo=a.evolves_to
+  console.log(evolutionsPoke);
+  
+  // <p class="p-type">Type: ${pokemon.type.join(", ")}</p>
 
 
 }
