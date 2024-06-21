@@ -16,6 +16,13 @@ class _ {
      *   .catch(error => console.error(error));
      */
     waitForElement(selector, timeout = 5000) {
+      if (typeof selector !== "string") {
+        throw new Error("El selector debe ser una cadena de texto.");
+      }
+      if (typeof timeout !== "number" || timeout <= 0) {
+        throw new Error("El tiempo de espera debe ser un número positivo.");
+      }
+
       return new Promise((resolve, reject) => {
         const interval = 100;
         let elapsed = 0;
@@ -44,6 +51,13 @@ class _ {
      * _.DOM.saveToSessionStorage('user', { name: 'Juan', age: 30 });
      */
     saveToSessionStorage(key, value) {
+      if (typeof key !== "string") {
+        throw new Error("La clave debe ser una cadena de texto.");
+      }
+      if (typeof value !== "object" || value === null) {
+        throw new Error("El valor debe ser un objeto.");
+      }
+
       sessionStorage.setItem(key, JSON.stringify(value));
       console.log(`'${key}' Guardado en el SessionStorage`);
     },
@@ -57,6 +71,13 @@ class _ {
      * _.DOM.saveToLocalStorage('settings', { theme: 'dark', language: 'es' });
      */
     saveToLocalStorage(key, value) {
+      if (typeof key !== "string") {
+        throw new Error("La clave debe ser una cadena de texto.");
+      }
+      if (typeof value !== "object" || value === null) {
+        throw new Error("El valor debe ser un objeto.");
+      }
+
       localStorage.setItem(key, JSON.stringify(value));
       console.log(`'${key}' Guardado en el LocalStorage`);
     },
@@ -74,9 +95,13 @@ class _ {
      * console.log(capitalized); // 'Hola mundo'
      */
     capitalize(string) {
-      if (typeof string !== "string" || string.length === 0) {
+      if (typeof string !== "string") {
+        throw new Error("El argumento debe ser una cadena de texto.");
+      }
+      if (string.length === 0) {
         return "";
       }
+
       // Convertimos toda la cadena a minúsculas
       string = string.toLowerCase();
       // Convertimos la primera letra a mayúscula y la concatenamos con el resto de la cadena
@@ -102,6 +127,13 @@ class _ {
      * console.log(randomDecimal); // Un número decimal entre 1 y 10
      */
     getRandomNum(min, max, isDecimal = false) {
+      if (typeof min !== "number" || typeof max !== "number") {
+        throw new Error("Los valores mínimo y máximo deben ser números.");
+      }
+      if (min >= max) {
+        throw new Error("El valor mínimo debe ser menor que el valor máximo.");
+      }
+
       if (isDecimal) {
         return Math.random() * (max - min) + min;
       } else {
@@ -124,12 +156,15 @@ class _ {
      * console.log(result); // true o false
      */
     isProbable(probabilityPercentage) {
+      if (typeof probabilityPercentage !== "number") {
+        throw new Error("El porcentaje de probabilidad debe ser un número.");
+      }
       if (probabilityPercentage < 0 || probabilityPercentage > 100) {
         throw new Error(
           "El porcentaje de probabilidad debe estar entre 0 y 100."
         );
       }
-      // Generar un número aleatorio entre 0 y 100
+
       const randomNumber = Math.random() * 100;
       // Verificar si el número aleatorio está dentro del rango de probabilidad
       return randomNumber <= probabilityPercentage;
