@@ -28,15 +28,17 @@ export function initCarrito() {
         <p>${itemCarrito.price}€</p>
         <div class="contador">
           <label for="quantity-${index}">Cantidad:</label>
-          <input type="number" id="quantity-${index}" name="quantity-${index}" value="${itemCarrito.quantity}" min="1">
+          <input type="number" id="quantity-${index}" name="quantity-${index}" value="${itemCarrito.quantity}" min="1" max="100">
           <p id=precio-${index}> Total: ${itemCarrito.variablePrice.toFixed(2)}€</p>
         </div>
       </div>
+      <div class= deleteButton>
       <button id=remove-${index}>
         <span class="material-symbols-outlined">
          delete
         </span> 
       </button> 
+      </div>
     </div>
     `;
 

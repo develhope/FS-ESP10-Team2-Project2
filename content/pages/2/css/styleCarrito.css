@@ -31,6 +31,10 @@ padding-top: 50px;
     width: 30%;
 }
 
+.carrito-items img:hover{
+    transform: scale(1.5);
+}
+
 
 .contador > input{
     width: 50px;
@@ -50,4 +54,12 @@ padding-top: 50px;
   'wght' 400,
   'GRAD' 0,
   'opsz' 24
+}
+
+.deleteButton > button{
+cursor: pointer;
+}
+
+.deleteButton:hover{
+    transform: scale(1.1);
 }
