@@ -330,6 +330,17 @@ input:checked+.slider:before {
     color: var(--clr-gray);
 }
 
+.pokemon-equip-back {
+    position: absolute;
+    top: 0rem;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 3rem;
+    font-weight: 800;
+    z-index: -1;
+    color: var(--clr-gray);
+}
+
 .pokemon-image {
     padding-inline: 1rem;
     display: flex;
@@ -608,7 +619,92 @@ input:checked+.slider:before {
 }
 
 
+.div-pokemon-SwitchEquipPokemon {
+    margin-top: 10px;
+}
 
+/*? CSS del Switch importado, (Equipar Pokémon) */
+.label-SwitchEquipPokemon {
+    background-color: var(--clr-gray);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 15px 10px 10px;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 10px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+    color: black;
+}
+
+.input-SwitchEquipPokemon {
+    display: none;
+}
+
+input:checked+label svg {
+    /* fill: hsl(0deg 100% 50%);
+    stroke: hsl(0deg 100% 50%); */
+    fill: rgb(251, 227, 45);
+    stroke: rgb(251, 227, 45);
+
+    animation: pokeballPulse 1s;
+}
+
+@keyframes pokeballPulse {
+    0% {
+        transform: scale(1);
+    }
+
+    25% {
+        transform: scale(1.3);
+    }
+
+    50% {
+        transform: scale(1);
+    }
+
+    75% {
+        transform: scale(1.3);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+input+label .action {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+}
+
+input+label .action span {
+    grid-column-start: 1;
+    grid-column-end: 1;
+    grid-row-start: 1;
+    grid-row-end: 1;
+    transition: all .5s;
+}
+
+input+label .action span.option-1 {
+    transform: translate(0px, 0%);
+    opacity: 1;
+}
+
+input:checked+label .action span.option-1 {
+    transform: translate(0px, -100%);
+    opacity: 0;
+}
+
+input+label .action span.option-2 {
+    transform: translate(0px, 100%);
+    opacity: 0;
+}
+
+input:checked+label .action span.option-2 {
+    transform: translate(0px, 0%);
+    opacity: 1;
+}
 
 
 

@@ -172,4 +172,8 @@ class _ {
   };
 }
 
+//! Export Normal
 export default _;
+
+//! Export Node.js
+// module.exports = { _ };

@@ -1,5 +1,9 @@
 //? Libreria personal de utilidades
+//! Import Normal
 import _ from "../../../assets/general/js/lib/utilities.js";
+
+//! Import Node.js
+// const { _ } = require("../../../assets/general/js/lib/utilities.js");
 
 //todo:---------------------------------------------------------------------------------------------
 //todo:---------------------------------------------------------------------------------------------
@@ -730,9 +734,7 @@ class PokemonBattle {
     );
 
     // Para que no se pase de ventaja establecemos como mínimo 60% de probabilidad para lanzar un ataque.
-    return _.bool.isProbable(probability)
-      ? maxSpeedPokemon
-      : minSpeedPokemon;
+    return _.bool.isProbable(probability) ? maxSpeedPokemon : minSpeedPokemon;
   }
 
   /**
@@ -843,10 +845,7 @@ class PokemonBattle {
     // console.error(defender.p.i.name, evasionProbability);
 
     // Verificar si el defensor NO está agotado y calcular la probabilidad de evasión
-    if (
-      !defender.isExhausted() &&
-      _.bool.isProbable(evasionProbability)
-    ) {
+    if (!defender.isExhausted() && _.bool.isProbable(evasionProbability)) {
       defender.evading(modifiedAttackValue);
     } else {
       // Aplicar la defensa correspondiente después de verificar la evasión
@@ -1067,6 +1066,11 @@ class PokemonBattle {
 //todo:---------------------------------------------------------------------------------------------
 class PokemonInventory {
   #inventory = [];
+  #nextId = 1;
+
+  log(log, isError = false) {
+    isError ? console.error(`#! ${log}`) : console.log(`# ${log}`);
+  }
 
   /**
    * Añade uno o más Pokémon al inventario.
@@ -1078,24 +1082,40 @@ class PokemonInventory {
     }
     pokemons.forEach((pokemon) => {
       if (pokemon instanceof Pokemon) {
+        // Asignar un ID único
+        pokemon.id = this.#nextId++;
+        let alias = `My ${pokemon.p.i.name}`;
+        let existingAliases = this.#inventory.filter((p) =>
+          p.alias.startsWith(alias)
+        ).length;
+
+        if (existingAliases > 0) {
+          alias = `${alias} ${existingAliases + 1}`;
+        }
+
+        pokemon.alias = alias;
         this.#inventory.push(pokemon);
-        console.log(`${pokemon.p.i.name} ha sido añadido al inventario.`);
+        this.log(
+          `${pokemon.p.i.name} (ID: ${pokemon.id}) ha sido añadido al inventario con el alias "${pokemon.alias}".`
+        );
       } else {
-        console.error("Solo se pueden añadir instancias de la clase Pokemon.");
+        this.log("Solo se pueden añadir instancias de la clase Pokemon.", true);
       }
     });
   }
 
   /**
-   * Elimina uno o más Pokémon del inventario por su nombre o índice.
+   * Elimina uno o más Pokémon del inventario por su nombre o ID.
    * Si no se proporciona ningún parámetro, elimina todos los Pokémon.
-   * @param {string|number|(string|number)[]} [identifiers] - El nombre, índice, o un array mezclado de nombres e índices de los Pokémon a eliminar. Si no se proporciona, elimina todos los Pokémon.
+   * @param {string|number|(string|number)[]} [identifiers] - El alias, ID, o un array mezclado de alias e IDs de los Pokémon a eliminar. Si no se proporciona, elimina todos los Pokémon.
    */
   removePokemon(identifiers) {
     if (identifiers === undefined) {
-      const allPokemons = this.#inventory.map((pokemon) => pokemon.p.i.name);
+      const allPokemons = this.#inventory.map(
+        (pokemon) => `[ #${pokemon.id} ${pokemon.p.i.name} (${pokemon.alias}) ]`
+      );
       this.#inventory = [];
-      console.log(
+      this.log(
         `Se eliminaron todos los Pokémon del inventario: ${allPokemons.join(
           ", "
         )}.`
@@ -1109,33 +1129,34 @@ class PokemonInventory {
 
     const toRemove = new Set();
 
-    // Convertir nombres a índices
+    // Convertir alias a IDs
     identifiers.forEach((identifier) => {
       if (typeof identifier === "string") {
-        identifier = _.str.capitalize(identifier);
-
         const index = this.#inventory.findIndex(
-          (pokemon) => pokemon.p.i.name === identifier
+          (pokemon) => pokemon.alias === identifier
         );
         if (index !== -1) {
           toRemove.add(index);
         } else {
-          console.error(
-            `No se encontró un Pokémon con el nombre "${identifier}" en el inventario.`
+          this.log(
+            `No se encontró un Pokémon con el alias "${identifier}" en el inventario.`,
+            true
           );
         }
       } else if (typeof identifier === "number") {
-        if (identifier >= 0 && identifier < this.#inventory.length) {
-          toRemove.add(identifier);
+        const index = this.#inventory.findIndex(
+          (pokemon) => pokemon.id === identifier
+        );
+        if (index !== -1) {
+          toRemove.add(index);
         } else {
-          console.error(
-            `No se encontró un Pokémon con el índice "${identifier}" en el inventario.`
+          this.log(
+            `No se encontró un Pokémon con el ID "${identifier}" en el inventario.`,
+            true
           );
         }
       } else {
-        console.error(
-          "Identificador no válido. Debe ser un nombre o un índice."
-        );
+        this.log("Identificador no válido. Debe ser un nombre o un ID.", true);
       }
     });
 
@@ -1145,11 +1166,13 @@ class PokemonInventory {
       .sort((a, b) => b - a)
       .forEach((index) => {
         const removed = this.#inventory.splice(index, 1)[0];
-        removedPokemons.push(removed.p.i.name);
+        removedPokemons.push(
+          `[ #${removed.id} ${removed.p.i.name} (${removed.alias}) ]`
+        );
       });
 
     if (removedPokemons.length) {
-      console.log(
+      this.log(
         `Se eliminaron del inventario los siguientes Pokémon: ${removedPokemons.join(
           ", "
         )}.`
@@ -1161,53 +1184,62 @@ class PokemonInventory {
    * Muestra todos los Pokémon en el inventario.
    */
   showInventory() {
+    console.log("");
     if (this.#inventory.length === 0) {
-      console.log("El inventario está vacío.");
+      this.log("El inventario está vacío.");
     } else {
-      console.log("Inventario de Pokémon:");
-      this.#inventory.forEach((pokemon, index) => {
-        console.log(`\nPokemon ${index + 1}:`);
-        pokemon.stats();
+      this.log("Inventario de Pokémon:");
+      this.#inventory.forEach((poke) => {
+        console.log(`Pokemon ${poke.id} (${poke.alias}):`);
+        poke.stats();
+        console.log("");
       });
     }
   }
 
   /**
-   * Obtiene un Pokémon por su nombre o índice.
-   * @param {string|number} identifier - El nombre o índice del Pokémon.
+   * Obtiene un Pokémon por su alias o ID.
+   * @param {string|number} identifier - El alias o ID del Pokémon.
    * @returns {Pokemon|null} El Pokémon encontrado o null si no se encuentra.
    */
   getPokemon(identifier) {
     if (typeof identifier === "string") {
       const pokemon = this.#inventory.find(
-        (pokemon) => pokemon.p.i.name === identifier
+        (pokemon) => pokemon.alias === identifier
       );
       if (pokemon) {
         return pokemon;
       } else {
-        console.error(
-          `No se encontró un Pokémon con el nombre "${identifier}" en el inventario.`
+        this.log(
+          `No se encontró un Pokémon con el alias "${identifier}" en el inventario.`,
+          true
         );
         return null;
       }
     } else if (typeof identifier === "number") {
-      if (identifier >= 0 && identifier < this.#inventory.length) {
-        return this.#inventory[identifier];
+      const pokemon = this.#inventory.find(
+        (pokemon) => pokemon.id === identifier
+      );
+      if (pokemon) {
+        return pokemon;
       } else {
-        console.error(
-          `No se encontró un Pokémon en el índice "${identifier}" en el inventario.`
+        this.log(
+          `No se encontró un Pokémon con el ID "${identifier}" en el inventario.`,
+          true
         );
         return null;
       }
     } else {
-      console.error(
-        "El identificador debe ser un nombre (string) o un índice (number)."
+      this.log(
+        "El identificador debe ser un nombre (string) o un ID (number).",
+        true
       );
       return null;
     }
   }
 }
 
+//! Export Normal
 export { Pokemon, PokemonBattle, PokemonInventory };
 
 // //todo:---------------------------------------------------------------------------------------------
@@ -1285,16 +1317,28 @@ export { Pokemon, PokemonBattle, PokemonInventory };
 // console.log("###INIT###\n");
 
 // myInventory.addPokemon([
-//   pokemonCollection.dragonite,
-//   pokemonCollection.eternatus,
+//   new Pokemon("Dragonite", ["Dragon", "Flying"], 91, 134, 100, 95, 100, 80),
+//   new Pokemon("Eternatus", ["Poison", "Dragon"], 140, 85, 145, 95, 95, 130),
+//   new Pokemon("Eternatus", ["Poison", "Dragon"], 140, 85, 145, 95, 95, 130),
+//   new Pokemon("Eternatus", ["Poison", "Dragon"], 140, 85, 145, 95, 95, 130),
 // ]);
 
 // myInventory.showInventory();
 
-// // const battle = new PokemonBattle(
-// //   myInventory.getPokemon(0),
-// //   myInventory.getPokemon(1)
-// // );
+// myInventory.removePokemon(["My Eternatus 2", 3]);
 
-// // battle.startBattle();
+// myInventory.showInventory();
+
+// console.log(myInventory.getPokemon("My Dragonite"));
+
+// // Prueba de error
+// console.log(myInventory.getPokemon("Este alias no existe"));
+
+// //? Test PokemonBattle whit PokemonInventory
+// const battle = new PokemonBattle(
+//   myInventory.getPokemon(1),
+//   myInventory.getPokemon(4)
+// );
+
+// battle.startBattle();
 // console.log("\n###END###");
