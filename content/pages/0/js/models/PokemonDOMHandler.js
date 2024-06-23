@@ -98,6 +98,7 @@ export default class PokemonDOMHandler {
    * @param {number|string} show - Número de tarjetas a mostrar o 'all' para mostrar todas.
    */
   displayPokemon(data, pokemonDataList, inventory = false, show = 30) {
+    // console.log("show", show);
     this.data = data;
     this.pokemonDataList = pokemonDataList;
     this.currentPage = 0;
