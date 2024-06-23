@@ -131,5 +131,5 @@ const pokemonData = {
 // _.DOM.saveToLocalStorage("inventory", mappedInventory);
 
 //! Inicia la carga de los Pokémon (puedes cambiar el número por el numero de Pokémon que desees descargar)
-initializePokemonManager(151);
+initializePokemonManager(1025);
 // initializePokemonManager(151, true);

@@ -12,7 +12,7 @@
 
 - [x] **2.** Implementar un filtro de búsqueda por nombre/id.
 
-- [ ] **3.** Implementar un sistema automático de paginación para la lista de todos los Pokémon.
+- [x] **3.** Implementar un sistema automático de paginación para la lista de todos los Pokémon.
 
 ### Ideas
 

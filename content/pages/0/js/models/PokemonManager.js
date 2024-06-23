@@ -13,6 +13,58 @@ import P_F from "./PokemonFilter.js";
 //? Modulos de (PokemonBattle.js)
 import { Pokemon, PokemonBattle, PokemonInventory } from "./PokemonBattle.js";
 
+/**
+ * Maneja el evento 'beforeunload' para limpiar el sessionStorage.
+ * @param {Event} event - El evento 'beforeunload'.
+ */
+function clearSessionStorage(event = null) {
+  //! detectar la recarga de la pagina, (Solo la RECARGA), soy consciente de que no funciona muy bien, pero es lo unico que he encontrado para que funcione solo al recargar la pagina.
+  if (window.performance.navigation.type == 1) {
+    if (event) event.preventDefault();
+
+    console.log("Clear Session Storage\npokemonManager_data, pokemonPreview");
+    sessionStorage.removeItem("pokemonManager_data");
+    sessionStorage.removeItem("pokemonPreview");
+  }
+}
+
+//!# Estas ultimas funciones me dan risa por no llorar, se que se puede mejorar la logica muuuucho, pero antes estoy intenando hacer lo de la paginacion y estoy poniendo parche tras parche a ver si consigo algo, si me da tiempo mejorare y optimizare el codigo (mensaje para el eloy del futuro jejej)
+/**
+ * Maneja el evento de clic en un elemento Pokémon.
+ * @param {object} data - El objeto data interno de la clase `PokemonManager` que se guardara en el sessionStorage.
+ * @param {object} poke - El objeto Pokémon seleccionado.
+ */
+export function handleSessionStorage(data, poke = null) {
+  // Eliminar el event listener antes de salir de la página
+  window.removeEventListener("beforeunload", clearSessionStorage);
+
+  // Guardar el estado completo de los datos en sessionStorage
+  _.DOM.saveToSessionStorage("pokemonManager_data", data);
+
+  // Obtener y almacenar el objeto Pokémon seleccionado en sessionStorage
+  if (poke) _.DOM.saveToSessionStorage("pokemonPreview", poke);
+}
+
+/**
+ * Añade event listeners a los elementos de la lista de Pokémon.
+ * @param {Array} pokemonDivDataList - Lista de objetos Pokémon para los que se añadirán event listeners.
+ *
+ */
+export function addEventListenersPokemonCards(data, pokemonDivDataList) {
+  // Itera sobre cada objeto Pokémon en la lista proporcionada
+  pokemonDivDataList.forEach((poke) => {
+    // Selecciona el elemento del DOM correspondiente al Pokémon actual
+    const pokemonElement = document.querySelector(`#pokemon-${poke.pokeId}`);
+
+    // Añade un event listener de tipo 'click' al elemento seleccionado
+    pokemonElement.addEventListener("click", () => {
+      handleSessionStorage(data, poke);
+      // Redirigir a la página de detalles del Pokémon
+      window.location.href = `../1/pokemonDetail.html`;
+    });
+  });
+}
+
 export default class PokemonManager {
   /**
    * Constructor de la clase PokemonManager.
@@ -44,7 +96,7 @@ export default class PokemonManager {
           domElement.addEventListener(
             "click",
             () => {
-              this.#handleSessionStorage();
+              handleSessionStorage();
             },
             { capture: true } // Usa el modo de captura para dar prioridad
           );
@@ -55,7 +107,7 @@ export default class PokemonManager {
     });
 
     // Añadir el event listener
-    window.addEventListener("beforeunload", this.#clearSessionStorage);
+    window.addEventListener("beforeunload", clearSessionStorage);
 
     // window.addEventListener("beforeunload", (e) => {
     //   this.#handleSessionStorage();
@@ -148,36 +200,6 @@ export default class PokemonManager {
     );
   }
 
-  /**
-   * Maneja el evento 'beforeunload' para limpiar el sessionStorage.
-   * @param {Event} event - El evento 'beforeunload'.
-   */
-  #clearSessionStorage(event = null) {
-    //! detectar la recarga de la pagina, (Solo la RECARGA), soy consciente de que no funciona muy bien, pero es lo unico que he encontrado para que funcione solo al recargar la pagina.
-    if (window.performance.navigation.type == 1) {
-      if (event) event.preventDefault();
-
-      console.log("Clear Session Storage\npokemonManager_data, pokemonPreview");
-      sessionStorage.removeItem("pokemonManager_data");
-      sessionStorage.removeItem("pokemonPreview");
-    }
-  }
-
-  /**
-   * Maneja el evento de clic en un elemento Pokémon.
-   * @param {object} poke - El objeto Pokémon seleccionado.
-   */
-  #handleSessionStorage(poke = null) {
-    // Eliminar el event listener antes de salir de la página
-    window.removeEventListener("beforeunload", this.#clearSessionStorage);
-
-    // Guardar el estado completo de los datos en sessionStorage
-    _.DOM.saveToSessionStorage("pokemonManager_data", this.#data);
-
-    // Obtener y almacenar el objeto Pokémon seleccionado en sessionStorage
-    if (poke) _.DOM.saveToSessionStorage("pokemonPreview", poke);
-  }
-
   #createInventoryInstance() {
     localStorage.removeItem("inventory");
 
@@ -221,7 +243,7 @@ export default class PokemonManager {
 
     if (reload) {
       // Eliminar los datos almacenados en sessionStorage
-      this.#clearSessionStorage();
+      clearSessionStorage();
     }
 
     try {
@@ -438,10 +460,6 @@ export default class PokemonManager {
     if (this.#data.dom.filters.isInventory) {
       // pokemonData = this.#data.pokemonDataListInventory;
       pokemonData = this.#data.pokemonDataListInventory;
-
-      // //! Prueba con el carrito
-      // const cart = JSON.parse(localStorage.getItem("carrito"));
-      // pokemonData = cart ? cart : [];
     } else {
       pokemonData = this.#data.pokemonDataList;
     }
@@ -487,12 +505,13 @@ export default class PokemonManager {
 
     // Mostrar los Pokémon en el DOM usando el manejador de datos de Pokémon
     this.PokemonDOMHandler.displayPokemon(
+      this.#data,
       this.#data.dom.pokemonDivDataList,
       this.#data.dom.filters.isInventory
     );
 
-    if (!this.#data.dom.filters.isInventory)
-      this.#addEventListenersPokemonCards(this.#data.dom.pokemonDivDataList);
+    // if (!this.#data.dom.filters.isInventory)
+    //   addEventListenersPokemonCards(this.#data.dom.pokemonDivDataList);
 
     // Log para depuración
     // console.clear();
@@ -622,7 +641,7 @@ export default class PokemonManager {
   //     // Añade un event listener de tipo 'click' al elemento seleccionado
   //     pokemonElement.addEventListener("click", () => {
   //       // Eliminar el event listener
-  //       window.removeEventListener("beforeunload", this.#clearSessionStorage);
+  //       window.removeEventListener("beforeunload", clearSessionStorage);
 
   //       // Guarda el estado completo de los datos en sessionStorage
   //       sessionStorage.setItem(
@@ -640,23 +659,4 @@ export default class PokemonManager {
   //     });
   //   });
   // }
-
-  /**
-   * Añade event listeners a los elementos de la lista de Pokémon.
-   * @param {Array} pokemonDivDataList - Lista de objetos Pokémon para los que se añadirán event listeners.
-   */
-  #addEventListenersPokemonCards(pokemonDivDataList) {
-    // Itera sobre cada objeto Pokémon en la lista proporcionada
-    pokemonDivDataList.forEach((poke) => {
-      // Selecciona el elemento del DOM correspondiente al Pokémon actual
-      const pokemonElement = document.querySelector(`#pokemon-${poke.pokeId}`);
-
-      // Añade un event listener de tipo 'click' al elemento seleccionado
-      pokemonElement.addEventListener("click", () => {
-        this.#handleSessionStorage(poke);
-        // Redirigir a la página de detalles del Pokémon
-        window.location.href = `../1/pokemonDetail.html`;
-      });
-    });
-  }
 }

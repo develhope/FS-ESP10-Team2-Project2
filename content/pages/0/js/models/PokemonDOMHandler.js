@@ -1,6 +1,11 @@
 //? Funcion de la parte del carrito para añadir el Pokemon a este
 import { addToCart } from "./../../../2/js/carrito.js";
 
+import {
+  addEventListenersPokemonCards,
+  handleSessionStorage,
+} from "./PokemonManager.js";
+
 export default class PokemonDOMHandler {
   /**
    * Constructor de la clase PokemonDOMHandler.
@@ -11,6 +16,15 @@ export default class PokemonDOMHandler {
   constructor({ pokemonDivList, filterContainer: filterContainer }) {
     this.mainContainer = filterContainer;
     this.pokemonDivList = pokemonDivList;
+
+    this.currentPage = 0;
+    this.pokemonDataList = [];
+    this.observer = new IntersectionObserver(this.#loadMore.bind(this), {
+      root: null,
+      rootMargin: "0px",
+      threshold: 1.0,
+    });
+
     this.#createFilterSearchInput(filterContainer);
     this.#createFilterSelect(filterContainer);
     this.#createSwitchInventory(filterContainer);
@@ -62,21 +76,93 @@ export default class PokemonDOMHandler {
     div.appendChild(style);
   }
 
+  // /**
+  //  * Método para mostrar uno o varios Pokémon en el DOM.
+  //  * @param {object[]} pokemonDataList - Un array de objetos de Pokémon.
+  //  * @param {boolean} inventory - Un booleano que representa las tarjetas de los Pokemon en modo inventario, si es true.
+  //  */
+  // displayPokemon(pokemonDataList, inventory = false) {
+  //   this.pokemonDivList.innerHTML = "";
+
+  //   pokemonDataList.forEach((poke) => {
+  //     const div = inventory
+  //       ? this.#createPokemonElementInventory(poke)
+  //       : this.#createPokemonElementNormal(poke);
+  //     this.pokemonDivList.append(div);
+  //     this.#addImageHoverEffect(div, poke);
+  //   });
+  // }
+
   /**
    * Método para mostrar uno o varios Pokémon en el DOM.
    * @param {object[]} pokemonDataList - Un array de objetos de Pokémon.
    * @param {boolean} inventory - Un booleano que representa las tarjetas de los Pokemon en modo inventario, si es true.
    */
-  displayPokemon(pokemonDataList, inventory = false) {
+  displayPokemon(data, pokemonDataList, inventory = false) {
+    this.data = data;
+    this.pokemonDataList = pokemonDataList;
+    this.currentPage = 0;
     this.pokemonDivList.innerHTML = "";
+    this.#loadNextPage(inventory);
+  }
 
-    pokemonDataList.forEach((poke) => {
+  /**
+   * Cargar la siguiente página de Pokémon.
+   * @param {boolean} inventory - Si las tarjetas de los Pokemon están en modo inventario.
+   * @private
+   */
+  #loadNextPage(inventory) {
+    const start = this.currentPage * 30;
+    const end = start + 30;
+    const nextPageData = this.pokemonDataList.slice(start, end);
+
+    nextPageData.forEach((poke) => {
       const div = inventory
         ? this.#createPokemonElementInventory(poke)
         : this.#createPokemonElementNormal(poke);
       this.pokemonDivList.append(div);
       this.#addImageHoverEffect(div, poke);
     });
+
+    this.currentPage++;
+
+    // Si hay más páginas, observar el último elemento añadido
+    if (end < this.pokemonDataList.length) {
+      const lastPokemonElement = this.pokemonDivList.lastElementChild;
+      this.observer.observe(lastPokemonElement);
+    }
+
+    // Añadir los event listeners para la nueva página cargada
+    addEventListenersPokemonCards(this.data, nextPageData);
+
+    // // Itera sobre cada objeto Pokémon en la lista proporcionada
+    // nextPageData.forEach((poke) => {
+    //   // Selecciona el elemento del DOM correspondiente al Pokémon actual
+    //   const pokemonElement = document.querySelector(`#pokemon-${poke.pokeId}`);
+
+    //   // Guardar el estado completo de los datos en sessionStorage
+    //   _.DOM.saveToSessionStorage("pokemonManager_data", this.data);
+
+    //   // Añade un event listener de tipo 'click' al elemento seleccionado
+    //   pokemonElement.addEventListener("click", () => {
+    //     handleSessionStorage(poke);
+    //     // Redirigir a la página de detalles del Pokémon
+    //     window.location.href = `../1/pokemonDetail.html`;
+    //   });
+    // });
+  }
+
+  /**
+   * Cargar más Pokémon cuando se alcanza el final de la lista.
+   * @param {IntersectionObserverEntry[]} entries - Las entradas observadas.
+   * @private
+   */
+  #loadMore(entries) {
+    const [entry] = entries;
+    if (entry.isIntersecting) {
+      this.observer.unobserve(entry.target);
+      this.#loadNextPage();
+    }
   }
 
   /**
