@@ -34,7 +34,7 @@ function clearSessionStorage(event = null) {
  * @param {object} data - El objeto data interno de la clase `PokemonManager` que se guardara en el sessionStorage.
  * @param {object} poke - El objeto Pokémon seleccionado.
  */
-export function handleSessionStorage(data, poke = null) {
+function handleSessionStorage(data, poke = null) {
   // Eliminar el event listener antes de salir de la página
   window.removeEventListener("beforeunload", clearSessionStorage);
 
