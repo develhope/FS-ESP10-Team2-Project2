@@ -34,10 +34,11 @@ function clearSessionStorage(event = null) {
  * @param {object} data - El objeto data interno de la clase `PokemonManager` que se guardara en el sessionStorage.
  * @param {object} poke - El objeto Pokémon seleccionado.
  */
-function handleSessionStorage(data, poke = null) {
+function handleSessionStorage(data, poke = null, loadedCards = null) {
   // Eliminar el event listener antes de salir de la página
   window.removeEventListener("beforeunload", clearSessionStorage);
 
+  data.dom.loadedCards = loadedCards;
   // Guardar el estado completo de los datos en sessionStorage
   _.DOM.saveToSessionStorage("pokemonManager_data", data);
 
@@ -50,7 +51,13 @@ function handleSessionStorage(data, poke = null) {
  * @param {Array} pokemonDivDataList - Lista de objetos Pokémon para los que se añadirán event listeners.
  *
  */
-export function addEventListenersPokemonCards(data, pokemonDivDataList) {
+export function addEventListenersPokemonCards(
+  data,
+  pokemonDivDataList,
+  loadedCards
+) {
+  console.log("loadedCards", loadedCards);
+
   // Itera sobre cada objeto Pokémon en la lista proporcionada
   pokemonDivDataList.forEach((poke) => {
     // Selecciona el elemento del DOM correspondiente al Pokémon actual
@@ -58,7 +65,7 @@ export function addEventListenersPokemonCards(data, pokemonDivDataList) {
 
     // Añade un event listener de tipo 'click' al elemento seleccionado
     pokemonElement.addEventListener("click", () => {
-      handleSessionStorage(data, poke);
+      handleSessionStorage(data, poke, loadedCards);
       // Redirigir a la página de detalles del Pokémon
       window.location.href = `../1/pokemonDetail.html`;
     });
@@ -96,7 +103,7 @@ export default class PokemonManager {
           domElement.addEventListener(
             "click",
             () => {
-              handleSessionStorage();
+              handleSessionStorage(this.#data);
             },
             { capture: true } // Usa el modo de captura para dar prioridad
           );
@@ -126,6 +133,7 @@ export default class PokemonManager {
         isInventory: false,
       },
       pokemonDivDataList: [],
+      loadedCards: undefined,
     },
     pokemonDataList: [],
     pokemonDataListInventory: [],
@@ -194,6 +202,7 @@ export default class PokemonManager {
     - nameOrId: ${this.#data.dom.filters.byNameOrId}
     - inventory: ${this.#data.dom.filters.isInventory}
   - pokemonDivDataList length: ${this.#data.dom.pokemonDivDataList.length}
+  - loadedCards: ${this.#data.dom.loadedCards}
 - pokemonDataList length: ${this.#data.pokemonDataList.length}
 - pokemonDataListInventory length: ${this.#data.pokemonDataListInventory.length}
 `
@@ -507,8 +516,11 @@ export default class PokemonManager {
     this.PokemonDOMHandler.displayPokemon(
       this.#data,
       this.#data.dom.pokemonDivDataList,
-      this.#data.dom.filters.isInventory
+      this.#data.dom.filters.isInventory,
+      this.#data.dom.loadedCards
     );
+
+    this.#data.dom.loadedCards = undefined;
 
     // if (!this.#data.dom.filters.isInventory)
     //   addEventListenersPokemonCards(this.#data.dom.pokemonDivDataList);

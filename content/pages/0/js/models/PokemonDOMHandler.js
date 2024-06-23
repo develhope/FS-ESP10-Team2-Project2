@@ -16,6 +16,7 @@ export default class PokemonDOMHandler {
 
     this.currentPage = 0;
     this.pokemonDataList = [];
+    this.show = 30; // Nueva propiedad para controlar cuántas tarjetas mostrar
     this.observer = new IntersectionObserver(this.#loadMore.bind(this), {
       root: null,
       rootMargin: "0px",
@@ -94,11 +95,13 @@ export default class PokemonDOMHandler {
    * Método para mostrar uno o varios Pokémon en el DOM.
    * @param {object[]} pokemonDataList - Un array de objetos de Pokémon.
    * @param {boolean} inventory - Un booleano que representa las tarjetas de los Pokemon en modo inventario, si es true.
+   * @param {number|string} show - Número de tarjetas a mostrar o 'all' para mostrar todas.
    */
-  displayPokemon(data, pokemonDataList, inventory = false) {
+  displayPokemon(data, pokemonDataList, inventory = false, show = 30) {
     this.data = data;
     this.pokemonDataList = pokemonDataList;
     this.currentPage = 0;
+    this.show = show === "all" ? pokemonDataList.length : show; // Actualizar la propiedad show
     this.pokemonDivList.innerHTML = "";
     this.#loadNextPage(inventory);
   }
@@ -109,8 +112,8 @@ export default class PokemonDOMHandler {
    * @private
    */
   #loadNextPage(inventory) {
-    const start = this.currentPage * 30;
-    const end = start + 30;
+    const start = this.currentPage * this.show;
+    const end = start + this.show;
     const nextPageData = this.pokemonDataList.slice(start, end);
 
     nextPageData.forEach((poke) => {
@@ -123,30 +126,15 @@ export default class PokemonDOMHandler {
 
     this.currentPage++;
 
-    // Si hay más páginas, observar el último elemento añadido
+    // Si hay más páginas y no se debe mostrar toda la lista, observar el último elemento añadido
     if (end < this.pokemonDataList.length) {
       const lastPokemonElement = this.pokemonDivList.lastElementChild;
       this.observer.observe(lastPokemonElement);
     }
 
-    // Añadir los event listeners para la nueva página cargada
-    addEventListenersPokemonCards(this.data, nextPageData);
-
-    // // Itera sobre cada objeto Pokémon en la lista proporcionada
-    // nextPageData.forEach((poke) => {
-    //   // Selecciona el elemento del DOM correspondiente al Pokémon actual
-    //   const pokemonElement = document.querySelector(`#pokemon-${poke.pokeId}`);
-
-    //   // Guardar el estado completo de los datos en sessionStorage
-    //   _.DOM.saveToSessionStorage("pokemonManager_data", this.data);
-
-    //   // Añade un event listener de tipo 'click' al elemento seleccionado
-    //   pokemonElement.addEventListener("click", () => {
-    //     handleSessionStorage(poke);
-    //     // Redirigir a la página de detalles del Pokémon
-    //     window.location.href = `../1/pokemonDetail.html`;
-    //   });
-    // });
+    // Añadir los event listeners para la nueva página cargada, incluyendo el número de tarjetas cargadas
+    const loadedCards = this.currentPage * this.show;
+    addEventListenersPokemonCards(this.data, nextPageData, loadedCards);
   }
 
   /**
