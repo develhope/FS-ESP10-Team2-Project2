@@ -137,6 +137,7 @@ export default class PokemonManager {
     },
     pokemonDataList: [],
     pokemonDataListInventory: [],
+    numPokemonDownloaded: 1025,
   };
 
   /**
@@ -146,7 +147,7 @@ export default class PokemonManager {
    * const allPokemon = pokemonManager.pokemon;
    */
   get pokemon() {
-    return JSON.parse(JSON.stringify(this.#data.pokemonDataList));
+    return _.obj.deepCopyJSON(this.#data.pokemonDataList);
   }
 
   /**
@@ -156,7 +157,7 @@ export default class PokemonManager {
    * const filteredPokemon = pokemonManager.pokemonFiltered;
    */
   get pokemonFiltered() {
-    return JSON.parse(JSON.stringify(this.#data.dom.pokemonDivDataList));
+    return _.obj.deepCopyJSON(this.#data.dom.pokemonDivDataList);
   }
 
   /**
@@ -205,6 +206,7 @@ export default class PokemonManager {
   - loadedCards: ${this.#data.dom.loadedCards}
 - pokemonDataList length: ${this.#data.pokemonDataList.length}
 - pokemonDataListInventory length: ${this.#data.pokemonDataListInventory.length}
+- numPokemonDownloaded: ${this.#data.numPokemonDownloaded}
 `
     );
   }
@@ -267,12 +269,26 @@ export default class PokemonManager {
         this.#data = pokemonManager_data;
         this.#getDOMElements(true);
       } else {
-        // Cargar la lista de Pokémon utilizando el manejador de datos
-        this.#data.pokemonDataList =
-          await this.PokemonDataHandler.loadPokemonList(count);
+        // Descargar del la API la lista de Pokémon utilizando el manejador de datos
+        this.#data.originalPokemonDataList =
+          await this.PokemonDataHandler.loadPokemonList(
+            this.#data.numPokemonDownloaded
+          );
 
+        // Limpiamos la lista de Pokémon para cargar solo los deseados
+        const pokemonDataListClear = _.arr.trimKeepArray(
+          _.obj.shallowCopy(this.#data.originalPokemonDataList),
+          count,
+          true
+        );
+        console.log(pokemonDataListClear.length);
+
+        this.#data.originalPokemonDataList.market = undefined;
+
+        // Clonar la lista de Pokémon utilizando el manejador de datos
+        this.#data.pokemonDataList = pokemonDataListClear;
         // Clonar la lista de Pokémon cargados para su manipulación en el DOM
-        this.#data.dom.pokemonDivDataList = [...this.#data.pokemonDataList];
+        this.#data.dom.pokemonDivDataList = pokemonDataListClear;
 
         // Guardar la lista en sessionStorage
         sessionStorage.setItem(
@@ -510,7 +526,8 @@ export default class PokemonManager {
     }
 
     // Actualizar la lista temporal de Pokémon en el DOM
-    this.#data.dom.pokemonDivDataList = [...pokemonData];
+    this.#data.dom.pokemonDivDataList = _.obj.shallowCopy(pokemonData);
+    // this.#data.dom.pokemonDivDataList = [...pokemonData];
 
     // Mostrar los Pokémon en el DOM usando el manejador de datos de Pokémon
     this.PokemonDOMHandler.displayPokemon(

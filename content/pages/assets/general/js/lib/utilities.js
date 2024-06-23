@@ -206,6 +206,172 @@ class _ {
       return randomNumber <= probabilityPercentage;
     },
   };
+
+  //todo: Funciones de tipo Array (Array)
+  static arr = {
+    /**
+     ** Recorta un array eliminando un número específico de elementos del inicio o del final.
+     * @param {array} array - El array a recortar.
+     * @param {number} num - El número de elementos a eliminar.
+     * @param {boolean} [fromStart=true] - Indica si se deben eliminar los elementos desde el inicio (true) o desde el final (false).
+     * @returns {array} - El array recortado.
+     * @example
+     * // Elimina los primeros 2 elementos del array.
+     * const result = _.arr.trimArray([1, 2, 3, 4, 5], 2);
+     * console.log(result); // [3, 4, 5]
+     *
+     * // Elimina los últimos 3 elementos del array.
+     * const result = _.arr.trimArray([1, 2, 3, 4, 5], 3, false);
+     * console.log(result); // [1, 2]
+     */
+    trimArray(array, num, fromStart = true) {
+      if (!Array.isArray(array)) {
+        throw new Error("El primer argumento debe ser un array.");
+      }
+      if (typeof num !== "number" || num < 0) {
+        throw new Error("El segundo argumento debe ser un número positivo.");
+      }
+      if (typeof fromStart !== "boolean") {
+        throw new Error("El tercer argumento debe ser un valor booleano.");
+      }
+
+      if (fromStart) {
+        return array.slice(num);
+      } else {
+        return array.slice(0, -num);
+      }
+    },
+
+    /**
+     * Recorta un array manteniendo un número específico de elementos y eliminando los demás,
+     * ya sea desde el inicio o desde el final.
+     * @param {array} array - El array a recortar.
+     * @param {number} num - El número de elementos a mantener.
+     * @param {boolean} [keepFromStart=true] - Indica si se deben mantener los elementos desde el inicio (true) o desde el final (false).
+     * @returns {array} - El array recortado.
+     * @example
+     * // Mantiene los primeros 2 elementos del array.
+     * const result = _.arr.trimKeepArray([1, 2, 3, 4, 5], 2);
+     * console.log(result); // [1, 2]
+     *
+     * // Mantiene los últimos 3 elementos del array.
+     * const result = _.arr.trimKeepArray([1, 2, 3, 4, 5], 3, false);
+     * console.log(result); // [3, 4, 5]
+     */
+    trimKeepArray(array, num, keepFromStart = true) {
+      if (!Array.isArray(array)) {
+        throw new Error("El primer argumento debe ser un array.");
+      }
+      if (typeof num !== "number" || num < 0) {
+        throw new Error("El segundo argumento debe ser un número positivo.");
+      }
+      if (typeof keepFromStart !== "boolean") {
+        throw new Error("El tercer argumento debe ser un valor booleano.");
+      }
+
+      if (keepFromStart) {
+        return array.slice(0, num);
+      } else {
+        return array.slice(-num);
+      }
+    },
+  };
+
+  //todo: Funciones de tipo Objeto (Object)
+  static obj = {
+    /**
+     ** Realiza una copia superficial de un objeto.
+     * Una copia superficial copia las propiedades del objeto original al nuevo objeto.
+     * Si alguna de las propiedades es un objeto, la referencia a este objeto se copiará, no el objeto en sí.
+     * @param {object} obj - El objeto a copiar.
+     * @returns {object} - La copia superficial del objeto.
+     * @example
+     * const original = { a: 1, b: 2 };
+     * const copy = _.obj.shallowCopy(original);
+     * console.log(copy); // { a: 1, b: 2 }
+     * @example
+     * // Cuando usar:
+     * // Útil cuando se trabaja con objetos simples o cuando solo se necesitan copias de primer nivel.
+     */
+    shallowCopy(obj) {
+      if (typeof obj !== "object" || obj === null) {
+        throw new Error("El argumento debe ser un objeto.");
+      }
+      return [...obj];
+    },
+
+    /**
+     ** Realiza una copia profunda de un objeto utilizando JSON.
+     * Nota: Esto no funciona con funciones o tipos especiales de objetos (como Date, RegExp, Map, Set).
+     * Una copia profunda crea una copia completa de un objeto, incluyendo todos los niveles de objetos anidados.
+     * @param {object} obj - El objeto a copiar.
+     * @returns {object} - La copia profunda del objeto.
+     * @example
+     * const original = { a: 1, b: { c: 3 } };
+     * const copy = _.obj.deepCopyJSON(original);
+     * console.log(copy); // { a: 1, b: { c: 3 } }
+     * @example
+     * // Cuando usar:
+     * // Útil para objetos anidados simples y estructuras de datos que no contienen funciones o tipos especiales.
+     */
+    deepCopyJSON(obj) {
+      if (typeof obj !== "object" || obj === null) {
+        throw new Error("El argumento debe ser un objeto.");
+      }
+      return JSON.parse(JSON.stringify(obj));
+    },
+
+    /**
+     ** Realiza una copia profunda de un objeto utilizando un método recursivo.
+     * Maneja funciones y tipos especiales de objetos.
+     * Una copia profunda crea una copia completa de un objeto, incluyendo todos los niveles de objetos anidados,
+     * funciones y tipos especiales de objetos como Date, RegExp, Map y Set.
+     * @param {object} obj - El objeto a copiar.
+     * @returns {object} - La copia profunda del objeto.
+     * @example
+     * const original = { a: 1, b: { c: 3, d: new Date() } };
+     * const copy = _.obj.deepCopyRecursive(original);
+     * console.log(copy); // { a: 1, b: { c: 3, d: [Date object] } }
+     * @example
+     * // Cuando usar:
+     * // Útil para objetos complejos que contienen funciones o tipos especiales de objetos.
+     */
+    deepCopyRecursive(obj) {
+      if (typeof obj !== "object" || obj === null) {
+        throw new Error("El argumento debe ser un objeto.");
+      }
+
+      let copy;
+
+      if (Array.isArray(obj)) {
+        copy = [];
+        obj.forEach((_, i) => {
+          copy[i] = this.deepCopyRecursive(obj[i]);
+        });
+      } else if (obj instanceof Date) {
+        copy = new Date(obj.getTime());
+      } else if (obj instanceof RegExp) {
+        copy = new RegExp(obj);
+      } else if (obj instanceof Map) {
+        copy = new Map();
+        obj.forEach((value, key) => {
+          copy.set(key, this.deepCopyRecursive(value));
+        });
+      } else if (obj instanceof Set) {
+        copy = new Set();
+        obj.forEach((value) => {
+          copy.add(this.deepCopyRecursive(value));
+        });
+      } else {
+        copy = {};
+        Object.keys(obj).forEach((key) => {
+          copy[key] = this.deepCopyRecursive(obj[key]);
+        });
+      }
+
+      return copy;
+    },
+  };
 }
 
 //! Export Normal
