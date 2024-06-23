@@ -56,7 +56,7 @@ export function addEventListenersPokemonCards(
   pokemonDivDataList,
   loadedCards
 ) {
-  console.log("loadedCards", loadedCards);
+  // console.log("loadedCards", loadedCards);
 
   // Itera sobre cada objeto Pokémon en la lista proporcionada
   pokemonDivDataList.forEach((poke) => {
