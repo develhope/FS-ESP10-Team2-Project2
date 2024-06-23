@@ -76,82 +76,7 @@ export default class PokemonManager {
       pokemonDivDataList: [],
     },
     pokemonDataList: [],
-    pokemonDataListInventory: [
-      {
-        pokeId: 1, // Número ID del Pokémon
-        name: "bulbasaur", // Nombre del Pokémon
-        type: ["grass", "poison"], // Tipos del Pokémon
-        images: {
-          illustration: {
-            default:
-              "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png", // URL de la ilustración por defecto
-            shiny:
-              "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/shiny/1.png", // URL de la ilustración shiny
-          },
-          rendering: {
-            default:
-              "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/1.png", // URL del renderizado por defecto
-            shiny:
-              "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/1.png", // URL del renderizado shiny
-          },
-          gif: {
-            back_default:
-              "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/1.gif", // URL del gif por defecto visto desde atrás
-            back_shiny:
-              "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/shiny/1.gif", // URL del gif shiny visto desde atrás
-            front_default:
-              "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/1.gif", // URL del gif por defecto visto desde el frente
-            front_shiny:
-              "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/shiny/1.gif", // URL del gif shiny visto desde el frente
-          },
-        },
-        statistics: {
-          height: {
-            centimeter: 70.0, // Altura en centímetros
-            decimeters: 7, // Altura en decímetros
-            meters: 0.7, // Altura en metros
-          },
-          weight: {
-            gram: 6900, // Peso en gramos
-            hectograms: 69, // Peso en hectogramos
-            kilograms: 6.9, // Peso en kilogramos
-            tons: 0.0069, // Peso en toneladas
-          },
-          hp: 45, // Puntos de puntos de vida
-          hp_percent: 10, // Porcentaje de puntos de vida
-          attack: 49, // Estadística de puntos de ataque
-          attack_percent: 50, // Porcentaje de puntos de ataque
-          defense: 20, // Estadística de puntos de defensa
-          defense_percent: 10, // Porcentaje de puntos de defensa
-          special_attack: 65, // Estadística de puntos de ataque especial
-          special_attack_percent: 65, // Porcentaje de puntos de ataque especial
-          special_defense: 30, // Estadística de puntos de defensa especial
-          special_defense_percent: 40, // Porcentaje de puntos de defensa especial
-          speed: 45, // Estadística de puntos de velocidad
-          speed_percent: 45, // Porcentaje de puntos de velocidad
-
-          power: 254, // La suma de todas sus estadisticas de lucha.
-          power_percent: 30, // Porcentaje de todas sus estadisticas de lucha.
-        },
-        value: {
-          base_experience: 64, // Experiencia base
-          movements: 20, // Número de movimientos
-          capture_rate_percent: 45, // Porcentaje de tasa de captura
-          isLegendary: false, // Si es legendario
-          isMythical: false, // Si es mítico
-          isFinalEvolution: true, // Si es su evolucion final
-        },
-        evolutions: [
-          { name: "bulbasaur", evolves_to: ["ivysaur"] },
-          { name: "ivysaur", evolves_to: ["venusaur"] },
-          { name: "venusaur", evolves_to: [] },
-        ],
-        market: {
-          price: 100, // Precio
-          discount: 69, // Precio con el descuento por oferta
-        },
-      },
-    ],
+    pokemonDataListInventory: [],
   };
 
   /**
@@ -253,6 +178,36 @@ export default class PokemonManager {
     if (poke) _.DOM.saveToSessionStorage("pokemonPreview", poke);
   }
 
+  #createInventoryInstance() {
+    localStorage.removeItem("inventory");
+
+    const myInventory = new PokemonInventory(false);
+
+    let pokemonToStoreInInventory;
+
+    let randomNumPoke;
+
+    for (let i = 0; i < 2; i++) {
+      randomNumPoke = _.num.getRandomNum(1, this.#data.pokemonDataList.length);
+
+      pokemonToStoreInInventory = new Pokemon(
+        this.#data.pokemonDataList[randomNumPoke].name,
+        this.#data.pokemonDataList[randomNumPoke].type,
+        this.#data.pokemonDataList[randomNumPoke].statistics.hp,
+        this.#data.pokemonDataList[randomNumPoke].statistics.attack,
+        this.#data.pokemonDataList[randomNumPoke].statistics.special_attack,
+        this.#data.pokemonDataList[randomNumPoke].statistics.defense,
+        this.#data.pokemonDataList[randomNumPoke].statistics.special_defense,
+        this.#data.pokemonDataList[randomNumPoke].statistics.speed
+      );
+
+      myInventory.addPokemon(pokemonToStoreInInventory);
+    }
+
+    myInventory.saveToLocalStorage();
+    myInventory.showInventory();
+  }
+
   /**
    * Inicializa la lista de Pokémon cargando datos desde la API o restaurando desde sessionStorage.
    * @param {number} count - La cantidad de Pokémon a cargar.
@@ -271,11 +226,11 @@ export default class PokemonManager {
 
     try {
       // Intentar obtener los datos del sessionStorage
-      let pokemonManager_data_JSON = sessionStorage.getItem(
+      const pokemonManager_data = _.DOM.getFromSessionStorage(
         "pokemonManager_data"
       );
-      if (pokemonManager_data_JSON) {
-        const pokemonManager_data = JSON.parse(pokemonManager_data_JSON);
+
+      if (pokemonManager_data) {
         console.log("Restaurando datos...");
 
         this.#data = pokemonManager_data;
@@ -294,6 +249,8 @@ export default class PokemonManager {
           JSON.stringify(this.#data)
         );
       }
+
+      this.#createInventoryInstance();
 
       // Configurar el slider del filtro de precios
       this.PokemonDOMHandler.setFilterSliderValue(
@@ -329,7 +286,7 @@ export default class PokemonManager {
         this.#data.dom.filters.isInventory
       );
 
-      if (!pokemonManager_data_JSON)
+      if (!pokemonManager_data)
         _.DOM.saveToSessionStorage("pokemonManager_data", this.#data);
 
       // Añadir los event listeners

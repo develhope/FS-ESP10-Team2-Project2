@@ -63,6 +63,24 @@ class _ {
     },
 
     /**
+     ** Obtiene los datos de sessionStorage.
+     * @param {string} key - La clave bajo la cual se almacenaron los datos.
+     * @returns {object|null} - El valor almacenado o null si no se encuentra.
+     * @example
+     * // Obtiene un objeto de sessionStorage.
+     * const user = _.DOM.getFromSessionStorage('user');
+     * console.log(user); // { name: 'Juan', age: 30 } o null
+     */
+    getFromSessionStorage(key) {
+      if (typeof key !== "string") {
+        throw new Error("La clave debe ser una cadena de texto.");
+      }
+
+      const value = sessionStorage.getItem(key);
+      return value ? JSON.parse(value) : null;
+    },
+
+    /**
      ** Guarda los datos en localStorage.
      * @param {string} key - La clave bajo la cual se almacenarán los datos.
      * @param {object} value - El valor a almacenar.
@@ -80,6 +98,24 @@ class _ {
 
       localStorage.setItem(key, JSON.stringify(value));
       console.log(`'${key}' Guardado en el LocalStorage`);
+    },
+
+    /**
+     ** Obtiene los datos de localStorage.
+     * @param {string} key - La clave bajo la cual se almacenaron los datos.
+     * @returns {object|null} - El valor almacenado o null si no se encuentra.
+     * @example
+     * // Obtiene un objeto de localStorage.
+     * const settings = _.DOM.getFromLocalStorage('settings');
+     * console.log(settings); // { theme: 'dark', language: 'es' } o null
+     */
+    getFromLocalStorage(key) {
+      if (typeof key !== "string") {
+        throw new Error("La clave debe ser una cadena de texto.");
+      }
+
+      const value = localStorage.getItem(key);
+      return value ? JSON.parse(value) : null;
     },
   };
 
