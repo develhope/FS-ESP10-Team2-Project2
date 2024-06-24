@@ -1,4 +1,7 @@
-export class PokemonDataHandler {
+//? Libreria personal de utilidades
+import _ from "../../../assets/general/js/lib/utilities.js";
+
+export default class PokemonDataHandler {
   static API_URLS = {
     POKEMON: "https://pokeapi.co/api/v2/pokemon/",
     SPECIES: "https://pokeapi.co/api/v2/pokemon-species/",
@@ -49,7 +52,7 @@ export class PokemonDataHandler {
     }
 
     // Calcular el 5% de count y generar un número aleatorio entre 1 y ese valor
-    const offerCount = this.getRandomInt(1, Math.floor(count * 0.05));
+    const offerCount = _.num.getRandomNum(1, Math.floor(count * 0.05));
 
     // Añadir ofertas aleatorias a algunos Pokémon
     this.#addRandomOffers(results, offerCount, 60);
@@ -206,15 +209,12 @@ export class PokemonDataHandler {
   }
 
   /**
-   * Método privado para obtener las evoluciones de un Pokémon a partir de la cadena evolutiva.
-   * Este método recorre la cadena evolutiva proporcionada y construye una lista de evoluciones.
-   *
-   * @param {object} chain - La cadena evolutiva del Pokémon, obtenida de la API.
-   * @returns {Array} - Una lista de objetos que representan las evoluciones del Pokémon.
-   *                    Cada objeto contiene el nombre del Pokémon y una lista de nombres de los Pokémon
-   *                    a los que puede evolucionar.
+   * Obtiene todos los nombres de las evoluciones de un Pokémon a partir de una cadena evolutiva.
+   * @param {object} chain - La cadena evolutiva del Pokémon.
+   * @returns {Array} - Una lista de nombres de todas las evoluciones a partir del Pokémon inicial.
    */
   #getEvolutions(chain) {
+    // Extrae la lista de evoluciones desde la cadena evolutiva proporcionada
     const evolutions = [];
     let currentEvolution = chain;
 
@@ -229,7 +229,27 @@ export class PokemonDataHandler {
       currentEvolution = currentEvolution.evolves_to[0];
     } while (currentEvolution && currentEvolution.evolves_to);
 
-    return evolutions;
+    // Función para obtener todos los nombres de las evoluciones
+    function getAllEvolutions(startName, evolutions) {
+      const evolutionNames = [];
+
+      function findEvolutions(name) {
+        const pokemon = evolutions.find((p) => p.name === name);
+        if (pokemon) {
+          evolutionNames.push(pokemon.name);
+          pokemon.evolves_to.forEach((evoName) => findEvolutions(evoName));
+        }
+      }
+
+      findEvolutions(startName);
+      return evolutionNames;
+    }
+
+    // Obtener el nombre del Pokémon inicial de la cadena evolutiva
+    const startName = chain.species.name;
+
+    // Devolver todos los nombres de las evoluciones
+    return getAllEvolutions(startName, evolutions);
   }
 
   /**
@@ -429,18 +449,6 @@ export class PokemonDataHandler {
     const roundedOffer = Math.round(offerPrice * 100) / 100;
 
     return roundedOffer;
-  }
-
-  /**
-   * Genera un número entero aleatorio entre min (incluido) y max (incluido).
-   * @param {number} min - El valor mínimo.
-   * @param {number} max - El valor máximo.
-   * @returns {number} - Un número entero aleatorio entre min y max.
-   */
-  getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
   /**

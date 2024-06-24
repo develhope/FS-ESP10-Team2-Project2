@@ -1,16 +1,19 @@
-import { PokemonManager } from "./models/PokemonManager.js";
+//? Libreria personal de utilidades
+import _ from "../../assets/general/js/lib/utilities.js";
 
-//! Eliminar todos los datos almacenados en localStorage
+//? Manejador de Pokémon (Pokemon Manager )
+import P_M from "./models/PokemonManager.js";
+
+//! Eliminar todos los datos almacenados en localStorage y en el sessionStorage
 // localStorage.clear();
 // sessionStorage.clear();
-// console.log(JSON.stringify(sessionStorage, null, 2));
 
 // Creación de la instancia del gestor de Pokémon
-const pokemonManager = new PokemonManager();
+const pokemonManager = new P_M();
 
 /**
  * Inicializa la carga de los Pokémon.
- * @param {number} count - El número de Pokémon a descargar.
+ * @param {number} count - El número de Pokémon a cargar en el DOM.
  */
 async function initializePokemonManager(count, reload) {
   try {
@@ -21,6 +24,6 @@ async function initializePokemonManager(count, reload) {
   }
 }
 
-//! Inicia la carga de los Pokémon (puedes cambiar el número por el numero de Pokémon que desees descargar)
-initializePokemonManager(151);
+//! Inicia la carga de los Pokémon (puedes cambiar el número por el numero de Pokémon que desees cargar en el DOM)
+initializePokemonManager(1025);
 // initializePokemonManager(151, true);

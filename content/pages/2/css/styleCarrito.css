@@ -18,15 +18,21 @@ padding-top: 50px;
     padding: 1.7vw;
     border: 3px solid rgba(187, 184, 184, 0.955);
     border-radius: 10px;
-    background-color: rgba(187, 184, 184, 0.758);
+    background-color: rgba(187, 184, 184, 0.758); 
     width: 400px;
     gap:4vw;
     text-wrap: wrap;
     align-items: center;
 }
 
+/* Arreglar números del input modo oscuro */
+
 .carrito-items img{
     width: 30%;
+}
+
+.carrito-items img:hover{
+    transform: scale(1.5);
 }
 
 
@@ -36,5 +42,27 @@ padding-top: 50px;
     text-align: center;
     border: 1px solid black;
     border-radius: 5px;
-    background-color: rgb(232, 228, 228);
+    background-color: rgba(252, 233, 124, 0.874);
+    color: black;
+}
+
+/* Papelera */
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24
+}
+
+.deleteButton > button{
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    cursor: pointer;
+}
+
+.deleteButton:hover{
+    transform: scale(1.1);
 }

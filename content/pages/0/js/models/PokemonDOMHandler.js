@@ -1,6 +1,10 @@
+//? Funcion de la parte del carrito para añadir el Pokemon
 import { addToCart } from "./../../../2/js/carrito.js";
 
-export class PokemonDOMHandler {
+//? Funcion compartida par añadir los event listeners a las tarjetas Pokémon
+import { addEventListenersPokemonCards } from "./PokemonManager.js";
+
+export default class PokemonDOMHandler {
   /**
    * Constructor de la clase PokemonDOMHandler.
    * @param {object} options - Objeto de opciones con las propiedades necesarias.
@@ -10,8 +14,19 @@ export class PokemonDOMHandler {
   constructor({ pokemonDivList, filterContainer: filterContainer }) {
     this.mainContainer = filterContainer;
     this.pokemonDivList = pokemonDivList;
+
+    this.currentPage = 0;
+    this.pokemonDataList = [];
+    this.show = 30; // Nueva propiedad para controlar cuántas tarjetas mostrar
+    this.observer = new IntersectionObserver(this.#loadMore.bind(this), {
+      root: null,
+      rootMargin: "0px",
+      threshold: 1.0,
+    });
+
     this.#createFilterSearchInput(filterContainer);
     this.#createFilterSelect(filterContainer);
+    this.#createSwitchInventory(filterContainer);
   }
 
   /**
@@ -60,18 +75,282 @@ export class PokemonDOMHandler {
     div.appendChild(style);
   }
 
+  // /**
+  //  * Método para mostrar uno o varios Pokémon en el DOM.
+  //  * @param {object[]} pokemonDataList - Un array de objetos de Pokémon.
+  //  * @param {boolean} inventory - Un booleano que representa las tarjetas de los Pokemon en modo inventario, si es true.
+  //  */
+  // displayPokemon(pokemonDataList, inventory = false) {
+  //   this.pokemonDivList.innerHTML = "";
+
+  //   pokemonDataList.forEach((poke) => {
+  //     const div = inventory
+  //       ? this.#createPokemonElementInventory(poke)
+  //       : this.#createPokemonElementNormal(poke);
+  //     this.pokemonDivList.append(div);
+  //     this.#addImageHoverEffect(div, poke);
+  //   });
+  // }
+
   /**
    * Método para mostrar uno o varios Pokémon en el DOM.
    * @param {object[]} pokemonDataList - Un array de objetos de Pokémon.
+   * @param {boolean} inventory - Un booleano que representa las tarjetas de los Pokemon en modo inventario, si es true.
+   * @param {number|string} show - Número de tarjetas a mostrar o 'all' para mostrar todas.
    */
-  displayPokemon(pokemonDataList) {
+  displayPokemon(data, pokemonDataList, inventory = false, show = 30) {
+    // console.log("show", show);
+    this.data = data;
+    this.pokemonDataList = pokemonDataList;
+    this.currentPage = 0;
+    this.show = show === "all" ? pokemonDataList.length : show; // Actualizar la propiedad show
     this.pokemonDivList.innerHTML = "";
+    this.#loadNextPage(inventory);
+  }
 
-    pokemonDataList.forEach((poke) => {
-      const div = this.#createPokemonElement(poke);
+  /**
+   * Cargar la siguiente página de Pokémon.
+   * @param {boolean} inventory - Si las tarjetas de los Pokemon están en modo inventario.
+   * @private
+   */
+  #loadNextPage(inventory) {
+    const start = this.currentPage * this.show;
+    const end = start + this.show;
+    const nextPageData = this.pokemonDataList.slice(start, end);
+
+    nextPageData.forEach((poke) => {
+      const div = inventory
+        ? this.#createPokemonElementInventory(poke)
+        : this.#createPokemonElementNormal(poke);
       this.pokemonDivList.append(div);
       this.#addImageHoverEffect(div, poke);
     });
+
+    this.currentPage++;
+
+    // Si hay más páginas y no se debe mostrar toda la lista, observar el último elemento añadido
+    if (end < this.pokemonDataList.length) {
+      const lastPokemonElement = this.pokemonDivList.lastElementChild;
+      this.observer.observe(lastPokemonElement);
+    }
+
+    if (inventory) {
+      // Añadir los event listeners para la nueva página cargada, incluyendo el número de tarjetas cargadas
+      const loadedCards = this.currentPage * this.show;
+      addEventListenersPokemonCards(this.data, nextPageData, loadedCards);
+    }
+  }
+
+  /**
+   * Cargar más Pokémon cuando se alcanza el final de la lista.
+   * @param {IntersectionObserverEntry[]} entries - Las entradas observadas.
+   * @private
+   */
+  #loadMore(entries) {
+    const [entry] = entries;
+    if (entry.isIntersecting) {
+      this.observer.unobserve(entry.target);
+      this.#loadNextPage();
+    }
+  }
+
+  /**
+   * Método privado para crear el elemento HTML de un Pokémon del inventario.
+   * @param {object} poke - El objeto Pokémon.
+   * @returns {HTMLElement} - El elemento div creado para el Pokémon.
+   * @private
+   */
+  #createPokemonElementInventory(poke) {
+    // Convertir el nombre del Pokémon a mayúsculas
+    const name = poke.name.toUpperCase();
+
+    // Generar el HTML para los tipos del Pokémon
+    const types = poke.type
+      .map(
+        (type) =>
+          `<p class="${type} type">${
+            type.charAt(0).toUpperCase() + type.slice(1)
+          }</p>`
+      )
+      .join("");
+
+    // Determinar la altura del Pokémon en la unidad apropiada
+    const height =
+      poke.statistics.height.meters < 1
+        ? `${poke.statistics.height.centimeter}cm`
+        : `${poke.statistics.height.meters}M`;
+
+    // Determinar el peso del Pokémon en la unidad apropiada
+    const weight =
+      poke.statistics.weight.kilograms < 1
+        ? `${poke.statistics.weight.gram}g`
+        : `${poke.statistics.weight.kilograms}kg`;
+
+    // Determinar la calidad del Pokémon
+    const quality = poke.value.isMythical
+      ? "pokemon-name-mythical"
+      : poke.value.isLegendary
+      ? "pokemon-name-legendary"
+      : "";
+
+    // Crear el elemento div para el Pokémon
+    const div = document.createElement("div");
+    div.id = `pokemon-${poke.id}`; // Asigna un ID único al elemento
+    div.classList.add("pokemon");
+    div.style.userSelect = "none"; // Bloquear la selección del elemento
+    div.innerHTML = `
+    <div style="padding-bottom: 1.6rem"></div>
+    <p class="pokemon-equip-back">${true ? "EQUIPADO" : ""}</p>
+    <div class="pokemon-image">
+      <img src="${poke.images.illustration.default}" alt="${poke.name}">
+    </div>
+    <div class="pokemon-info">
+      <div class="name-container">
+        <h2 class="pokemon-name" id="${quality}">${name}</h2>
+      </div>
+      <div class="pokemon-types">
+        ${types}
+      </div>
+      <div class="div-pokemon-stats">
+        <p class="stat">${height}</p>
+        <p class="stat">${weight}</p>
+      </div>
+      <div class="div-pokemon-SwitchEquipPokemon" id="div-pokemon-SwitchEquipPokemon-${
+        poke.dataInventory.inInventory.id
+      }">
+        <input class="input-SwitchEquipPokemon" type="checkbox" checked="checked" id="equipped" name="equipped-checkbox" value="equipped-button">
+        <label class="label-SwitchEquipPokemon" for="equipped" class="container">
+          <!--<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>-->
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 120 120"" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
+            <circle cx="60" cy="60" r="50" />
+          </svg>
+          <div class="action">
+            <span class="option-1">Equipar Pokémon</span>
+            <span class="option-2">Pokémon Equipado</span>
+          </div>
+        </label>
+      </div>
+    </div>
+  `;
+
+    // Crear el elemento de PopUp con información adicional
+    const divPopUp = document.createElement("div");
+    divPopUp.classList.add("div-pokemon-popup");
+
+    divPopUp.innerHTML = `
+    <svg class="icon-svg-info" width="30" height="30" viewBox="0 0 512 512">
+      <title>Estadisticas</title>
+      <path
+          d="M256,6.234C118.059,6.234,6.234,118.059,6.234,256.001c0,137.94,111.824,249.765,249.766,249.765  s249.766-111.824,249.766-249.765C505.766,118.059,393.941,6.234,256,6.234z M489.966,258  C487.828,385.396,383.907,488.017,256,488.017c-127.907,0-231.829-102.62-233.966-230.017h-0.051c0-0.669,0.02-1.333,0.025-2  c-0.006-0.667-0.025-1.331-0.025-2h0.051C24.171,126.603,128.093,23.983,256,23.983c127.907,0,231.829,102.62,233.966,230.017h0.051  c0,0.669-0.02,1.333-0.025,2c0.006,0.667,0.025,1.331,0.025,2H489.966z" />
+      <path
+          d="M256,132.228  c-68.357,0-123.772,55.415-123.772,123.772S187.643,379.772,256,379.772S379.772,324.357,379.772,256S324.357,132.228,256,132.228z   M256,331.024c-41.436,0-75.024-33.59-75.024-75.024s33.589-75.024,75.024-75.024c41.435,0,75.024,33.59,75.024,75.024  S297.435,331.024,256,331.024z"
+          fill="none" />
+      <path
+          d="M256,223.724c-17.826,0-32.276,14.451-32.276,32.276c0,17.826,14.45,32.276,32.276,32.276  s32.276-14.45,32.276-32.276C288.276,238.174,273.826,223.724,256,223.724z M256,277.951c-12.124,0-21.952-9.827-21.952-21.951  s9.828-21.952,21.952-21.952c12.124,0,21.951,9.828,21.951,21.952S268.124,277.951,256,277.951z" />
+      <path
+          d="M256,180.976c-41.436,0-75.024,33.59-75.024,75.024s33.589,75.024,75.024,75.024  c41.435,0,75.024-33.59,75.024-75.024S297.435,180.976,256,180.976z M256,307.025c-28.181,0-51.025-22.844-51.025-51.025  s22.845-51.025,51.025-51.025c28.182,0,51.025,22.844,51.025,51.025S284.182,307.025,256,307.025z" />
+      <g>
+          <path
+              d="M136.784,252.489c0-17.625,3.758-34.489,10.509-49.489H14v107h137.237   C142.019,292,136.784,273.296,136.784,252.489z" />
+          <path
+              d="M369.264,203c6.751,15,10.509,31.863,10.509,49.489c0,20.807-5.234,39.511-14.452,57.511H498V203H369.264z" />
+      </g>
+    </svg>
+
+    <div class="info-pokemon-popup">
+    
+    
+      <div class="div-stat-percent-power">
+        <div class="stat-percentage-power" style="background-color: ${this.#getColorByPercentage(
+          poke.statistics.power_percent
+        )}">
+        </div>
+        <p>Power: ${poke.statistics.power} </p>
+        <p>(${poke.statistics.power_percent}%)</p>
+      </div>
+
+      <div class="div-stat-percent">
+        <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
+          poke.statistics.hp_percent
+        )}">
+        </div>
+        <p>HP: ${poke.statistics.hp} </p>
+        <p>(${poke.statistics.hp_percent}%)</p>
+      </div>
+
+      <div class="div-stat-percent">
+        <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
+          poke.statistics.attack_percent
+        )}">
+        </div>
+        <p>Attack: ${poke.statistics.attack} </p>
+        <p>(${poke.statistics.attack_percent}%)</p>
+      </div>
+
+      <div class="div-stat-percent-special">
+        <div class="stat-percentage-special" style="background-color: ${this.#getColorByPercentage(
+          poke.statistics.special_attack_percent
+        )}">
+        </div>
+        <p>Special: ${poke.statistics.special_attack} </p>
+        <p>(${poke.statistics.special_attack_percent}%)</p>
+      </div>
+
+      <div class="div-stat-percent">
+        <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
+          poke.statistics.defense_percent
+        )}">
+        </div>
+        <p>Defense: ${poke.statistics.defense} </p>
+        <p>(${poke.statistics.defense_percent}%)</p>
+      </div>
+
+      <div class="div-stat-percent-special">
+        <div class="stat-percentage-special" style="background-color: ${this.#getColorByPercentage(
+          poke.statistics.special_defense_percent
+        )}">
+        </div>
+        <p>Special: ${poke.statistics.special_defense} </p>
+        <p>(${poke.statistics.special_defense_percent}%)</p>
+      </div>
+
+      <div class="div-stat-percent">
+        <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
+          poke.statistics.speed_percent
+        )}">
+        </div>
+        <p>Speed: ${poke.statistics.speed} </p>
+        <p>(${poke.statistics.speed_percent}%)</p>
+      </div>
+
+    </div>
+  `;
+
+    div.appendChild(divPopUp);
+
+    //!! Agrega el botón al elemento .div-addCart
+    // const divAddCart = div.querySelector(".div-addCart");
+
+    // Añadir eventos de hover para mostrar y ocultar el PopUp
+    divPopUp.addEventListener("mouseenter", () => {
+      divPopUp.querySelector(".info-pokemon-popup").classList.add("show");
+      // divAddCart.style.zIndex = -1;
+    });
+
+    divPopUp.addEventListener("mouseleave", () => {
+      divPopUp.querySelector(".info-pokemon-popup").classList.remove("show");
+      // divAddCart.style.zIndex = null;
+    });
+
+    //!# out (null) (ARREGLAR ANTES DE SIGIR)
+    const equippedButton = document.querySelector(
+      `#div-pokemon-SwitchEquipPokemon-${poke.dataInventory.inInventory.id}`
+    );
+
+    console.log(equippedButton);
+    equippedButton.addEventListener("click", () => {});
+
+    return div;
   }
 
   /**
@@ -80,7 +359,7 @@ export class PokemonDOMHandler {
    * @returns {HTMLElement} - El elemento div creado para el Pokémon.
    * @private
    */
-  #createPokemonElement(poke) {
+  #createPokemonElementNormal(poke) {
     // Formatear el ID del Pokémon con ceros a la izquierda
     const pokeId = poke.pokeId.toString().padStart(3, "0");
     // Convertir el nombre del Pokémon a mayúsculas
@@ -133,26 +412,6 @@ export class PokemonDOMHandler {
           <p class="offerPercentage">${offerPercentage}%</p>
       `;
     }
-
-    /**
-     * Función para obtener el color de fondo según el porcentaje.
-     * @param {number} percent - El porcentaje a evaluar.
-     * @returns {string} - El color de fondo correspondiente al porcentaje.
-     */
-    const getColorByPercentage = (percent) => {
-      // Retorna color gris oscuro si el porcentaje es menor o igual a 4% (Nefasto)
-      if (percent <= 4) return "#666666"; // 4%
-      // Retorna color rojo si el porcentaje está entre 5% y 25% (Malo)
-      if (percent <= 25) return "red"; // 20%
-      // Retorna color amarillo si el porcentaje está entre 26% y 50% (Normal)
-      if (percent <= 50) return "yellow"; // 24%
-      // Retorna color verde si el porcentaje está entre 51% y 75% (Bueno)
-      if (percent <= 75) return "green"; // 24%
-      // Retorna color azul si el porcentaje está entre 76% y 96% (Muy bueno)
-      if (percent <= 96) return "blue"; // 20%
-      // Retorna color violeta oscuro si el porcentaje es mayor o igual a 96% (Sublime)
-      return "darkviolet"; // 4%
-    };
 
     // Crear el elemento div para el Pokémon
     const div = document.createElement("div");
@@ -232,7 +491,7 @@ export class PokemonDOMHandler {
     
     
       <div class="div-stat-percent-power">
-        <div class="stat-percentage-power" style="background-color: ${getColorByPercentage(
+        <div class="stat-percentage-power" style="background-color: ${this.#getColorByPercentage(
           poke.statistics.power_percent
         )}">
         </div>
@@ -241,7 +500,7 @@ export class PokemonDOMHandler {
       </div>
 
       <div class="div-stat-percent">
-        <div class="stat-percentage" style="background-color: ${getColorByPercentage(
+        <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
           poke.statistics.hp_percent
         )}">
         </div>
@@ -250,7 +509,7 @@ export class PokemonDOMHandler {
       </div>
 
       <div class="div-stat-percent">
-        <div class="stat-percentage" style="background-color: ${getColorByPercentage(
+        <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
           poke.statistics.attack_percent
         )}">
         </div>
@@ -259,7 +518,7 @@ export class PokemonDOMHandler {
       </div>
 
       <div class="div-stat-percent-special">
-        <div class="stat-percentage-special" style="background-color: ${getColorByPercentage(
+        <div class="stat-percentage-special" style="background-color: ${this.#getColorByPercentage(
           poke.statistics.special_attack_percent
         )}">
         </div>
@@ -268,7 +527,7 @@ export class PokemonDOMHandler {
       </div>
 
       <div class="div-stat-percent">
-        <div class="stat-percentage" style="background-color: ${getColorByPercentage(
+        <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
           poke.statistics.defense_percent
         )}">
         </div>
@@ -277,7 +536,7 @@ export class PokemonDOMHandler {
       </div>
 
       <div class="div-stat-percent-special">
-        <div class="stat-percentage-special" style="background-color: ${getColorByPercentage(
+        <div class="stat-percentage-special" style="background-color: ${this.#getColorByPercentage(
           poke.statistics.special_defense_percent
         )}">
         </div>
@@ -286,7 +545,7 @@ export class PokemonDOMHandler {
       </div>
 
       <div class="div-stat-percent">
-        <div class="stat-percentage" style="background-color: ${getColorByPercentage(
+        <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
           poke.statistics.speed_percent
         )}">
         </div>
@@ -327,6 +586,26 @@ export class PokemonDOMHandler {
     });
     return div;
   }
+
+  /**
+   * Función para obtener el color de fondo según el porcentaje.
+   * @param {number} percent - El porcentaje a evaluar.
+   * @returns {string} - El color de fondo correspondiente al porcentaje.
+   */
+  #getColorByPercentage = (percent) => {
+    // Retorna color gris oscuro si el porcentaje es menor o igual a 4% (Nefasto)
+    if (percent <= 4) return "#666666"; // 4%
+    // Retorna color rojo si el porcentaje está entre 5% y 25% (Malo)
+    if (percent <= 25) return "red"; // 20%
+    // Retorna color amarillo si el porcentaje está entre 26% y 50% (Normal)
+    if (percent <= 50) return "yellow"; // 24%
+    // Retorna color verde si el porcentaje está entre 51% y 75% (Bueno)
+    if (percent <= 75) return "green"; // 24%
+    // Retorna color azul si el porcentaje está entre 76% y 96% (Muy bueno)
+    if (percent <= 96) return "blue"; // 20%
+    // Retorna color violeta oscuro si el porcentaje es mayor o igual a 96% (Sublime)
+    return "darkviolet"; // 4%
+  };
 
   /**
    * Método privado para agregar el efecto de hover a la imagen de un Pokémon.
@@ -573,6 +852,36 @@ export class PokemonDOMHandler {
 
     filterSlider.value = newValue;
     sliderValue.innerText = `${Math.floor(newValue)}€`;
+  }
+
+  /**
+   * Método para crear el Switch Inventory y añadirlo al DOM.
+   */
+  #createSwitchInventory() {
+    const SwitchInventoryContainer = document.querySelector(
+      ".switch-inventory-container"
+    );
+
+    SwitchInventoryContainer.innerHTML = `
+      <label class="switch">
+        <input type="checkbox" id="inventorySwitch">
+        <span class="slider"></span>
+      </label>
+      <span id="switchLabel">Inventario</span>
+  `;
+  }
+
+  /**
+   * Método para establecer el valor del Switch Inventory.
+   */
+  setSwitchInventoryValue(value) {
+    const inventorySwitch = document.querySelector("#inventorySwitch");
+
+    if (inventorySwitch) {
+      inventorySwitch.checked = value;
+    } else {
+      console.error("El elemento #inventorySwitch no se encontró en el DOM.");
+    }
   }
 
   /**

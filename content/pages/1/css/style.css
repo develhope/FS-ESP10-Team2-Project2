@@ -150,6 +150,10 @@ height: min-content;
     /* background-color: ; */
 }
 .button-type-section-container3-pokemon{
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+
     display: flex;
     flex-direction: row;
     gap:1vw;
