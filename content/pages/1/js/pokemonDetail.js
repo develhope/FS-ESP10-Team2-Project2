@@ -30,39 +30,64 @@ function displayPokemonDetails(pokemon) {
   let h1 = document.createElement("h1")
   h1.id = "h1"
   h1.innerText = `${pokemon.name} No: ${pokemon.pokeId}`
-  let table=document.createElement("section")
-  table.className="puntos-de-base"
+  let table = document.createElement("section")
+  table.className = "puntos-de-base"
   container.appendChild(h1)
   container.appendChild(container1)
   container.appendChild(table)
   container1.appendChild(container2);
 
-  let h2Table=document.createElement("h2")
-  h2Table.className="h2-table"
-  h2Table.innerText="Puntos de base"
-    let ul0=document.createElement("ul")
-    ul0.className="ul0";
-    table.appendChild(h2Table)
-    table.appendChild(ul0)
-  
-    let statisticsAll=pokemon.statistics
-    console.log(statisticsAll)
-    // pokemon.statistics.forEach((a)=>{
-    // let li=document.createElement("li");
-    // li.innerText=a.power
-    // ul0.appendChild(li)
-    // })
+  let h2Table = document.createElement("h2")
+  h2Table.className = "h2-table"
+  h2Table.innerText = "Puntos de base"
+
+  table.appendChild(h2Table)
+
+  // let statisticsAll = pokemon.statistics
+  // console.log(statisticsAll)
+
+ 
+  // hp
+  //   hp_percent
+  //   attack
+  //   attack_percent
+  //   defense
+  //   defense_percent
+  //   special_attack
+  //   special_attack_percent
+  //   special_defense 
+  //   special_defense_percent
+  //   speed
+  //   speed_percent
+  //   power
+  //   power_percent
+  // let stat= pokemon.statistics.forEach((parameters)=>{ 
+  //   let li=document.createElement("li")
+  //   li.innerText=`Attack:${parameters.attack}`
+  // ul0.appendChild(li)
+  // })
+
+  // console.log(stat)
+
+
+
   // isLegendary: false, // Si es legendario
   // isMythical: false, // Si es mítico
   // isFinalEvolution: true, // Si es su evolucion final
   function habilitiesPokemon(pokemon) {
-    if (pokemon.value.isLegendary === false) {
-      return "Legendary"
+    console.log(pokemon.value.isLegendary)
+    console.log(pokemon.value.isMythical)
+    if (pokemon.value.isLegendary === true) {
+      return "Hability: Legendary"
     }
-    else if (pokemon.value.isMythical === false)
-      return "Mythical"
+    else if (pokemon.value.isMythical === true) {
+      return "Hability: Mythical"
+    }
 
+    return " "
   }
+
+
   container2.innerHTML = `
    <div class=imgs> <img src="${pokemon.images.illustration.shiny}" alt="${pokemon.name} front" id="img-shiny">
    <img src="${pokemon.images.gif.front_shiny}" alt="${pokemon.name} front" id="gif">
@@ -80,7 +105,7 @@ function displayPokemonDetails(pokemon) {
   <p class="p-details-pokemon-container-text">Height:<span class="span-details-pokemon-container-text">${pokemon.statistics.height.meters} ${metersFnc(pokemon)} </span></p>
   <p class="p-details-pokemon-container-text">Weight:<span class="span-details-pokemon-container-text">${pokemon.statistics.weight.kilograms} ${gramsFnc(pokemon)}</span></p></div>
    <div class="text-div-details-pokemon-container-text">
-   <p id="hability-p-details-pokemon-container-tex"class="p-details-pokemon-container-text">Hability:<span class="habilitiy-span-details-pokemon-container-text"> ${habilitiesPokemon(pokemon)} </span> </p> <div>
+   <p id="hability-p-details-pokemon-container-tex"class="p-details-pokemon-container-text"><span class="habilitiy-span-details-pokemon-container-text"> ${habilitiesPokemon(pokemon)} </span> </p> <div>
 
   </div>
 
@@ -114,11 +139,19 @@ function displayPokemonDetails(pokemon) {
   typeSection.appendChild(typeText);
   typeSection.appendChild(buttonType);
 
+  // function obtenerImagenDeEvolucion(pokemon) {
+  //   const objetoRelacionado = pokemon.find(a => a.evolutions === pokemon);
+  //   if (objetoRelacionado) {
+  //     return objetoRelacionado.imagen;
+  //   } else {
+  //     return 'No se encontró una imagen para esta evolución.';
+  //   }
+  // }
   let container4 = document.createElement("section")
   container4.className = "evolutions-pokemon-container"
   container4.innerHTML = `
 <div class=imgs-evolutions>
-<img class="img-evolutions-pokemon" src="${pokemon.images.illustration.shiny}" alt="${pokemon.name} front">
+<img class="img-evolutions-pokemon" src="${pokemon.images.illustration.default}" alt="${pokemon.name} front">
 <span class="class=arrow-span-evolutions-pokemon"> > </span> 
 
 </div>
@@ -126,12 +159,32 @@ function displayPokemonDetails(pokemon) {
 `
   container.appendChild(container4);
 
-  let mapEvo = document.getElementById("map-evoltions")
-  const evolutionsPoke = pokemon.evolutions.map((a) => `<p id="img-evolutions">${a.evolves_to}</p>`).join("");
-  mapEvo.innerHTML = evolutionsPoke
-  let evo=a.evolves_to
-  console.log(evolutionsPoke);
-  
+
+  // let mapEvo = document.getElementById("map-evoltions")
+
+  // mapEvo.innerHTML = trying
+  // function pokeImages(pokemon) {
+
+  //   let evolutionsPoke = pokemon.evolutions
+  //   console.log(evolutionsPoke);
+
+  // }
+
+  // const evolutionChain = getAllEvolutions("bulbasaur", evolutions);
+  // console.log(evolutionChain); 
+  // // ["bulbasaur", "ivysaur", "venusaur"]
+  // // pokeImages(pokemon)
+  // getAllEvolutions(pokemon.name, pokemon.evolutions)
+  // // let trying = `<img id="img-evolutions">${a.images.illustration.default}</img>`.join("");
+  // // mapEvo.innerHTML = trying
+
+
+  let evolutionsPoke = pokemon.evolutions
+    console.log(evolutionsPoke);
+
+
+
+
   // <p class="p-type">Type: ${pokemon.type.join(", ")}</p>
 
 
