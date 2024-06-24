@@ -1,5 +1,8 @@
 /*todo || GENERAL STYLES */
 
+* {
+    box-sizing: border-box;
+}
 
 ul {
     list-style-type: none;
@@ -13,8 +16,6 @@ button {
 
 body {
     min-height: 100vh;
-    background-color: var(--clr-gray);
-    transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
 }
 
 
