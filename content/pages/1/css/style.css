@@ -221,3 +221,6 @@ width: min-content;
     text-align: left; 
     box-sizing: border-box;
 } */
+ #ul{
+    padding: 10vw;
+ }
