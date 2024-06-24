@@ -48,27 +48,32 @@ function handleSessionStorage(data, pokemon = null, loadedCards = undefined) {
 
 /**
  * Añade event listeners a los elementos de la lista de Pokémon.
+ * @param {Array} data - Datos generales.
  * @param {Array} pokemonDivDataList - Lista de objetos Pokémon para los que se añadirán event listeners.
- *
+ * @param {number} loadedCards - Número de tarjetas cargadas.
  */
 export function addEventListenersPokemonCards(
   data,
   pokemonDivDataList,
   loadedCards
 ) {
-  // console.log("loadedCards", loadedCards);
-
   // Itera sobre cada objeto Pokémon en la lista proporcionada
   pokemonDivDataList.forEach((poke) => {
     // Selecciona el elemento del DOM correspondiente al Pokémon actual
     const pokemonElement = document.querySelector(`#pokemon-${poke.pokeId}`);
 
-    // let pokemon = [];
-    // pokemon.evolutions.forEach((p) => {
-    //   this.pokemonDivDataList;
-    // });
+    // Crear el objeto con el nombre del Pokémon actual en la propiedad '_'
+    const pokemon = { _: poke.name };
 
-    const pokemon = poke;
+    // Añadir las evoluciones como propiedades en el objeto
+    poke.evolutions.forEach((evoName) => {
+      const evolutionPokemon = pokemonDivDataList.find(
+        (p) => p.name.toLowerCase() === evoName.toLowerCase()
+      );
+      if (evolutionPokemon) {
+        pokemon[evoName.toLowerCase()] = evolutionPokemon;
+      }
+    });
     // Añade un event listener de tipo 'click' al elemento seleccionado
     pokemonElement.addEventListener("click", () => {
       handleSessionStorage(data, pokemon, loadedCards);
