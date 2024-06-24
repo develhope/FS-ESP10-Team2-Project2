@@ -143,6 +143,54 @@ class _ {
       // Convertimos la primera letra a mayúscula y la concatenamos con el resto de la cadena
       return string.charAt(0).toUpperCase() + string.slice(1);
     },
+
+    /**
+     ** Formatea un string para que sea un nombre válido de variable.
+     * Reemplaza los caracteres no válidos y aplica las reglas necesarias.
+     * @param {string} input - El string a formatear.
+     * @returns {string} - El string formateado como un nombre de variable válido.
+     * @example
+     * // Formatea una cadena para que sea un nombre de variable válido.
+     * const formatted = _.str.formatAsVariableName('-3hola mundo-');
+     * console.log(formatted); // '_3holaMundo_'
+     *
+     * // Formatea una cadena para que sea un nombre de variable válido.
+     * const formatted = _.str.formatAsVariableName('123&foo-bar');
+     * console.log(formatted); // '_123foo_bar'
+     */
+    formatAsVariableName(input) {
+      if (typeof input !== "string") {
+        throw new Error("El argumento debe ser una cadena de texto.");
+      }
+
+      // Mapa de caracteres válidos
+      const validChars =
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+      let formattedString = "";
+
+      for (let i = 0; i < input.length; i++) {
+        let char = input[i];
+
+        if (char === "-") {
+          // Reemplaza '-' por '_'
+          formattedString += "_";
+        } else if (char === " ") {
+          // Reemplaza espacios por la siguiente letra en mayúscula si es una letra
+          if (i + 1 < input.length && /[a-zA-Z]/.test(input[i + 1])) {
+            formattedString += input[++i].toUpperCase();
+          }
+        } else if (validChars.includes(char)) {
+          formattedString += char;
+        }
+      }
+
+      // Asegurarse de que el string no comience con un número
+      if (/^[0-9]/.test(formattedString)) {
+        formattedString = "_" + formattedString;
+      }
+
+      return formattedString;
+    },
   };
 
   //todo: Funciones de tipo Numéricas (Number)

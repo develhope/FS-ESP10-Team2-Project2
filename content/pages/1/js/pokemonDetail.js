@@ -220,7 +220,7 @@ if (storedPokemon) {
   const pokemon = JSON.parse(storedPokemon);
 
   //! (IMPORTANTE) el objeto `pokemon` contiene los objetos Pokémon de las evoluciones disponibles
-  //* El objeto `pokemon` tiene una propiedad `_` que guarda el nombre del Pokémon original
+  //* El objeto `pokemon` tiene una propiedad `_` que guarda el pokeID del Pokémon original
   console.log(
     `Hay '${pokemon[pokemon._].evolutions.length}' evoluciones disponibles:`
   );
