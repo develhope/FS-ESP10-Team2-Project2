@@ -30,18 +30,18 @@ function displayPokemonDetails(pokemon) {
   let h1 = document.createElement("h1")
   h1.id = "h1"
   h1.innerText = `${pokemon.name} No: ${pokemon.pokeId}`
-  let table = document.createElement("section")
-  table.className = "puntos-de-base"
+  // let table = document.createElement("section")
+  // table.className = "puntos-de-base"
   container.appendChild(h1)
   container.appendChild(container1)
-  container.appendChild(table)
+  // container.appendChild(table)
   container1.appendChild(container2);
 
-  let h2Table = document.createElement("h2")
-  h2Table.className = "h2-table"
-  h2Table.innerText = "Puntos de base"
+  // let h2Table = document.createElement("h2")
+  // h2Table.className = "h2-table"
+  // h2Table.innerText = "Puntos de base"
 
-  table.appendChild(h2Table)
+  // table.appendChild(h2Table)
 
   // let statisticsAll = pokemon.statistics
   // console.log(statisticsAll)
@@ -74,6 +74,7 @@ function displayPokemonDetails(pokemon) {
   // isLegendary: false, // Si es legendario
   // isMythical: false, // Si es mítico
   // isFinalEvolution: true, // Si es su evolucion final
+
   function habilitiesPokemon(pokemon) {
     console.log(pokemon.value.isLegendary)
     console.log(pokemon.value.isMythical)
@@ -159,6 +160,10 @@ function displayPokemonDetails(pokemon) {
 `
   container.appendChild(container4);
 
+pokemon.forEach((a)=>{
+  if
+})
+  
 
   // let mapEvo = document.getElementById("map-evoltions")
 
@@ -178,9 +183,6 @@ function displayPokemonDetails(pokemon) {
   // // let trying = `<img id="img-evolutions">${a.images.illustration.default}</img>`.join("");
   // // mapEvo.innerHTML = trying
 
-
-  let evolutionsPoke = pokemon.evolutions
-    console.log(evolutionsPoke);
 
 
 
