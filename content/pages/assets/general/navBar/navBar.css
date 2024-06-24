@@ -68,6 +68,10 @@
 
 /*? CSS del boton, Modo Claro/Oscuro */
 .btn-darkModeToggle {
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+
     margin-left: 10px;
     display: flex;
     align-items: center;
