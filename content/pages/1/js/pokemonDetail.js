@@ -160,9 +160,7 @@ function displayPokemonDetails(pokemon) {
 `
   container.appendChild(container4);
 
-pokemon.forEach((a)=>{
-  if
-})
+
   
 
   // let mapEvo = document.getElementById("map-evoltions")
