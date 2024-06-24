@@ -134,7 +134,7 @@ export default class PokemonDOMHandler {
       this.observer.observe(lastPokemonElement);
     }
 
-    if (inventory) {
+    if (!inventory) {
       // Añadir los event listeners para la nueva página cargada, incluyendo el número de tarjetas cargadas
       const loadedCards = this.currentPage * this.show;
       addEventListenersPokemonCards(this.data, nextPageData, loadedCards);

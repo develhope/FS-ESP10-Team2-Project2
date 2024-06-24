@@ -32,9 +32,9 @@ function clearSessionStorage(event = null) {
 /**
  * Maneja el evento de clic en un elemento Pokémon.
  * @param {object} data - El objeto data interno de la clase `PokemonManager` que se guardara en el sessionStorage.
- * @param {object} poke - El objeto Pokémon seleccionado.
+ * @param {Array} pokemon - El objeto Pokémon seleccionado y sus evoluciones si tienen, en un array.
  */
-function handleSessionStorage(data, poke = null, loadedCards = undefined) {
+function handleSessionStorage(data, pokemon = null, loadedCards = undefined) {
   // Eliminar el event listener antes de salir de la página
   window.removeEventListener("beforeunload", clearSessionStorage);
 
@@ -43,7 +43,7 @@ function handleSessionStorage(data, poke = null, loadedCards = undefined) {
   _.DOM.saveToSessionStorage("pokemonManager_data", data);
 
   // Obtener y almacenar el objeto Pokémon seleccionado en sessionStorage
-  if (poke) _.DOM.saveToSessionStorage("pokemonPreview", poke);
+  if (pokemon) _.DOM.saveToSessionStorage("pokemonPreview", pokemon);
 }
 
 /**
@@ -63,9 +63,15 @@ export function addEventListenersPokemonCards(
     // Selecciona el elemento del DOM correspondiente al Pokémon actual
     const pokemonElement = document.querySelector(`#pokemon-${poke.pokeId}`);
 
+    // let pokemon = [];
+    // pokemon.evolutions.forEach((p) => {
+    //   this.pokemonDivDataList;
+    // });
+
+    const pokemon = poke;
     // Añade un event listener de tipo 'click' al elemento seleccionado
     pokemonElement.addEventListener("click", () => {
-      handleSessionStorage(data, poke, loadedCards);
+      handleSessionStorage(data, pokemon, loadedCards);
       // Redirigir a la página de detalles del Pokémon
       window.location.href = `../1/pokemonDetail.html`;
     });
