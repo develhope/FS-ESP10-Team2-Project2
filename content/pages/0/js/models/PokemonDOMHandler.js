@@ -134,9 +134,11 @@ export default class PokemonDOMHandler {
       this.observer.observe(lastPokemonElement);
     }
 
-    // Añadir los event listeners para la nueva página cargada, incluyendo el número de tarjetas cargadas
-    const loadedCards = this.currentPage * this.show;
-    addEventListenersPokemonCards(this.data, nextPageData, loadedCards);
+    if (inventory) {
+      // Añadir los event listeners para la nueva página cargada, incluyendo el número de tarjetas cargadas
+      const loadedCards = this.currentPage * this.show;
+      addEventListenersPokemonCards(this.data, nextPageData, loadedCards);
+    }
   }
 
   /**
@@ -213,9 +215,11 @@ export default class PokemonDOMHandler {
         <p class="stat">${height}</p>
         <p class="stat">${weight}</p>
       </div>
-      <div class="div-pokemon-SwitchEquipPokemon">
-        <input class="input-SwitchEquipPokemon" type="checkbox" checked="checked" id="favorite" name="favorite-checkbox" value="favorite-button">
-        <label class="label-SwitchEquipPokemon" for="favorite" class="container">
+      <div class="div-pokemon-SwitchEquipPokemon" id="div-pokemon-SwitchEquipPokemon-${
+        poke.dataInventory.inInventory.id
+      }">
+        <input class="input-SwitchEquipPokemon" type="checkbox" checked="checked" id="equipped" name="equipped-checkbox" value="equipped-button">
+        <label class="label-SwitchEquipPokemon" for="equipped" class="container">
           <!--<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>-->
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 120 120"" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
             <circle cx="60" cy="60" r="50" />
@@ -338,18 +342,14 @@ export default class PokemonDOMHandler {
       // divAddCart.style.zIndex = null;
     });
 
-    // divAddCart.addEventListener("click", (event) => {
-    //   event.stopPropagation(); // Evita la propagación del evento
-    //   //? Llama a la función externa "addToCart" para guardar el pokemon en el carrito
-    //   console.log(`${poke.name.toUpperCase()} Añadido al Carrito`);
-    //   addToCart(poke);
+    //!# out (null) (ARREGLAR ANTES DE SIGIR)
+    const equippedButton = document.querySelector(
+      `#div-pokemon-SwitchEquipPokemon-${poke.dataInventory.inInventory.id}`
+    );
 
-    //   divAddCart.classList.add("adding-to-cart");
-    //   // Remover la clase después de la animación
-    //   setTimeout(() => {
-    //     divAddCart.classList.remove("adding-to-cart");
-    //   }, 400); // Duración de la animación en milisegundos
-    // });
+    console.log(equippedButton);
+    equippedButton.addEventListener("click", () => {});
+
     return div;
   }
 

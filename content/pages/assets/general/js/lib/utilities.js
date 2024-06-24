@@ -243,7 +243,7 @@ class _ {
     },
 
     /**
-     * Recorta un array manteniendo un número específico de elementos y eliminando los demás,
+     ** Recorta un array manteniendo un número específico de elementos y eliminando los demás,
      * ya sea desde el inicio o desde el final.
      * @param {array} array - El array a recortar.
      * @param {number} num - El número de elementos a mantener.

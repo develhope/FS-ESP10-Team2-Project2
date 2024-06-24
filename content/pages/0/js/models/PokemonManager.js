@@ -137,6 +137,7 @@ export default class PokemonManager {
     },
     pokemonDataList: [],
     pokemonDataListInventory: [],
+    originalPokemonDataList: [],
     numPokemonDownloaded: 1025,
   };
 
@@ -259,6 +260,13 @@ export default class PokemonManager {
 
     try {
       // Intentar obtener los datos del sessionStorage
+      const inventory = _.DOM.getFromLocalStorage("inventory");
+      if (inventory) {
+        console.log("Restaurando datos Inventario...");
+        this.#data.pokemonDataListInventory = inventory;
+      }
+
+      // Intentar obtener los datos del sessionStorage
       const pokemonManager_data = _.DOM.getFromSessionStorage(
         "pokemonManager_data"
       );
@@ -281,7 +289,7 @@ export default class PokemonManager {
           count,
           true
         );
-        console.log(pokemonDataListClear.length);
+        // console.log(pokemonDataListClear.length);
 
         this.#data.originalPokemonDataList.market = undefined;
 
@@ -474,6 +482,54 @@ export default class PokemonManager {
   }
 
   /**
+   * Transforma la lista de Pokémon añadiendo datos de inventario y eliminando la propiedad 'market'.
+   * @returns {Array} - Una nueva lista de Pokémon con la propiedad 'dataInventory' y sin la propiedad 'market'.
+   */
+  #transformFromArrayDefaultToInventory() {
+    const faultArr = this.#data.originalPokemonDataList;
+    const inventoryArr = this.#data.pokemonDataListInventory;
+
+    // console.log("faultArr:", faultArr);
+    // console.log("inventoryArr:", inventoryArr);
+
+    // Filtrar los elementos de faultArr que coinciden con los nombres en inventoryArr
+    const cleanArr = faultArr.filter((faultPokemon) => {
+      const match = inventoryArr.some(
+        (inventoryPokemon) =>
+          inventoryPokemon.values[0] === _.str.capitalize(faultPokemon.name)
+      );
+      // if (match) {
+      //   console.log(`Match found: ${faultPokemon.name}`);
+      // }
+      return match;
+    });
+
+    // Crear un nuevo array transformado
+    const arr = cleanArr.map((p) => {
+      // Encontrar el objeto correspondiente en inventoryArr
+      const inventoryPokemon = inventoryArr.find(
+        (inventory) => inventory.values[0] === _.str.capitalize(p.name)
+      );
+
+      // Verificar si se encontró el objeto en inventoryArr
+      // if (inventoryPokemon) {
+      //   console.log(`inventarioPokemon para ${p.name}:`, inventoryPokemon);
+      // } else {
+      //   console.log(`No se encontró Pokémon de inventario para ${p.name}`);
+      // }
+
+      // Crear un nuevo objeto sin la propiedad 'market' y añadir 'dataInventory'
+      const { market, ...rest } = p;
+      rest.dataInventory = inventoryPokemon;
+
+      return rest; // Devolver el nuevo objeto modificado
+    });
+
+    console.log("arr:", arr);
+    return arr;
+  }
+
+  /**
    * Actualiza y muestra la lista de Pokémon en el DOM.
    * @throws {Error} - Si ocurre un error al actualizar y mostrar los datos de los Pokémon.
    * @private
@@ -484,7 +540,7 @@ export default class PokemonManager {
     let pokemonData;
     if (this.#data.dom.filters.isInventory) {
       // pokemonData = this.#data.pokemonDataListInventory;
-      pokemonData = this.#data.pokemonDataListInventory;
+      pokemonData = this.#transformFromArrayDefaultToInventory();
     } else {
       pokemonData = this.#data.pokemonDataList;
     }
@@ -493,6 +549,15 @@ export default class PokemonManager {
     for (let [filterType, filterValue] of Object.entries(
       this.#data.dom.filters
     )) {
+      if (filterType === "byMaxPrice") {
+        break;
+      }
+      if (filterType === "byNameOrId") {
+        if (Array.isArray(filterValue) && filterValue[0] === "market.price") {
+          break;
+        }
+      }
+
       // Construir el nombre del método correspondiente en PokemonFilter
       const methodName = `getPokemon${
         filterType.charAt(0).toUpperCase() + filterType.slice(1)
@@ -538,9 +603,6 @@ export default class PokemonManager {
     );
 
     this.#data.dom.loadedCards = undefined;
-
-    // if (!this.#data.dom.filters.isInventory)
-    //   addEventListenersPokemonCards(this.#data.dom.pokemonDivDataList);
 
     // Log para depuración
     // console.clear();
