@@ -54,7 +54,8 @@
  * @property {boolean} value.isMythical - Si el Pokémon es mítico.
  * @property {boolean} value.isFinalEvolution - Si el Pokémon ya no puede evolucionar mas porque se encuentra en su ultima evolución.
  *
- * @property {Array} evolutions - Una lista de nombres de todas las evoluciones a partir del Pokémon inicial. *
+ * @property {Array} evolutions - Una lista de nombres de todas las evoluciones a partir del Pokémon inicial`.
+ * @property {Array|null|undefined} gender - Una lista de los generos disponibles del Pokémon, `null` si no tiene genero, `undefined` si no es ni "female" ni "male".
  * @property {Object} market - Un objeto que contiene datos del mercado actual.
  * @property {number} market.price - La cantidad de dinero actual que vale el Pokémon si no hay un descuento vigente.
  * @property {number|undefined} market.discount - La cantidad de dinero vigente que vale el Pokémon con el descuento de la oferta, si se encuentra "undefined" no habrá oferta disponible.
@@ -125,7 +126,8 @@ const pokemon = {
     isMythical: false, // Si es mítico
     isFinalEvolution: true, // Si es su evolucion final
   },
-  evolutions: ["bulbasaur", "ivysaur", "venusaur"],
+  evolutions: ["bulbasaur", "ivysaur", "venusaur"], // Cadena de todas las evoluciones disponibles
+  gender: ["male", "female"], // Tios posibles de genero
   market: {
     price: 100, // Precio
     discount: 69, // Precio con el descuento por oferta
