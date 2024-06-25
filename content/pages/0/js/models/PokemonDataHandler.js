@@ -8,6 +8,7 @@ export default class PokemonDataHandler {
     HABITAT: "https://pokeapi.co/api/v2/pokemon-habitat/",
     EVOLUTION_SPECIES: "https://pokeapi.co/api/v2/evolution-species/",
     EVOLUTION_CHAIN: "https://pokeapi.co/api/v2/evolution-chain/",
+    GENDERS: "https://pokeapi.co/api/v2/gender/",
   };
 
   /**
@@ -51,6 +52,25 @@ export default class PokemonDataHandler {
       );
     }
 
+    const [femaleResponse, maleResponse, genderlessResponse] =
+      await Promise.all([
+        fetch(`${PokemonDataHandler.API_URLS.GENDERS}1`),
+        fetch(`${PokemonDataHandler.API_URLS.GENDERS}2`),
+        fetch(`${PokemonDataHandler.API_URLS.GENDERS}3`),
+      ]);
+
+    if (!femaleResponse.ok || !maleResponse.ok || !genderlessResponse.ok) {
+      throw new Error(`Error al obtener los datos de los generos Pokémon}`);
+    }
+
+    const [femaleData, maleData, genderlessData] = await Promise.all([
+      femaleResponse.json(),
+      maleResponse.json(),
+      genderlessResponse.json(),
+    ]);
+
+    this.#addGendersPokemon(results, [femaleData, maleData, genderlessData]);
+
     // Calcular el 5% de count y generar un número aleatorio entre 1 y ese valor
     const offerCount = _.num.getRandomNum(1, Math.floor(count * 0.05));
 
@@ -63,6 +83,46 @@ export default class PokemonDataHandler {
     // Calcula los porcentajes para cada estadística
     this.#calculateStatisticsPercentages(results, maxMinValues);
     return results;
+  }
+
+  /**
+   * Añade la propiedad `gender` a cada objeto Pokémon en `results` basándose en los datos de género proporcionados.
+   * @param {Array} results - La lista de objetos Pokémon a actualizar.
+   * @param {Array} genderData - Una lista con tres elementos: [femaleData, maleData, genderlessData].
+   * @private
+   */
+  #addGendersPokemon(results, genderData) {
+    const [femaleData, maleData, genderlessData] = genderData;
+
+    // Crear mapas para acceso rápido por nombre de Pokémon
+    const femaleSet = new Set(
+      femaleData.pokemon_species_details.map(
+        (detail) => detail.pokemon_species.name
+      )
+    );
+    const maleSet = new Set(
+      maleData.pokemon_species_details.map(
+        (detail) => detail.pokemon_species.name
+      )
+    );
+    const genderlessSet = new Set(
+      genderlessData.pokemon_species_details.map(
+        (detail) => detail.pokemon_species.name
+      )
+    );
+
+    results.forEach((pokemon) => {
+      const { name } = pokemon;
+
+      if (genderlessSet.has(name)) {
+        pokemon.gender = null;
+      } else {
+        const genders = [];
+        if (femaleSet.has(name)) genders.push("female");
+        if (maleSet.has(name)) genders.push("male");
+        pokemon.gender = genders.length ? genders : undefined;
+      }
+    });
   }
 
   /**
@@ -204,6 +264,7 @@ export default class PokemonDataHandler {
         isFinalEvolution: this.#isFinalEvolution(poke.name, evolution.chain),
       },
       evolutions: this.#getEvolutions(evolution.chain),
+      gender: [undefined],
       market: { price: undefined, discount: undefined },
     };
   }
@@ -251,7 +312,7 @@ export default class PokemonDataHandler {
     const out = getAllEvolutions(startName, evolutions);
 
     // Devolver todos los nombres de las evoluciones
-    return out ? out : [];
+    return out;
   }
 
   /**
