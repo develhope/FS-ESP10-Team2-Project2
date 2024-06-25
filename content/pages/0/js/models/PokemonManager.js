@@ -68,13 +68,20 @@ export function addEventListenersPokemonCards(
     // Añadir las evoluciones como propiedades en el objeto
     poke.evolutions.forEach((evoName) => {
       const evoNameClean = _.str.formatAsVariableName(evoName.toLowerCase());
-      const evolutionPokemon = pokemonDivDataList.find(
+      // console.log("# evoNameClean:", evoNameClean);
+
+      const evolutionPokemon = data.originalPokemonDataList.find(
         (p) => _.str.formatAsVariableName(p.name.toLowerCase()) === evoNameClean
       );
+      // console.log("## evolutionPokemon:", evolutionPokemon);
+
       if (evolutionPokemon) {
         pokemon[evoNameClean] = evolutionPokemon;
       }
     });
+
+    // console.log("### pokemon:", pokemon);
+    // console.log("");
     // Añade un event listener de tipo 'click' al elemento seleccionado
     pokemonElement.addEventListener("click", () => {
       handleSessionStorage(data, pokemon, loadedCards);
@@ -561,14 +568,20 @@ export default class PokemonManager {
     for (let [filterType, filterValue] of Object.entries(
       this.#data.dom.filters
     )) {
-      if (filterType === "byMaxPrice") {
-        break;
-      }
-      if (filterType === "byNameOrId") {
-        if (Array.isArray(filterValue) && filterValue[0] === "market.price") {
-          break;
-        }
-      }
+      // if (filterType === "byMaxPrice") break;
+
+      // if (
+      //   filterType === "byNameOrId" &&
+      //   Array.isArray(filterValue) &&
+      //   filterValue[0] === "market.price"
+      // )
+      //   break;
+
+      // console.log("#filterType:");
+      // console.log(filterType);
+
+      // console.log("#filterValue:");
+      // console.log(filterValue);
 
       // Construir el nombre del método correspondiente en PokemonFilter
       const methodName = `getPokemon${

@@ -158,7 +158,7 @@ export default class PokemonDataHandler {
   #transformPokemon(poke, species, evolution) {
     return {
       pokeId: poke.id,
-      name: poke.name,
+      name: poke.species.name,
       type: poke.types.map((type) => type.type.name),
       images: {
         illustration: {
@@ -248,8 +248,10 @@ export default class PokemonDataHandler {
     // Obtener el nombre del Pokémon inicial de la cadena evolutiva
     const startName = chain.species.name;
 
+    const out = getAllEvolutions(startName, evolutions);
+
     // Devolver todos los nombres de las evoluciones
-    return getAllEvolutions(startName, evolutions);
+    return out ? out : [];
   }
 
   /**

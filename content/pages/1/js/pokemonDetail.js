@@ -24,15 +24,15 @@ function displayPokemonDetails(pokemon) {
   let container1 = document.createElement("section");
   container1.className = "pokemon-container-img-text";
 
-  let container2 = document.createElement("section")
-  container2.className = "pokemon-container-img"
-  let h1 = document.createElement("h1")
-  h1.id = "h1"
-  h1.innerText = `${pokemon.name} No: ${pokemon.pokeId}`
+  let container2 = document.createElement("section");
+  container2.className = "pokemon-container-img";
+  let h1 = document.createElement("h1");
+  h1.id = "h1";
+  h1.innerText = `${pokemon.name} No: ${pokemon.pokeId}`;
   // let table = document.createElement("section")
   // table.className = "puntos-de-base"
-  container.appendChild(h1)
-  container.appendChild(container1)
+  container.appendChild(h1);
+  container.appendChild(container1);
   // container.appendChild(table)
   container1.appendChild(container2);
 
@@ -166,9 +166,6 @@ function displayPokemonDetails(pokemon) {
 `;
   container.appendChild(container4);
 
-
-  
-
   // let mapEvo = document.getElementById("map-evoltions")
 
   // mapEvo.innerHTML = trying
@@ -186,10 +183,6 @@ function displayPokemonDetails(pokemon) {
   // getAllEvolutions(pokemon.name, pokemon.evolutions)
   // // let trying = `<img id="img-evolutions">${a.images.illustration.default}</img>`.join("");
   // // mapEvo.innerHTML = trying
-
-
-
-
 
   // <p class="p-type">Type: ${pokemon.type.join(", ")}</p>
 }
@@ -224,14 +217,16 @@ if (storedPokemon) {
   console.log(
     `Hay '${pokemon[pokemon._].evolutions.length}' evoluciones disponibles:`
   );
+  console.log(pokemon[pokemon._].evolutions);
 
   //* Imprimir el objeto `pokemon` completo, que incluye las evoluciones
   console.log(pokemon);
 
   //* Imprimir el Pokémon original usando la propiedad `_` como clave
-  console.log(`El Pokémon original es ${pokemon._}:`);
+  console.log(`El Pokémon original es '${pokemon._}':`);
+  console.log(`Nombre real: '${pokemon[pokemon._].name}'`);
   console.log(pokemon[pokemon._]);
-  console.log("");
+  console.log("\n\n\n");
 
   //! (IMPORTANTE) Mandar el objeto completo `pokemon` a la función principal
   //* Más adelante, deberas establecer el elemento original `pokemon[pokemon._]` para establecerlo como tal
