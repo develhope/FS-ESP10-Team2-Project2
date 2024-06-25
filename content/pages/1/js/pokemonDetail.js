@@ -212,8 +212,8 @@ if (storedPokemon) {
   // Parsear el JSON almacenado en sessionStorage para obtener el objeto Pokémon
   const pokemon = JSON.parse(storedPokemon);
 
-  //! (IMPORTANTE) el objeto `pokemon` contiene los objetos Pokémon de las evoluciones disponibles
-  //* El objeto `pokemon` tiene una propiedad `_` que guarda el pokeID del Pokémon original
+  //! (IMPORTANTE) El objeto `pokemon` contiene los objetos Pokémon de las evoluciones disponibles
+  //* El objeto `pokemon` tiene una propiedad `_` que guarda el nombre del Pokémon original
   console.log(
     `Hay '${pokemon[pokemon._].evolutions.length}' evoluciones disponibles:`
   );
@@ -222,16 +222,18 @@ if (storedPokemon) {
   //* Imprimir el objeto `pokemon` completo, que incluye las evoluciones
   console.log(pokemon);
 
-  //* Imprimir el Pokémon original usando la propiedad `_` como clave
+  //* Imprimir el nombre del Pokémon original usando la propiedad `_` como clave
   console.log(`El Pokémon original es '${pokemon._}':`);
+  //* Para que sea una clave válida se reemplaza el carácter "-" por "_" si es que `pokemon._` contiene el carácter "-"
+  //* Si quieres obtener el nombre real, utiliza la siguiente nomenclatura para obtener el nombre real del Pokémon original `pokemon[pokemon._].name`
   console.log(`Nombre real: '${pokemon[pokemon._].name}'`);
   console.log(pokemon[pokemon._]);
   console.log("\n\n\n");
 
   //! (IMPORTANTE) Mandar el objeto completo `pokemon` a la función principal
-  //* Más adelante, deberas establecer el elemento original `pokemon[pokemon._]` para establecerlo como tal
-  pokemonMain(pokemon[pokemon._]); //? Aqui envio el objeto Pokémon original
-  // pokemonMain(pokemon); //! Pero tu deberas enviar el objeto entero y manipular sus datos para optener todas las propiedades necesarias de los demas Pokémon como sus imagenes
+  //* Más adelante, deberás establecer el elemento original `pokemon[pokemon._]` para manipularlo adecuadamente
+  pokemonMain(pokemon[pokemon._]); //? Aquí envío el objeto Pokémon original
+  // pokemonMain(pokemon); //! Pero tú deberás enviar el objeto entero y manipular sus datos para obtener todas las propiedades necesarias de los demás Pokémon como sus imágenes
 } else {
   // Si no se encuentra ningún Pokémon seleccionado en sessionStorage, mostrar un error
   console.error(

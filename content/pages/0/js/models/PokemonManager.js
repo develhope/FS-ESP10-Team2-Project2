@@ -62,19 +62,22 @@ export function addEventListenersPokemonCards(
     // Selecciona el elemento del DOM correspondiente al Pokémon actual
     const pokemonElement = document.querySelector(`#pokemon-${poke.pokeId}`);
 
-    // Crear el objeto con el name del Pokémon actual en la propiedad '_'
+    // Crear el objeto con el nombre del Pokémon actual en la propiedad '_'
     const pokemon = { _: _.str.formatAsVariableName(poke.name) };
 
     // Añadir las evoluciones como propiedades en el objeto
     poke.evolutions.forEach((evoName) => {
+      // Formatear el nombre de la evolución para usarlo como clave
       const evoNameClean = _.str.formatAsVariableName(evoName.toLowerCase());
       // console.log("# evoNameClean:", evoNameClean);
 
+      // Buscar el objeto de la evolución en la lista de datos originales
       const evolutionPokemon = data.originalPokemonDataList.find(
         (p) => _.str.formatAsVariableName(p.name.toLowerCase()) === evoNameClean
       );
       // console.log("## evolutionPokemon:", evolutionPokemon);
 
+      // Si se encuentra el objeto de la evolución, añadirlo al objeto `pokemon`
       if (evolutionPokemon) {
         pokemon[evoNameClean] = evolutionPokemon;
       }
@@ -82,7 +85,8 @@ export function addEventListenersPokemonCards(
 
     // console.log("### pokemon:", pokemon);
     // console.log("");
-    // Añade un event listener de tipo 'click' al elemento seleccionado
+
+    // Añadir un event listener de tipo 'click' al elemento seleccionado
     pokemonElement.addEventListener("click", () => {
       handleSessionStorage(data, pokemon, loadedCards);
       // Redirigir a la página de detalles del Pokémon
