@@ -124,7 +124,10 @@ export function addEventListenersPokemonEquippedButton(
         // Actualizar el estado de equipamiento del Pokémon en el inventario
         PokemonInventory.equipPokemon(inventoryID);
         PokemonInventory.saveToLocalStorage();
-        PokemonInventory.getPokemon(inventoryID).stats();
+
+        if (PokemonInventory.getEquippedPokemon())
+          PokemonInventory.getPokemon(inventoryID).stats();
+
         // // Obtener todos los Pokémon del inventario
         // const allPokemon = PokemonInventory.getPokemon("*");
 
@@ -164,6 +167,32 @@ export function addEventListenersPokemonEquippedButton(
   });
 }
 
+export function startBattle(pokemon, PokemonInventory) {
+  const myInventory = PokemonInventory;
+
+  const poke1 = myInventory.getEquippedPokemon();
+  if (!poke1) {
+    console.warn("No hay ningun Pokémon equipado");
+    return;
+  }
+
+  const poke2 = new Pokemon(
+    pokemon.name,
+    pokemon.type,
+    pokemon.statistics.hp,
+    pokemon.statistics.attack,
+    pokemon.statistics.special_attack,
+    pokemon.statistics.defense,
+    pokemon.statistics.special_defense,
+    pokemon.statistics.speed
+  );
+
+  const battle = new PokemonBattle(poke1, poke2);
+  console.log("\n\n###  BATALLA:\n");
+  console.log(`'${poke1.nameFull}' VS '${poke2.nameFull}'`);
+  battle.startBattle();
+}
+
 export default class PokemonManager {
   /**
    * Constructor de la clase PokemonManager.
@@ -179,8 +208,6 @@ export default class PokemonManager {
     myInventory.showInventory();
 
     this.PokemonInventory = myInventory;
-
-    // this.#data.pokemonDataListInventory = myInventory.getPokemon("*");
 
     // Obtener referencias a elementos del DOM
     this.#getDOMElements();
@@ -438,10 +465,10 @@ export default class PokemonManager {
       }
 
       // this.#addRandomPokemonToInventory();
-      this.#addListToInventory(
-        [4, 7, 10, 13, 15, 28, 123, 149, 150, 237, 456, 746, 890],
-        true
-      );
+      // this.#addListToInventory(
+      //   [4, 7, 10, 13, 15, 28, 123, 149, 150, 237, 456, 746, 890],
+      //   true
+      // );
 
       // Configurar el slider del filtro de precios
       this.PokemonDOMHandler.setFilterSliderValue(
@@ -791,12 +818,7 @@ export default class PokemonManager {
     this.#data.dom.pokemonDivDataList = _.obj.shallowCopy(pokemonData);
     // this.#data.dom.pokemonDivDataList = [...pokemonData];
 
-    if (this.#data.dom.filters.isInventory) {
-      // Mostrar los Pokémon en el DOM usando el manejador de datos de Pokémon
-      this.PokemonDOMHandler.displayPokemon(this.#data, this.PokemonInventory);
-    } else {
-      this.PokemonDOMHandler.displayPokemon(this.#data);
-    }
+    this.PokemonDOMHandler.displayPokemon(this.#data, this.PokemonInventory);
 
     this.#data.dom.loadedCards = undefined;
 

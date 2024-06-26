@@ -109,7 +109,17 @@ class Pokemon {
    * Establece las propiedades "copy" a sus valores "base".
    */
   resetStats() {
-    this.log.history = [];
+    this.log = {
+      moves: {
+        attacks: { normal: 0, special: 0 },
+        defenses: { normal: 0, special: 0 },
+        evading: 0,
+        critic: { received: 0, inflicted: 0 },
+      },
+      recovery: { fatigue: 0 },
+      history: [],
+    };
+
     this.p.c = {
       hp: this.p.b.hp,
       attack: this.p.b.attack,
@@ -225,7 +235,7 @@ class Pokemon {
       ? ` * ${attackCritic} = ${attackTotal}`
       : "";
 
-    let log = `- ${this.p.i.name}: ${attackMessage}. Valor del ataque: ${attackBase}${attackCriticMessage}`;
+    let log = `- '${this.nameFull}': ${attackMessage}. Valor del ataque: ${attackBase}${attackCriticMessage}`;
 
     this.#pushConsoleLog(log);
   }
@@ -240,14 +250,14 @@ class Pokemon {
     const cHP = this.p.c.hp;
 
     if (cHP === 0) {
-      this.#pushConsoleLog(`${this.p.i.name} No puedo soportar el ataque.`);
+      this.#pushConsoleLog(`'${this.nameFull}' No puedo soportar el ataque.`);
       return;
     }
 
     const defenseMessage =
       defenseType === "special" ? "Defensa especial" : "Defensa normal";
     const defenseCriticMessage = defenseCritic ? "(Crítico) " : "";
-    const log = `- ${this.p.i.name}: ${defenseMessage}. ${defenseCriticMessage}Daño reducido a ${defenseTotal}.`;
+    const log = `- '${this.nameFull}': ${defenseMessage}. ${defenseCriticMessage}Daño reducido a ${defenseTotal}.`;
 
     const logStats = `${this.#getStats("hp")}\n${
       defenseType === "normal"
@@ -272,7 +282,7 @@ class Pokemon {
 
     if (cHP === 0) {
       this.#pushConsoleLog(
-        `${this.p.i.name} No puedo esquivar el ataque y no lo soporto.`
+        `'${this.nameFull}' No puedo esquivar el ataque y no lo soporto.`
       );
       return;
     }
@@ -282,7 +292,7 @@ class Pokemon {
         ? "Esquivó el ataque y no recibió daños"
         : `No logró esquivar todo el ataque. Daño recibido: ${evadingTotal}`;
 
-    const log = `- ${this.p.i.name}: ${evadingMessage}.`;
+    const log = `- '${this.nameFull}': ${evadingMessage}.`;
 
     this.#pushConsoleLog(log);
     this.#pushConsoleLog(this.#getStats("hp"));
@@ -477,7 +487,7 @@ class Pokemon {
    * Muestra el resultado de la ultima batalla del Pokémon, incluyendo sus estadísticas y movimientos realizados.
    */
   lastResult() {
-    const iName = this.p.i.name;
+    const iName = this.nameFull;
     const cHP = this.p.c.hp;
     const bHP = this.p.b.hp;
 
@@ -505,11 +515,17 @@ class Pokemon {
     console.log(`- Fatiga: ${cFatigue}`);
     console.log(`- Recuperación de Fatiga: ${log.recovery.fatigue}`);
 
-    console.log(`- Movimientos Realizados:`);
-
     // Verificar si hay ataques realizados y contar los que tienen valores mayores a 0
     let attackValues = Object.values(log.moves.attacks);
     let attackCount = attackValues.reduce((acc, curr) => acc + curr, 0);
+
+    // Verificar si hay defensas realizadas y contar los que tienen valores mayores a 0
+    let defenseValues = Object.values(log.moves.defenses);
+    let defenseCount = defenseValues.reduce((acc, curr) => acc + curr, 0);
+
+    const totalMoves = attackCount + defenseCount + log.moves.evading;
+
+    console.log(`- Movimientos Realizados: (${totalMoves})`);
 
     if (attackCount > 0) {
       console.log(`  - Ataques: (${attackCount})`);
@@ -523,10 +539,6 @@ class Pokemon {
         console.log(`    - Críticos: ${log.moves.critic.inflicted}`);
       }
     }
-
-    // Verificar si hay defensas realizadas y contar los que tienen valores mayores a 0
-    let defenseValues = Object.values(log.moves.defenses);
-    let defenseCount = defenseValues.reduce((acc, curr) => acc + curr, 0);
 
     if (defenseCount > 0) {
       console.log(`  - Defensas: (${defenseCount})`);
@@ -550,7 +562,7 @@ class Pokemon {
    * Muestra las estadisticas actuales del Pokemon y su estado.
    */
   stats() {
-    const iName = this.p.i.name;
+    const iName = this.nameFull;
 
     const cHP = this.p.c.hp;
     const cAttack = this.p.c.attack;
@@ -577,14 +589,18 @@ class Pokemon {
     console.log(`- velocidad: ${cSpeed}`);
   }
 
+  get inventoryID() {
+    return this.inInventory.id ? ` #${this.inInventory.id}` : "";
+  }
+
   get alias() {
-    return this.inInventory.alias ? this.inInventory.alias : "";
+    return this.inInventory.alias
+      ? `(${this.inInventory.alias})`
+      : this.inventoryID;
   }
 
   get nameFull() {
-    return `${this.p.i.name} #${this.inInventory.id}${
-      this.alias ? ` (${this.alias})` : ""
-    }`;
+    return `${this.p.i.name}${this.alias}`;
   }
 }
 
@@ -673,7 +689,7 @@ class PokemonBattle {
       // Si es la primera vez, el Pokémon más rápido ataca primero
       if (speed1 !== speed2) {
         this.#pushConsoleLog(
-          `${maxSpeedPokemon.p.i.name} ataca primero por su mayor velocidad.`
+          `'${maxSpeedPokemon.nameFull}' ataca primero por su mayor velocidad.`
         );
         return maxSpeedPokemon;
       }
@@ -694,14 +710,14 @@ class PokemonBattle {
 
     if (pokemon1.isExhausted()) {
       this.#pushConsoleLog(
-        `${pokemon1.p.i.name} está agotado, no puede atacar.`
+        `'${pokemon1.nameFull}' está agotado, no puede atacar.`
       );
       return pokemon2;
     }
 
     if (pokemon2.isExhausted()) {
       this.#pushConsoleLog(
-        `${pokemon2.p.i.name} está agotado, no puede atacar.`
+        `'${pokemon2.nameFull}' está agotado, no puede atacar.`
       );
       return pokemon1;
     }
@@ -715,7 +731,7 @@ class PokemonBattle {
         return minFatigePokemon;
       } else if (fatigue1 === fatigue2) {
         this.#pushConsoleLog(
-          `${maxSpeedPokemon.p.i.name} ataca por su mayor velocidad.`
+          `'${maxSpeedPokemon.nameFull}' ataca por su mayor velocidad.`
         );
         return maxSpeedPokemon;
       }
@@ -723,32 +739,39 @@ class PokemonBattle {
 
     if (fatigue1 < 0) {
       this.#pushConsoleLog(
-        `${pokemon1.p.i.name} está descansado, puede atacar.`
+        `'${pokemon1.nameFull}' está descansado, puede atacar.`
       );
       return pokemon1;
     }
 
     if (fatigue2 < 0) {
       this.#pushConsoleLog(
-        `${pokemon2.p.i.name} está descansado, puede atacar.`
+        `'${pokemon2.nameFull}' está descansado, puede atacar.`
       );
       return pokemon2;
     }
 
-    // Aplicar probabilidad basada en la diferencia de velocidad utilizando #balancedProbabilitySystem
-    const probability = this.#balancedProbabilitySystem(
-      maxSpeedPokemon.p.c.speed,
-      minSpeedPokemon.p.c.speed
-    );
+    if (speed1 === speed2) {
+      this.#pushConsoleLog(
+        `Cualquiera puede atacar, ambos tienen la misma probabilidad.`
+      );
+    } else {
+      // Aplicar probabilidad basada en la diferencia de velocidad utilizando #balancedProbabilitySystem
+      const probability = this.#balancedProbabilitySystem(
+        maxSpeedPokemon.p.c.speed,
+        minSpeedPokemon.p.c.speed
+      );
 
-    this.#pushConsoleLog(
-      `Cualquiera puede atacar, aunque ${
-        maxSpeedPokemon.p.i.name
-      } tiene un ${Math.round(probability)}% más de probabilidad.`
-    );
+      this.#pushConsoleLog(
+        `Cualquiera puede atacar, aunque '${
+          maxSpeedPokemon.nameFull
+        }' tiene un ${Math.round(probability)}% más de probabilidad.`
+      );
 
-    // Para que no se pase de ventaja establecemos como mínimo 60% de probabilidad para lanzar un ataque.
-    return _.bool.isProbable(probability) ? maxSpeedPokemon : minSpeedPokemon;
+      return _.bool.isProbable(probability) ? maxSpeedPokemon : minSpeedPokemon;
+    }
+
+    return _.bool.isProbable(50) ? pokemon1 : pokemon2;
   }
 
   /**
@@ -872,7 +895,7 @@ class PokemonBattle {
 
     // Comprobar si el defensor ha sido derrotado
     if (defender.isDefeated()) {
-      this.#pushConsoleLog(`${defender.p.i.name} ha sido derrotado`);
+      this.#pushConsoleLog(`'${defender.nameFull}' ha sido derrotado`);
       return true;
     }
 
@@ -994,8 +1017,8 @@ class PokemonBattle {
   #timeOfEvaluation() {
     const poke1 = this.pokemon1;
     const poke2 = this.pokemon2;
-    const poke1Name = poke1.p.i.name;
-    const poke2Name = poke2.p.i.name;
+    const poke1Name = `'${poke1.nameFull}'`;
+    const poke2Name = `'${poke2.nameFull}'`;
 
     console.log("Momento de evaluación:");
 
@@ -1273,6 +1296,16 @@ class PokemonInventory {
   }
 
   /**
+   * Obtiene el Pokémon que está actualmente equipado.
+   * @returns {Pokemon|null} - El Pokémon equipado o null si no hay ninguno equipado.
+   */
+  getEquippedPokemon() {
+    return (
+      this.#inventory.find((pokemon) => pokemon.inInventory.isEquipped) || null
+    );
+  }
+
+  /**
    * Equipa o desequipa un Pokémon en el inventario.
    * @param {string|number} identifier - El alias o ID del Pokémon a equipar o desequipar.
    */
@@ -1299,18 +1332,18 @@ class PokemonInventory {
       return;
     }
 
+    const currentlyEquipped = this.getEquippedPokemon();
+
     if (pokemonToEquip.inInventory.isEquipped) {
       // Si el Pokémon ya está equipado, lo desequipamos
       pokemonToEquip.inInventory.isEquipped = false;
       this.log(`${pokemonToEquip.nameFull} ha sido desequipado.`);
     } else {
       // Desequipar cualquier Pokémon que esté actualmente equipado
-      this.#inventory.forEach((pokemon) => {
-        if (pokemon.inInventory.isEquipped) {
-          pokemon.inInventory.isEquipped = false;
-          this.log(`${pokemon.nameFull} ha sido desequipado.`);
-        }
-      });
+      if (currentlyEquipped) {
+        currentlyEquipped.inInventory.isEquipped = false;
+        this.log(`${currentlyEquipped.nameFull} ha sido desequipado.`);
+      }
 
       // Equipar el Pokémon seleccionado
       pokemonToEquip.inInventory.isEquipped = true;
@@ -1329,9 +1362,9 @@ class PokemonInventory {
       this.log("Inventario de Pokémon:");
       this.#inventory.forEach((poke) => {
         console.log(
-          `Pokemon #${poke.inInventory.id}${
+          `Pokemon: ${
             poke.inInventory.alias ? ` (${poke.inInventory.alias})` : ""
-          }:`
+          }`
         );
         poke.stats();
         console.log("");
