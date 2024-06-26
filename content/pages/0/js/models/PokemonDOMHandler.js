@@ -1,8 +1,12 @@
+//? Libreria personal de utilidades
+import _ from "../../../assets/general/js/lib/utilities.js";
+
 //? Funcion de la parte del carrito para añadir el Pokemon
 import { addToCart } from "./../../../2/js/carrito.js";
 
-//? Funcion compartida par añadir los event listeners a las tarjetas Pokémon
+//? Funcion compartida par añadir los event listeners a las tarjetas Pokémon y de los botones de equipamiento
 import { addEventListenersPokemonCards } from "./PokemonManager.js";
+import { addEventListenersPokemonEquippedButton } from "./PokemonManager.js";
 
 export default class PokemonDOMHandler {
   /**
@@ -94,18 +98,21 @@ export default class PokemonDOMHandler {
 
   /**
    * Método para mostrar uno o varios Pokémon en el DOM.
-   * @param {object[]} pokemonDataList - Un array de objetos de Pokémon.
-   * @param {boolean} inventory - Un booleano que representa las tarjetas de los Pokemon en modo inventario, si es true.
-   * @param {number|string} show - Número de tarjetas a mostrar o 'all' para mostrar todas.
+   * @param {object[]} data - Toda la data de PokemonManager.
+   * @param {PokemonInventory} PokemonInventory - La instancia de la clase PokemonInventory.
    */
-  displayPokemon(data, pokemonDataList, inventory = false, show = 30) {
-    // console.log("show", show);
+  displayPokemon(data, PokemonInventory) {
     this.data = data;
-    this.pokemonDataList = pokemonDataList;
+    if (PokemonInventory) this.PokemonInventory = PokemonInventory;
+
+    this.pokemonDataList = data.dom.pokemonDivDataList;
+    const show = data.dom.loadedCards === undefined ? 30 : data.dom.loadedCards;
+
     this.currentPage = 0;
     this.show = show === "all" ? pokemonDataList.length : show; // Actualizar la propiedad show
     this.pokemonDivList.innerHTML = "";
-    this.#loadNextPage(inventory);
+
+    this.#loadNextPage(data.dom.filters.isInventory);
   }
 
   /**
@@ -113,18 +120,18 @@ export default class PokemonDOMHandler {
    * @param {boolean} inventory - Si las tarjetas de los Pokemon están en modo inventario.
    * @private
    */
-  #loadNextPage(inventory) {
+  async #loadNextPage(inventory) {
     const start = this.currentPage * this.show;
     const end = start + this.show;
     const nextPageData = this.pokemonDataList.slice(start, end);
 
-    nextPageData.forEach((poke) => {
+    for (const poke of nextPageData) {
       const div = inventory
-        ? this.#createPokemonElementInventory(poke)
-        : this.#createPokemonElementNormal(poke);
+        ? await this.#createPokemonElementInventory(poke)
+        : await this.#createPokemonElementNormal(poke);
       this.pokemonDivList.append(div);
       this.#addImageHoverEffect(div, poke);
-    });
+    }
 
     this.currentPage++;
 
@@ -134,7 +141,12 @@ export default class PokemonDOMHandler {
       this.observer.observe(lastPokemonElement);
     }
 
-    if (!inventory) {
+    if (inventory) {
+      addEventListenersPokemonEquippedButton(
+        nextPageData,
+        this.PokemonInventory
+      );
+    } else {
       // Añadir los event listeners para la nueva página cargada, incluyendo el número de tarjetas cargadas
       const loadedCards = this.currentPage * this.show;
       addEventListenersPokemonCards(this.data, nextPageData, loadedCards);
@@ -150,7 +162,7 @@ export default class PokemonDOMHandler {
     const [entry] = entries;
     if (entry.isIntersecting) {
       this.observer.unobserve(entry.target);
-      this.#loadNextPage();
+      this.#loadNextPage(this.data.dom.filters.isInventory);
     }
   }
 
@@ -160,7 +172,9 @@ export default class PokemonDOMHandler {
    * @returns {HTMLElement} - El elemento div creado para el Pokémon.
    * @private
    */
-  #createPokemonElementInventory(poke) {
+  async #createPokemonElementInventory(poke) {
+    const PokemonInventory = this.PokemonInventory;
+
     // Convertir el nombre del Pokémon a mayúsculas
     const name = poke.name.toUpperCase();
 
@@ -193,14 +207,21 @@ export default class PokemonDOMHandler {
       ? "pokemon-name-legendary"
       : "";
 
+    const inventoryID = poke.inventoryID;
+    // const isEquipped = poke.dataInventory.inInventory.isEquipped;
+    const isEquipped =
+      PokemonInventory.getPokemon(inventoryID).inInventory.isEquipped;
+
     // Crear el elemento div para el Pokémon
     const div = document.createElement("div");
-    div.id = `pokemon-${poke.id}`; // Asigna un ID único al elemento
+    div.id = `pokemon-${poke.pokeId}`; // Asigna un ID único al elemento
     div.classList.add("pokemon");
     div.style.userSelect = "none"; // Bloquear la selección del elemento
     div.innerHTML = `
     <div style="padding-bottom: 1.6rem"></div>
-    <p class="pokemon-equip-back">${true ? "EQUIPADO" : ""}</p>
+    <p class="pokemon-equip-back" id="pokemon-equip-back-${inventoryID}">${
+      isEquipped ? "EQUIPADO" : ""
+    }</p>
     <div class="pokemon-image">
       <img src="${poke.images.illustration.default}" alt="${poke.name}">
     </div>
@@ -215,13 +236,12 @@ export default class PokemonDOMHandler {
         <p class="stat">${height}</p>
         <p class="stat">${weight}</p>
       </div>
-      <div class="div-pokemon-SwitchEquipPokemon" id="div-pokemon-SwitchEquipPokemon-${
-        poke.dataInventory.inInventory.id
-      }">
-        <input class="input-SwitchEquipPokemon" type="checkbox" checked="checked" id="equipped" name="equipped-checkbox" value="equipped-button">
-        <label class="label-SwitchEquipPokemon" for="equipped" class="container">
-          <!--<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>-->
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 120 120"" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
+      <div class="div-pokemon-SwitchEquipPokemon" id="div-pokemon-SwitchEquipPokemon-${inventoryID}">
+        <input class="input-SwitchEquipPokemon" id="input-SwitchEquipPokemon-${inventoryID}" type="checkbox" ${
+      isEquipped ? 'checked="checked"' : ""
+    } id="equipped-${inventoryID}" name="equipped-checkbox" value="equipped-button">
+        <label class="label-SwitchEquipPokemon" class="container">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart">
             <circle cx="60" cy="60" r="50" />
           </svg>
           <div class="action">
@@ -233,122 +253,52 @@ export default class PokemonDOMHandler {
     </div>
   `;
 
-    // Crear el elemento de PopUp con información adicional
-    const divPopUp = document.createElement("div");
-    divPopUp.classList.add("div-pokemon-popup");
+    // const equippedButton = div.querySelector(
+    //   `.div-pokemon-SwitchEquipPokemon-${inventoryID}`
+    // );
 
-    divPopUp.innerHTML = `
-    <svg class="icon-svg-info" width="30" height="30" viewBox="0 0 512 512">
-      <title>Estadisticas</title>
-      <path
-          d="M256,6.234C118.059,6.234,6.234,118.059,6.234,256.001c0,137.94,111.824,249.765,249.766,249.765  s249.766-111.824,249.766-249.765C505.766,118.059,393.941,6.234,256,6.234z M489.966,258  C487.828,385.396,383.907,488.017,256,488.017c-127.907,0-231.829-102.62-233.966-230.017h-0.051c0-0.669,0.02-1.333,0.025-2  c-0.006-0.667-0.025-1.331-0.025-2h0.051C24.171,126.603,128.093,23.983,256,23.983c127.907,0,231.829,102.62,233.966,230.017h0.051  c0,0.669-0.02,1.333-0.025,2c0.006,0.667,0.025,1.331,0.025,2H489.966z" />
-      <path
-          d="M256,132.228  c-68.357,0-123.772,55.415-123.772,123.772S187.643,379.772,256,379.772S379.772,324.357,379.772,256S324.357,132.228,256,132.228z   M256,331.024c-41.436,0-75.024-33.59-75.024-75.024s33.589-75.024,75.024-75.024c41.435,0,75.024,33.59,75.024,75.024  S297.435,331.024,256,331.024z"
-          fill="none" />
-      <path
-          d="M256,223.724c-17.826,0-32.276,14.451-32.276,32.276c0,17.826,14.45,32.276,32.276,32.276  s32.276-14.45,32.276-32.276C288.276,238.174,273.826,223.724,256,223.724z M256,277.951c-12.124,0-21.952-9.827-21.952-21.951  s9.828-21.952,21.952-21.952c12.124,0,21.951,9.828,21.951,21.952S268.124,277.951,256,277.951z" />
-      <path
-          d="M256,180.976c-41.436,0-75.024,33.59-75.024,75.024s33.589,75.024,75.024,75.024  c41.435,0,75.024-33.59,75.024-75.024S297.435,180.976,256,180.976z M256,307.025c-28.181,0-51.025-22.844-51.025-51.025  s22.845-51.025,51.025-51.025c28.182,0,51.025,22.844,51.025,51.025S284.182,307.025,256,307.025z" />
-      <g>
-          <path
-              d="M136.784,252.489c0-17.625,3.758-34.489,10.509-49.489H14v107h137.237   C142.019,292,136.784,273.296,136.784,252.489z" />
-          <path
-              d="M369.264,203c6.751,15,10.509,31.863,10.509,49.489c0,20.807-5.234,39.511-14.452,57.511H498V203H369.264z" />
-      </g>
-    </svg>
+    // if (equippedButton) {
+    //   // Evento para el botón de equipar
+    //   equippedButton.addEventListener("click", (event) => {
+    //     event.stopPropagation(); // Evitar que el evento se propague y se ejecute varias veces
 
-    <div class="info-pokemon-popup">
-    
-    
-      <div class="div-stat-percent-power">
-        <div class="stat-percentage-power" style="background-color: ${this.#getColorByPercentage(
-          poke.statistics.power_percent
-        )}">
-        </div>
-        <p>Power: ${poke.statistics.power} </p>
-        <p>(${poke.statistics.power_percent}%)</p>
-      </div>
+    //     const checkbox = event.currentTarget.querySelector(
+    //       ".input-SwitchEquipPokemon"
+    //     );
+    //     const equipBackText = div.querySelector(".pokemon-equip-back");
 
-      <div class="div-stat-percent">
-        <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
-          poke.statistics.hp_percent
-        )}">
-        </div>
-        <p>HP: ${poke.statistics.hp} </p>
-        <p>(${poke.statistics.hp_percent}%)</p>
-      </div>
+    //     checkbox.checked = !checkbox.checked;
+    //     if (checkbox.checked) {
+    //       equipBackText.textContent = "EQUIPADO";
+    //     } else {
+    //       equipBackText.textContent = "";
+    //     }
 
-      <div class="div-stat-percent">
-        <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
-          poke.statistics.attack_percent
-        )}">
-        </div>
-        <p>Attack: ${poke.statistics.attack} </p>
-        <p>(${poke.statistics.attack_percent}%)</p>
-      </div>
+    //     // Actualizar el estado en poke.dataInventory.inInventory.isEquipped
+    //     // poke.dataInventory.inInventory.isEquipped = checkbox.checked;
+    //     PokemonInventory.equipPokemon(inventoryID);
 
-      <div class="div-stat-percent-special">
-        <div class="stat-percentage-special" style="background-color: ${this.#getColorByPercentage(
-          poke.statistics.special_attack_percent
-        )}">
-        </div>
-        <p>Special: ${poke.statistics.special_attack} </p>
-        <p>(${poke.statistics.special_attack_percent}%)</p>
-      </div>
+    //     // console.log(
+    //     //   `Pokémon ${poke.name} ${checkbox.checked ? "equipado" : "desequipado"}`
+    //     // );
+    //   });
+    // } else {
+    //   console.error(
+    //     `No se encontró el botón de equipar para el Pokémon ${poke.name} con ID ${inventoryID}`
+    //   );
+    // }
 
-      <div class="div-stat-percent">
-        <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
-          poke.statistics.defense_percent
-        )}">
-        </div>
-        <p>Defense: ${poke.statistics.defense} </p>
-        <p>(${poke.statistics.defense_percent}%)</p>
-      </div>
-
-      <div class="div-stat-percent-special">
-        <div class="stat-percentage-special" style="background-color: ${this.#getColorByPercentage(
-          poke.statistics.special_defense_percent
-        )}">
-        </div>
-        <p>Special: ${poke.statistics.special_defense} </p>
-        <p>(${poke.statistics.special_defense_percent}%)</p>
-      </div>
-
-      <div class="div-stat-percent">
-        <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
-          poke.statistics.speed_percent
-        )}">
-        </div>
-        <p>Speed: ${poke.statistics.speed} </p>
-        <p>(${poke.statistics.speed_percent}%)</p>
-      </div>
-
-    </div>
-  `;
-
+    const divPopUp = await this.#createDivPopUp(poke);
     div.appendChild(divPopUp);
-
-    //!! Agrega el botón al elemento .div-addCart
-    // const divAddCart = div.querySelector(".div-addCart");
 
     // Añadir eventos de hover para mostrar y ocultar el PopUp
     divPopUp.addEventListener("mouseenter", () => {
       divPopUp.querySelector(".info-pokemon-popup").classList.add("show");
-      // divAddCart.style.zIndex = -1;
     });
 
     divPopUp.addEventListener("mouseleave", () => {
       divPopUp.querySelector(".info-pokemon-popup").classList.remove("show");
-      // divAddCart.style.zIndex = null;
     });
-
-    //!# out (null) (ARREGLAR ANTES DE SIGIR)
-    const equippedButton = document.querySelector(
-      `#div-pokemon-SwitchEquipPokemon-${poke.dataInventory.inInventory.id}`
-    );
-
-    console.log(equippedButton);
-    equippedButton.addEventListener("click", () => {});
 
     return div;
   }
@@ -359,7 +309,7 @@ export default class PokemonDOMHandler {
    * @returns {HTMLElement} - El elemento div creado para el Pokémon.
    * @private
    */
-  #createPokemonElementNormal(poke) {
+  async #createPokemonElementNormal(poke) {
     // Formatear el ID del Pokémon con ceros a la izquierda
     const pokeId = poke.pokeId.toString().padStart(3, "0");
     // Convertir el nombre del Pokémon a mayúsculas
@@ -418,6 +368,7 @@ export default class PokemonDOMHandler {
     div.id = `pokemon-${poke.pokeId}`; // Asigna un ID único al elemento
     div.classList.add("pokemon");
     div.style.userSelect = "none"; // Bloquear la selección del elemento
+    div.style.cursor = "pointer";
     div.innerHTML = `
     <div class="div-offerPercentage">
       ${offer ? offer : ""}
@@ -464,98 +415,7 @@ export default class PokemonDOMHandler {
       div.querySelector(".div-offerPercentage").style.paddingBottom = "0";
 
     // Crear el elemento de PopUp con información adicional
-    const divPopUp = document.createElement("div");
-    divPopUp.classList.add("div-pokemon-popup");
-
-    divPopUp.innerHTML = `
-    <svg class="icon-svg-info" width="30" height="30" viewBox="0 0 512 512">
-      <title>Estadisticas</title>
-      <path
-          d="M256,6.234C118.059,6.234,6.234,118.059,6.234,256.001c0,137.94,111.824,249.765,249.766,249.765  s249.766-111.824,249.766-249.765C505.766,118.059,393.941,6.234,256,6.234z M489.966,258  C487.828,385.396,383.907,488.017,256,488.017c-127.907,0-231.829-102.62-233.966-230.017h-0.051c0-0.669,0.02-1.333,0.025-2  c-0.006-0.667-0.025-1.331-0.025-2h0.051C24.171,126.603,128.093,23.983,256,23.983c127.907,0,231.829,102.62,233.966,230.017h0.051  c0,0.669-0.02,1.333-0.025,2c0.006,0.667,0.025,1.331,0.025,2H489.966z" />
-      <path
-          d="M256,132.228  c-68.357,0-123.772,55.415-123.772,123.772S187.643,379.772,256,379.772S379.772,324.357,379.772,256S324.357,132.228,256,132.228z   M256,331.024c-41.436,0-75.024-33.59-75.024-75.024s33.589-75.024,75.024-75.024c41.435,0,75.024,33.59,75.024,75.024  S297.435,331.024,256,331.024z"
-          fill="none" />
-      <path
-          d="M256,223.724c-17.826,0-32.276,14.451-32.276,32.276c0,17.826,14.45,32.276,32.276,32.276  s32.276-14.45,32.276-32.276C288.276,238.174,273.826,223.724,256,223.724z M256,277.951c-12.124,0-21.952-9.827-21.952-21.951  s9.828-21.952,21.952-21.952c12.124,0,21.951,9.828,21.951,21.952S268.124,277.951,256,277.951z" />
-      <path
-          d="M256,180.976c-41.436,0-75.024,33.59-75.024,75.024s33.589,75.024,75.024,75.024  c41.435,0,75.024-33.59,75.024-75.024S297.435,180.976,256,180.976z M256,307.025c-28.181,0-51.025-22.844-51.025-51.025  s22.845-51.025,51.025-51.025c28.182,0,51.025,22.844,51.025,51.025S284.182,307.025,256,307.025z" />
-      <g>
-          <path
-              d="M136.784,252.489c0-17.625,3.758-34.489,10.509-49.489H14v107h137.237   C142.019,292,136.784,273.296,136.784,252.489z" />
-          <path
-              d="M369.264,203c6.751,15,10.509,31.863,10.509,49.489c0,20.807-5.234,39.511-14.452,57.511H498V203H369.264z" />
-      </g>
-    </svg>
-
-    <div class="info-pokemon-popup">
-    
-    
-      <div class="div-stat-percent-power">
-        <div class="stat-percentage-power" style="background-color: ${this.#getColorByPercentage(
-          poke.statistics.power_percent
-        )}">
-        </div>
-        <p>Power: ${poke.statistics.power} </p>
-        <p>(${poke.statistics.power_percent}%)</p>
-      </div>
-
-      <div class="div-stat-percent">
-        <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
-          poke.statistics.hp_percent
-        )}">
-        </div>
-        <p>HP: ${poke.statistics.hp} </p>
-        <p>(${poke.statistics.hp_percent}%)</p>
-      </div>
-
-      <div class="div-stat-percent">
-        <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
-          poke.statistics.attack_percent
-        )}">
-        </div>
-        <p>Attack: ${poke.statistics.attack} </p>
-        <p>(${poke.statistics.attack_percent}%)</p>
-      </div>
-
-      <div class="div-stat-percent-special">
-        <div class="stat-percentage-special" style="background-color: ${this.#getColorByPercentage(
-          poke.statistics.special_attack_percent
-        )}">
-        </div>
-        <p>Special: ${poke.statistics.special_attack} </p>
-        <p>(${poke.statistics.special_attack_percent}%)</p>
-      </div>
-
-      <div class="div-stat-percent">
-        <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
-          poke.statistics.defense_percent
-        )}">
-        </div>
-        <p>Defense: ${poke.statistics.defense} </p>
-        <p>(${poke.statistics.defense_percent}%)</p>
-      </div>
-
-      <div class="div-stat-percent-special">
-        <div class="stat-percentage-special" style="background-color: ${this.#getColorByPercentage(
-          poke.statistics.special_defense_percent
-        )}">
-        </div>
-        <p>Special: ${poke.statistics.special_defense} </p>
-        <p>(${poke.statistics.special_defense_percent}%)</p>
-      </div>
-
-      <div class="div-stat-percent">
-        <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
-          poke.statistics.speed_percent
-        )}">
-        </div>
-        <p>Speed: ${poke.statistics.speed} </p>
-        <p>(${poke.statistics.speed_percent}%)</p>
-      </div>
-
-    </div>
-  `;
-
+    const divPopUp = await this.#createDivPopUp(poke);
     div.appendChild(divPopUp);
 
     // Agrega el botón al elemento .div-addCart
@@ -608,6 +468,109 @@ export default class PokemonDOMHandler {
   };
 
   /**
+   * Método privado para crear el elemento de PopUp de información de un Pokémon.
+   * @param {object} poke - El objeto Pokémon.
+   * @returns {HTMLElement} - El elemento div de PopUp creado.
+   * @private
+   */
+  async #createDivPopUp(poke) {
+    // Crear el elemento de PopUp con información adicional
+    const divPopUp = document.createElement("div");
+    divPopUp.classList.add("div-pokemon-popup");
+
+    divPopUp.innerHTML = `
+        <svg class="icon-svg-info" width="30" height="30" viewBox="0 0 512 512">
+          <title>Estadisticas</title>
+          <path
+              d="M256,6.234C118.059,6.234,6.234,118.059,6.234,256.001c0,137.94,111.824,249.765,249.766,249.765  s249.766-111.824,249.766-249.765C505.766,118.059,393.941,6.234,256,6.234z M489.966,258  C487.828,385.396,383.907,488.017,256,488.017c-127.907,0-231.829-102.62-233.966-230.017h-0.051c0-0.669,0.02-1.333,0.025-2  c-0.006-0.667-0.025-1.331-0.025-2h0.051C24.171,126.603,128.093,23.983,256,23.983c127.907,0,231.829,102.62,233.966,230.017h0.051  c0,0.669-0.02,1.333-0.025,2c0.006,0.667,0.025,1.331,0.025,2H489.966z" />
+          <path
+              d="M256,132.228  c-68.357,0-123.772,55.415-123.772,123.772S187.643,379.772,256,379.772S379.772,324.357,379.772,256S324.357,132.228,256,132.228z   M256,331.024c-41.436,0-75.024-33.59-75.024-75.024s33.589-75.024,75.024-75.024c41.435,0,75.024,33.59,75.024,75.024  S297.435,331.024,256,331.024z"
+              fill="none" />
+          <path
+              d="M256,223.724c-17.826,0-32.276,14.451-32.276,32.276c0,17.826,14.45,32.276,32.276,32.276  s32.276-14.45,32.276-32.276C288.276,238.174,273.826,223.724,256,223.724z M256,277.951c-12.124,0-21.952-9.827-21.952-21.951  s9.828-21.952,21.952-21.952c12.124,0,21.951,9.828,21.951,21.952S268.124,277.951,256,277.951z" />
+          <path
+              d="M256,180.976c-41.436,0-75.024,33.59-75.024,75.024s33.589,75.024,75.024,75.024  c41.435,0,75.024-33.59,75.024-75.024S297.435,180.976,256,180.976z M256,307.025c-28.181,0-51.025-22.844-51.025-51.025  s22.845-51.025,51.025-51.025c28.182,0,51.025,22.844,51.025,51.025S284.182,307.025,256,307.025z" />
+          <g>
+              <path
+                  d="M136.784,252.489c0-17.625,3.758-34.489,10.509-49.489H14v107h137.237   C142.019,292,136.784,273.296,136.784,252.489z" />
+              <path
+                  d="M369.264,203c6.751,15,10.509,31.863,10.509,49.489c0,20.807-5.234,39.511-14.452,57.511H498V203H369.264z" />
+          </g>
+        </svg>
+    
+        <div class="info-pokemon-popup">
+        
+        
+          <div class="div-stat-percent-power">
+            <div class="stat-percentage-power" style="background-color: ${this.#getColorByPercentage(
+              poke.statistics.power_percent
+            )}">
+            </div>
+            <p>Power: ${poke.statistics.power} </p>
+            <p>(${poke.statistics.power_percent}%)</p>
+          </div>
+    
+          <div class="div-stat-percent">
+            <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
+              poke.statistics.hp_percent
+            )}">
+            </div>
+            <p>HP: ${poke.statistics.hp} </p>
+            <p>(${poke.statistics.hp_percent}%)</p>
+          </div>
+    
+          <div class="div-stat-percent">
+            <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
+              poke.statistics.attack_percent
+            )}">
+            </div>
+            <p>Attack: ${poke.statistics.attack} </p>
+            <p>(${poke.statistics.attack_percent}%)</p>
+          </div>
+    
+          <div class="div-stat-percent-special">
+            <div class="stat-percentage-special" style="background-color: ${this.#getColorByPercentage(
+              poke.statistics.special_attack_percent
+            )}">
+            </div>
+            <p>Special: ${poke.statistics.special_attack} </p>
+            <p>(${poke.statistics.special_attack_percent}%)</p>
+          </div>
+    
+          <div class="div-stat-percent">
+            <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
+              poke.statistics.defense_percent
+            )}">
+            </div>
+            <p>Defense: ${poke.statistics.defense} </p>
+            <p>(${poke.statistics.defense_percent}%)</p>
+          </div>
+    
+          <div class="div-stat-percent-special">
+            <div class="stat-percentage-special" style="background-color: ${this.#getColorByPercentage(
+              poke.statistics.special_defense_percent
+            )}">
+            </div>
+            <p>Special: ${poke.statistics.special_defense} </p>
+            <p>(${poke.statistics.special_defense_percent}%)</p>
+          </div>
+    
+          <div class="div-stat-percent">
+            <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
+              poke.statistics.speed_percent
+            )}">
+            </div>
+            <p>Speed: ${poke.statistics.speed} </p>
+            <p>(${poke.statistics.speed_percent}%)</p>
+          </div>
+    
+        </div>
+      `;
+
+    return divPopUp;
+  }
+
+  /**
    * Método privado para agregar el efecto de hover a la imagen de un Pokémon.
    * @param {HTMLElement} div - El elemento div del Pokémon.
    * @param {object} poke - El objeto Pokémon.
@@ -650,7 +613,7 @@ export default class PokemonDOMHandler {
     filterContainer.innerHTML = `
     <!-- <label class="filter-label" for="pokemon-filter">Filtrar Pokémon por:</label> -->
         <select class="filter-select" id="pokemon-filter">
-          <optgroup label="Precio (€)" class="filter-optgroup">
+          <optgroup label="Precio (€)" class="filter-optgroup" id="filter-optgroup-price">
             <option value="market.price-asc" class="filter-option">Precio (Menor)</option>
             <option value="market.price-desc" class="filter-option">Precio (Mayor)</option>
           </optgroup>

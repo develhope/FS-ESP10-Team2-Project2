@@ -312,7 +312,7 @@ input:checked+.slider:before {
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    cursor: pointer;
+    /* cursor: pointer; */
 }
 
 .pokemon:hover {

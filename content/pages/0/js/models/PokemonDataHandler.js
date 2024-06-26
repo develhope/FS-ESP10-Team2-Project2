@@ -86,46 +86,6 @@ export default class PokemonDataHandler {
   }
 
   /**
-   * Añade la propiedad `gender` a cada objeto Pokémon en `results` basándose en los datos de género proporcionados.
-   * @param {Array} results - La lista de objetos Pokémon a actualizar.
-   * @param {Array} genderData - Una lista con tres elementos: [femaleData, maleData, genderlessData].
-   * @private
-   */
-  #addGendersPokemon(results, genderData) {
-    const [femaleData, maleData, genderlessData] = genderData;
-
-    // Crear mapas para acceso rápido por nombre de Pokémon
-    const femaleSet = new Set(
-      femaleData.pokemon_species_details.map(
-        (detail) => detail.pokemon_species.name
-      )
-    );
-    const maleSet = new Set(
-      maleData.pokemon_species_details.map(
-        (detail) => detail.pokemon_species.name
-      )
-    );
-    const genderlessSet = new Set(
-      genderlessData.pokemon_species_details.map(
-        (detail) => detail.pokemon_species.name
-      )
-    );
-
-    results.forEach((pokemon) => {
-      const { name } = pokemon;
-
-      if (genderlessSet.has(name)) {
-        pokemon.gender = null;
-      } else {
-        const genders = [];
-        if (femaleSet.has(name)) genders.push("female");
-        if (maleSet.has(name)) genders.push("male");
-        pokemon.gender = genders.length ? genders : undefined;
-      }
-    });
-  }
-
-  /**
    * Método privado para obtener los datos de un Pokémon desde la API.
    * @param {number} id - El ID del Pokémon.
    * @returns {Promise<object>} - Los datos del Pokémon.
@@ -430,6 +390,46 @@ export default class PokemonDataHandler {
 
     value = value < 0 ? 10 : value;
     return this.#formatNumber(value);
+  }
+
+  /**
+   * Añade la propiedad `gender` a cada objeto Pokémon en `results` basándose en los datos de género proporcionados.
+   * @param {Array} results - La lista de objetos Pokémon a actualizar.
+   * @param {Array} genderData - Una lista con tres elementos: [femaleData, maleData, genderlessData].
+   * @private
+   */
+  #addGendersPokemon(results, genderData) {
+    const [femaleData, maleData, genderlessData] = genderData;
+
+    // Crear mapas para acceso rápido por nombre de Pokémon
+    const femaleSet = new Set(
+      femaleData.pokemon_species_details.map(
+        (detail) => detail.pokemon_species.name
+      )
+    );
+    const maleSet = new Set(
+      maleData.pokemon_species_details.map(
+        (detail) => detail.pokemon_species.name
+      )
+    );
+    const genderlessSet = new Set(
+      genderlessData.pokemon_species_details.map(
+        (detail) => detail.pokemon_species.name
+      )
+    );
+
+    results.forEach((pokemon) => {
+      const { name } = pokemon;
+
+      if (genderlessSet.has(name)) {
+        pokemon.gender = null;
+      } else {
+        const genders = [];
+        if (femaleSet.has(name)) genders.push("female");
+        if (maleSet.has(name)) genders.push("male");
+        pokemon.gender = genders.length ? genders : undefined;
+      }
+    });
   }
 
   /**

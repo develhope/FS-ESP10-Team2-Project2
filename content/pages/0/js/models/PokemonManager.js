@@ -95,6 +95,75 @@ export function addEventListenersPokemonCards(
   });
 }
 
+/**
+ * Añade event listeners a los botones de equipamiento de los Pokémon en el DOM.
+ * Cuando se hace clic en uno de estos botones, se actualizan todos los elementos relacionados con el estado de equipamiento del Pokémon correspondiente.
+ * @param {object[]} pokemonDivDataList - Lista de objetos Pokémon.
+ * @param {PokemonInventory} PokemonInventory - Instancia de la clase PokemonInventory.
+ */
+export function addEventListenersPokemonEquippedButton(
+  pokemonDivDataList,
+  PokemonInventory
+) {
+  // Itera sobre cada objeto Pokémon en la lista proporcionada
+  pokemonDivDataList.forEach((poke) => {
+    const inventoryID = poke.inventoryID;
+
+    // Selecciona todos los elementos del DOM correspondientes al Pokémon actual
+    const equippedButtons = document.querySelectorAll(
+      `#div-pokemon-SwitchEquipPokemon-${inventoryID}`
+    );
+
+    equippedButtons.forEach((equippedButton) => {
+      // // Selecciona el elemento del DOM correspondiente al Pokémon actual
+      // const pokemonElement = document.querySelector(`#pokemon-${poke.pokeId}`);
+
+      equippedButton.addEventListener("click", (event) => {
+        event.stopPropagation(); // Evitar que el evento se propague y se ejecute varias veces
+
+        // Actualizar el estado de equipamiento del Pokémon en el inventario
+        PokemonInventory.equipPokemon(inventoryID);
+        PokemonInventory.saveToLocalStorage();
+        PokemonInventory.getPokemon(inventoryID).stats();
+        // // Obtener todos los Pokémon del inventario
+        // const allPokemon = PokemonInventory.getPokemon("*");
+
+        // Iterar sobre todos los Pokémon y actualizar sus elementos del DOM
+        pokemonDivDataList.forEach((poke) => {
+          const currentInventoryID = poke.inventoryID;
+          const isEquipped =
+            PokemonInventory.getPokemon(currentInventoryID).inInventory
+              .isEquipped;
+
+          // Seleccionar todos los botones de equipamiento relacionados con el Pokémon
+          const allEquippedButtons = document.querySelectorAll(
+            `#div-pokemon-SwitchEquipPokemon-${currentInventoryID}`
+          );
+
+          allEquippedButtons.forEach((button) => {
+            const checkbox = button.querySelector(
+              `#input-SwitchEquipPokemon-${currentInventoryID}`
+            );
+            checkbox.checked = isEquipped;
+
+            // Seleccionar y actualizar el elemento de texto de equipamiento
+            const pokeDiv = button.closest(`#pokemon-${poke.pokeId}`);
+            const equipBackText = pokeDiv.querySelector(
+              `#pokemon-equip-back-${currentInventoryID}`
+            );
+
+            if (isEquipped) {
+              equipBackText.textContent = "EQUIPADO";
+            } else {
+              equipBackText.textContent = "";
+            }
+          });
+        });
+      });
+    });
+  });
+}
+
 export default class PokemonManager {
   /**
    * Constructor de la clase PokemonManager.
@@ -104,6 +173,14 @@ export default class PokemonManager {
     // Inicializar las instancias de las clases manejadoras
     this.PokemonDataHandler = new P_DH();
     this.PokemonFilter = new P_F();
+
+    const myInventory = new PokemonInventory(true);
+
+    myInventory.showInventory();
+
+    this.PokemonInventory = myInventory;
+
+    // this.#data.pokemonDataListInventory = myInventory.getPokemon("*");
 
     // Obtener referencias a elementos del DOM
     this.#getDOMElements();
@@ -159,7 +236,7 @@ export default class PokemonManager {
       loadedCards: undefined,
     },
     pokemonDataList: [],
-    pokemonDataListInventory: [],
+    // pokemonDataListInventory: [],
     originalPokemonDataList: [],
     numPokemonDownloaded: 1025,
   };
@@ -188,6 +265,8 @@ export default class PokemonManager {
    ** Método para depurar y mostrar el objeto #data en la consola.
    */
   logDataDebug() {
+    // - pokemonDataListInventory length: ${this.#data.pokemonDataListInventory.length}
+
     console.log(
       `#data:
 - dom:
@@ -229,13 +308,12 @@ export default class PokemonManager {
   - pokemonDivDataList length: ${this.#data.dom.pokemonDivDataList.length}
   - loadedCards: ${this.#data.dom.loadedCards}
 - pokemonDataList length: ${this.#data.pokemonDataList.length}
-- pokemonDataListInventory length: ${this.#data.pokemonDataListInventory.length}
 - numPokemonDownloaded: ${this.#data.numPokemonDownloaded}
 `
     );
   }
 
-  #createInventoryInstance() {
+  #addRandomPokemonToInventory() {
     localStorage.removeItem("inventory");
 
     const myInventory = new PokemonInventory(false);
@@ -244,9 +322,10 @@ export default class PokemonManager {
 
     let randomNumPoke;
 
-    for (let i = 0; i < 2; i++) {
-      randomNumPoke = _.num.getRandomNum(1, this.#data.pokemonDataList.length);
+    console.log(this.#data.pokemonDataList.length);
 
+    for (let i = 0; i < 50; i++) {
+      randomNumPoke = _.num.getRandomNum(1, this.#data.pokemonDataList.length);
       pokemonToStoreInInventory = new Pokemon(
         this.#data.pokemonDataList[randomNumPoke].name,
         this.#data.pokemonDataList[randomNumPoke].type,
@@ -261,6 +340,43 @@ export default class PokemonManager {
       myInventory.addPokemon(pokemonToStoreInInventory);
     }
 
+    myInventory.saveToLocalStorage();
+    myInventory.showInventory();
+  }
+
+  /**
+   * Añade una lista de Pokémon al inventario.
+   * Si se especifica el parámetro `clean`, primero elimina todos los Pokémon existentes en el inventario.
+   * @param {number[]} pokemonIDsList - Lista de IDs de los Pokémon a añadir al inventario.
+   * @param {boolean} [clean=false] - Si es verdadero, limpia el inventario antes de añadir los nuevos Pokémon.
+   */
+  #addListToInventory(pokemonIDsList, clean = false) {
+    const myInventory = this.PokemonInventory;
+
+    // Limpiar el inventario si se especifica el parámetro `clean`
+    if (clean) {
+      myInventory.delPokemon("*");
+    }
+
+    // Añadir cada Pokémon de la lista al inventario
+    pokemonIDsList.forEach((pokeID) => {
+      const pokemonData = this.#data.pokemonDataList[pokeID - 1];
+
+      const pokemonToStoreInInventory = new Pokemon(
+        pokemonData.name,
+        pokemonData.type,
+        pokemonData.statistics.hp,
+        pokemonData.statistics.attack,
+        pokemonData.statistics.special_attack,
+        pokemonData.statistics.defense,
+        pokemonData.statistics.special_defense,
+        pokemonData.statistics.speed
+      );
+
+      myInventory.addPokemon(pokemonToStoreInInventory);
+    });
+
+    // Guardar el inventario en el almacenamiento local y mostrarlo
     myInventory.saveToLocalStorage();
     myInventory.showInventory();
   }
@@ -282,13 +398,6 @@ export default class PokemonManager {
     }
 
     try {
-      // Intentar obtener los datos del sessionStorage
-      const inventory = _.DOM.getFromLocalStorage("inventory");
-      if (inventory) {
-        console.log("Restaurando datos Inventario...");
-        this.#data.pokemonDataListInventory = inventory;
-      }
-
       // Intentar obtener los datos del sessionStorage
       const pokemonManager_data = _.DOM.getFromSessionStorage(
         "pokemonManager_data"
@@ -328,7 +437,11 @@ export default class PokemonManager {
         );
       }
 
-      this.#createInventoryInstance();
+      // this.#addRandomPokemonToInventory();
+      this.#addListToInventory(
+        [4, 7, 10, 13, 15, 28, 123, 149, 150, 237, 456, 746, 890],
+        true
+      );
 
       // Configurar el slider del filtro de precios
       this.PokemonDOMHandler.setFilterSliderValue(
@@ -506,80 +619,135 @@ export default class PokemonManager {
 
   /**
    * Transforma la lista de Pokémon añadiendo datos de inventario y eliminando la propiedad 'market'.
-   * @returns {Array} - Una nueva lista de Pokémon con la propiedad 'dataInventory' y sin la propiedad 'market'.
+   * @returns {Array} - Una nueva lista de Pokémon con la propiedad 'inInventory' y sin la propiedad 'market'.
    */
   #transformFromArrayDefaultToInventory() {
     const faultArr = this.#data.originalPokemonDataList;
-    const inventoryArr = this.#data.pokemonDataListInventory;
-
-    // console.log("faultArr:", faultArr);
-    // console.log("inventoryArr:", inventoryArr);
+    // Obtener todos los Pokemon de PokemonInventory
+    const inventoryArr = this.PokemonInventory.getPokemon("*");
 
     // Filtrar los elementos de faultArr que coinciden con los nombres en inventoryArr
     const cleanArr = faultArr.filter((faultPokemon) => {
-      const match = inventoryArr.some(
+      return inventoryArr.some(
         (inventoryPokemon) =>
-          inventoryPokemon.values[0] === _.str.capitalize(faultPokemon.name)
+          inventoryPokemon.p.i.name.toLowerCase() ===
+          faultPokemon.name.toLowerCase()
       );
-      // if (match) {
-      //   console.log(`Match found: ${faultPokemon.name}`);
-      // }
-      return match;
     });
 
     // Crear un nuevo array transformado
     const arr = cleanArr.map((p) => {
       // Encontrar el objeto correspondiente en inventoryArr
       const inventoryPokemon = inventoryArr.find(
-        (inventory) => inventory.values[0] === _.str.capitalize(p.name)
+        (inventory) => inventory.p.i.name.toLowerCase() === p.name.toLowerCase()
       );
 
-      // Verificar si se encontró el objeto en inventoryArr
-      // if (inventoryPokemon) {
-      //   console.log(`inventarioPokemon para ${p.name}:`, inventoryPokemon);
-      // } else {
-      //   console.log(`No se encontró Pokémon de inventario para ${p.name}`);
-      // }
-
-      // Crear un nuevo objeto sin la propiedad 'market' y añadir 'dataInventory'
+      // Crear un nuevo objeto sin la propiedad 'market' y añadir 'inInventory'
       const { market, ...rest } = p;
-      rest.dataInventory = inventoryPokemon;
+      rest.inventoryID = inventoryPokemon.inInventory.id;
 
       return rest; // Devolver el nuevo objeto modificado
     });
 
-    console.log("arr:", arr);
+    // console.log(arr);
     return arr;
   }
 
   /**
-   * Actualiza y muestra la lista de Pokémon en el DOM.
-   * @throws {Error} - Si ocurre un error al actualizar y mostrar los datos de los Pokémon.
+   * Método para gestionar la visualización de los datos de Pokémon según si están en el inventario o no.
    * @private
    */
   #updateViewPokemon() {
+    /**
+     * Método para obtener el filtro byProperty según el valor del filtro.
+     * @param {string} filterValue - El valor del filtro.
+     * @returns {Array} - Array con la propiedad y el orden del filtro.
+     * @private
+     */
+    function getFilterByProperty(filterValue) {
+      switch (filterValue) {
+        case "market.price-asc":
+          return ["market.price", "asc"];
+        case "market.price-desc":
+          return ["market.price", "desc"];
+        default:
+          return ["pokeId", "asc"];
+      }
+    }
+
     this.#checkDataLoaded();
 
     let pokemonData;
+
+    const filterSelect = document.querySelector("#pokemon-filter");
+    const filterSliderContainer = this.#data.dom.elements.filterSliderContainer;
+    const filterOptgroupPrice = document.querySelector(
+      "#filter-optgroup-price"
+    );
+
     if (this.#data.dom.filters.isInventory) {
-      // pokemonData = this.#data.pokemonDataListInventory;
+      filterSliderContainer.style.display = "none";
+      filterOptgroupPrice.style.display = "none";
+
+      // Guardar el filtro actual si es uno de los filtros de precio
+      if (
+        filterSelect.value === "market.price-asc" ||
+        filterSelect.value === "market.price-desc"
+      ) {
+        this.lastInventoryFilter = filterSelect.value;
+        filterSelect.value = "pokeId-asc";
+        this.#data.dom.filters.byProperty = ["pokeId", "asc"];
+      }
+
       pokemonData = this.#transformFromArrayDefaultToInventory();
     } else {
+      filterSliderContainer.style.display = "block";
+      filterOptgroupPrice.style.display = "block";
+
+      // Restablecer el filtro anterior si existe
+      if (this.lastInventoryFilter) {
+        filterSelect.value = this.lastInventoryFilter;
+        this.#data.dom.filters.byProperty = getFilterByProperty(
+          this.lastInventoryFilter
+        );
+        this.lastInventoryFilter = null; // Limpiar el filtro recordado
+      }
+
       pokemonData = this.#data.pokemonDataList;
     }
+    // Obtener los filtros aplicables excluyendo los casos no necesarios
+    const applicableFilters = Object.entries(this.#data.dom.filters).filter(
+      ([filterType, filterValue]) => {
+        if (this.#data.dom.filters.isInventory) {
+          // Excluir filtros específicos en el modo inventario
+          if (filterType === "byMaxPrice") return false;
+          if (
+            filterType === "byNameOrId" &&
+            Array.isArray(filterValue) &&
+            filterValue[0] === "market.price"
+          )
+            return false;
+        }
+        return true;
+      }
+    );
 
-    // Iterar sobre los filtros y aplicarlos secuencialmente
-    for (let [filterType, filterValue] of Object.entries(
-      this.#data.dom.filters
-    )) {
-      // if (filterType === "byMaxPrice") break;
+    // Iterar sobre los filtros aplicables y aplicarlos secuencialmente
+    for (const [filterType, filterValue] of applicableFilters) {
+      // // Iterar sobre los filtros y aplicarlos secuencialmente
+      // for (let [filterType, filterValue] of Object.entries(
+      //   this.#data.dom.filters
+      // )) {
+      //   if (this.#data.dom.filters.isInventory && filterType === "byMaxPrice")
+      //     break;
 
-      // if (
-      //   filterType === "byNameOrId" &&
-      //   Array.isArray(filterValue) &&
-      //   filterValue[0] === "market.price"
-      // )
-      //   break;
+      //   if (
+      //     this.#data.dom.filters.isInventory &&
+      //     filterType === "byNameOrId" &&
+      //     Array.isArray(filterValue) &&
+      //     filterValue[0] === "market.price"
+      //   )
+      //     break;
 
       // console.log("#filterType:");
       // console.log(filterType);
@@ -623,19 +791,18 @@ export default class PokemonManager {
     this.#data.dom.pokemonDivDataList = _.obj.shallowCopy(pokemonData);
     // this.#data.dom.pokemonDivDataList = [...pokemonData];
 
-    // Mostrar los Pokémon en el DOM usando el manejador de datos de Pokémon
-    this.PokemonDOMHandler.displayPokemon(
-      this.#data,
-      this.#data.dom.pokemonDivDataList,
-      this.#data.dom.filters.isInventory,
-      this.#data.dom.loadedCards
-    );
+    if (this.#data.dom.filters.isInventory) {
+      // Mostrar los Pokémon en el DOM usando el manejador de datos de Pokémon
+      this.PokemonDOMHandler.displayPokemon(this.#data, this.PokemonInventory);
+    } else {
+      this.PokemonDOMHandler.displayPokemon(this.#data);
+    }
 
     this.#data.dom.loadedCards = undefined;
 
     // Log para depuración
     // console.clear();
-    this.logDataDebug();
+    // this.logDataDebug();
   }
 
   /**
