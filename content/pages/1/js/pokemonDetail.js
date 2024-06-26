@@ -24,48 +24,19 @@ function displayPokemonDetails(pokemon) {
   let container1 = document.createElement("section");
   container1.className = "pokemon-container-img-text";
 
-  let container2 = document.createElement("section");
-  container2.className = "pokemon-container-img";
-  let h1 = document.createElement("h1");
-  h1.id = "h1";
-  h1.innerText = `${pokemon.name} No: ${pokemon.pokeId}`;
+  let container2 = document.createElement("section")
+  container2.className = "pokemon-container-img"
+  let h1 = document.createElement("h1")
+  h1.id = "h1"
+  h1.innerText = `${pokemon.name} No: ${pokemon.pokeId}`
   // let table = document.createElement("section")
   // table.className = "puntos-de-base"
-  container.appendChild(h1);
-  container.appendChild(container1);
+  container.appendChild(h1)
+  container.appendChild(container1)
   // container.appendChild(table)
   container1.appendChild(container2);
+  container.appendChild(table)
 
-  // let h2Table = document.createElement("h2")
-  // h2Table.className = "h2-table"
-  // h2Table.innerText = "Puntos de base"
-
-  // table.appendChild(h2Table)
-
-  // let statisticsAll = pokemon.statistics
-  // console.log(statisticsAll)
-
-  // hp
-  //   hp_percent
-  //   attack
-  //   attack_percent
-  //   defense
-  //   defense_percent
-  //   special_attack
-  //   special_attack_percent
-  //   special_defense
-  //   special_defense_percent
-  //   speed
-  //   speed_percent
-  //   power
-  //   power_percent
-  // let stat= pokemon.statistics.forEach((parameters)=>{
-  //   let li=document.createElement("li")
-  //   li.innerText=`Attack:${parameters.attack}`
-  // ul0.appendChild(li)
-  // })
-
-  // console.log(stat)
 
   // isLegendary: false, // Si es legendario
   // isMythical: false, // Si es mítico
@@ -84,11 +55,47 @@ function displayPokemonDetails(pokemon) {
   }
 
   container2.innerHTML = `
-   <div class=imgs> <img src="${pokemon.images.illustration.shiny}" alt="${pokemon.name} front" id="img-shiny">
+   <div class=imgs> 
+   <div class=image><img src="${pokemon.images.illustration.shiny}" alt="${pokemon.name} front" id="img-shiny">
    <img src="${pokemon.images.gif.front_shiny}" alt="${pokemon.name} front" id="gif">
    </div>
-   <span id="price-span-imgs"class="span-details-pokemon-container-text">${price}€ </span> 
-  `;
+   <span id="price-span-imgs"class="span-details-pokemon-container-text">${price}€ </span>
+   </div>
+   <div class="table">
+   <h2>Puntos de base</h2>
+   <ul class=ul>
+   <li>Hp: ${pokemon.statistics.hp}%</li>
+   <li>Attack: ${pokemon.statistics.attack}% </li>
+   <li>Attack_percent: ${pokemon.statistics.attack_percent}%</li>
+   <li>Defense: ${pokemon.statistics.defense}%</li>
+   <li>Defense_percent: ${pokemon.statistics.defense_percent}%</li>
+   <li>Height: ${pokemon.statistics.height}%</li>
+   <li>Hp: ${pokemon.statistics.hp}%</li>
+   <li>Hp percent: ${pokemon.statistics.hp_percent}%</li>
+   <li>Power: ${pokemon.statistics.power}%</li>
+   <li>Power porcent: ${pokemon.statistics.power_percent}%</li>
+   <li>Special_attack: ${pokemon.statistics.special_attack}%</li>
+   <li>Special_attack_percent: ${pokemon.statistics.special_attack_percent}%</li>
+   <li>Special_defense: ${pokemon.statistics.special_defense}%</li>
+   <li>Special_defense_percent: ${pokemon.statistics.special_defense_percent}%</li>
+   <li>Speed:${pokemon.statistics.speed}%</li>
+   <li>Speed_percent:${pokemon.statistics.speed_percent}%</li>
+   <li>Weight:${pokemon.statistics.weight}%</li>
+   </ul>
+     `;
+
+
+  // let li=document.createElement("li")
+  // li.textContent=chaos
+  // table.appendChild(h2Table)
+  // table.appendChild(ul)
+  // ul.appendChild(li)
+
+  let statisticsAll = pokemon.statistics
+  console.log(statisticsAll)
+
+  // let chaos=pokemon.statistics.forEach((a)=>{return`<li>${a.attack}</li>`})
+
 
   let container3 = document.createElement("section");
   container3.className = "pokemon-text-container";
@@ -96,16 +103,14 @@ function displayPokemonDetails(pokemon) {
   container3.innerHTML = `
 <div class=pokemon-container-text>
  <div class="text-div-details-pokemon-container">
-  <p class="p-details-pokemon-container-text">Height:<span class="span-details-pokemon-container-text">${
-    pokemon.statistics.height.meters
-  } ${metersFnc(pokemon)} </span></p>
-  <p class="p-details-pokemon-container-text">Weight:<span class="span-details-pokemon-container-text">${
-    pokemon.statistics.weight.kilograms
-  } ${gramsFnc(pokemon)}</span></p></div>
+  <p class="p-details-pokemon-container-text">Height:<span class="span-details-pokemon-container-text">${pokemon.statistics.height.meters
+    } ${metersFnc(pokemon)} </span></p>
+  <p class="p-details-pokemon-container-text">Weight:<span class="span-details-pokemon-container-text">${pokemon.statistics.weight.kilograms
+    } ${gramsFnc(pokemon)}</span></p></div>
    <div class="text-div-details-pokemon-container-text">
    <p id="hability-p-details-pokemon-container-tex"class="p-details-pokemon-container-text"><span class="habilitiy-span-details-pokemon-container-text"> ${habilitiesPokemon(
-     pokemon
-   )} </span> </p> <div>
+      pokemon
+    )} </span> </p> <div>
 
   </div>
 
@@ -165,6 +170,9 @@ function displayPokemonDetails(pokemon) {
 <div id="map-evoltions"></div>
 `;
   container.appendChild(container4);
+
+
+  
 
   // let mapEvo = document.getElementById("map-evoltions")
 

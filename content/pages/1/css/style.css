@@ -31,18 +31,26 @@ margin-top: 1vw;
     flex-direction: column;
     box-sizing: border-box;
     position: relative;
-    background-color: rgb(219, 218, 218);
+   gap:2vw;
     border-radius: 1vw;
 }
 .imgs{
     display: flex;
+    flex-direction: column;
+    background-color: rgb(219, 218, 218);
+    padding: 0.2vw;
+}
+
+.image{
+    display: flex;
     flex-direction: row;
+    
 }
 
 #img-shiny {
     display: flex;
 justify-content: center;
-    width: 60%;
+    width: 8vw;
 }
 
 #gif {
@@ -84,7 +92,7 @@ justify-content: center;
     display: flex;
     gap: 3vw;
     justify-content: center;
-margin-bottom: 15vw;
+margin-bottom: 1.5vw;
 }
 
 .p-type{
@@ -210,11 +218,10 @@ width: min-content;
     font-weight: bold;
     color: #f366b9;
 }
-/* .puntos-de-base{
-    display: flex;
-    width: 10vw;
-    padding: 2vw;
+.puntos-de-base{
    box-sizing: border-box;
+ 
+   margin-right: 30vw;
 }
 .h2-table{
     display: flex;
@@ -222,5 +229,8 @@ width: min-content;
     box-sizing: border-box;
 } */
  #ul{
-    padding: 10vw;
+   
+    display: flex;
+    flex-direction: column;
+    color:red
  }
