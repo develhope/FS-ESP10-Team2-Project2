@@ -43,7 +43,7 @@ class Pokemon {
       recovery: { fatigue: 0 },
       history: [],
     },
-    inInventory: { id: undefined, alias: undefined, isEquipped: false },
+    inInventory: { id: undefined, alias: undefined, isEquipped: undefined },
 
     // moreInformation: {},
   };
@@ -1188,11 +1188,11 @@ class PokemonInventory {
 
   /**
    * Elimina uno o más Pokémon del inventario por su nombre o ID.
-   * Si no se proporciona ningún parámetro, elimina todos los Pokémon.
-   * @param {string|number|(string|number)[]} [identifiers] - El alias, ID, o un array mezclado de alias e IDs de los Pokémon a eliminar. Si no se proporciona, elimina todos los Pokémon.
+   * Si no se proporciona ningún parámetro, elimina el último Pokémon.
+   * @param {string|number|(string|number)[]} [identifiers] - El alias, ID, o un array mezclado de alias e IDs de los Pokémon a eliminar. Si es "*", elimina todos los Pokémon. Si es undefined, elimina el último Pokémon.
    */
   delPokemon(identifiers) {
-    if (identifiers === undefined) {
+    if (identifiers === "*") {
       const allPokemon = this.#inventory.map(
         (pokemon) => `[ ${pokemon.nameFull} ]`
       );
@@ -1202,6 +1202,18 @@ class PokemonInventory {
           ", "
         )}.`
       );
+      return;
+    }
+
+    if (identifiers === undefined) {
+      if (this.#inventory.length > 0) {
+        const removed = this.#inventory.pop();
+        this.log(
+          `Se eliminó el último Pokémon del inventario: [ ${removed.nameFull} ].`
+        );
+      } else {
+        this.log("No hay Pokémon en el inventario para eliminar.");
+      }
       return;
     }
 
@@ -1261,8 +1273,8 @@ class PokemonInventory {
   }
 
   /**
-   * Equipa un Pokémon en el inventario.
-   * @param {string|number} identifier - El alias o ID del Pokémon a equipar.
+   * Equipa o desequipa un Pokémon en el inventario.
+   * @param {string|number} identifier - El alias o ID del Pokémon a equipar o desequipar.
    */
   equipPokemon(identifier) {
     let pokemonToEquip = null;
@@ -1287,15 +1299,23 @@ class PokemonInventory {
       return;
     }
 
-    this.#inventory.forEach((pokemon) => {
-      if (pokemon.inInventory.isEquipped) {
-        pokemon.inInventory.isEquipped = false;
-        this.log(`${pokemon.nameFull} ha sido desequipado.`);
-      }
-    });
+    if (pokemonToEquip.inInventory.isEquipped) {
+      // Si el Pokémon ya está equipado, lo desequipamos
+      pokemonToEquip.inInventory.isEquipped = false;
+      this.log(`${pokemonToEquip.nameFull} ha sido desequipado.`);
+    } else {
+      // Desequipar cualquier Pokémon que esté actualmente equipado
+      this.#inventory.forEach((pokemon) => {
+        if (pokemon.inInventory.isEquipped) {
+          pokemon.inInventory.isEquipped = false;
+          this.log(`${pokemon.nameFull} ha sido desequipado.`);
+        }
+      });
 
-    pokemonToEquip.inInventory.isEquipped = true;
-    this.log(`${pokemonToEquip.nameFull} ha sido equipado.`);
+      // Equipar el Pokémon seleccionado
+      pokemonToEquip.inInventory.isEquipped = true;
+      this.log(`${pokemonToEquip.nameFull} ha sido equipado.`);
+    }
   }
 
   /**
