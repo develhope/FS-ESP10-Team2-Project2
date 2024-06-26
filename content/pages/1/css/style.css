@@ -200,10 +200,6 @@ width: min-content;
   width: 7vw;
   border-radius: 0.2vw;
 }
-#types-container3-pokemon:hover{
-    background-color:#f366b9 ;
-    color: yellow;
-}
 #price-span-imgs{
     display: flex;
     font-size: 1.2vw;
