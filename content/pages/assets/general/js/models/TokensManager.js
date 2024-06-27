@@ -1,20 +1,32 @@
+//? Libreria personal de utilidades
+import _ from "../lib/utilities.js";
+
 /**
  * Clase para administrar los Tokens del usuario.
  */
 class TokensManager {
   // Variable privada local para almacenar todos los tokens del usuario
-  #tokens = 0;
+  #tokens = null;
+
+  // Instancia singleton
+  static instance;
 
   /**
    * Constructor de la clase Tokens.
    * @param {number} initialAmount - La cantidad inicial de tokens a añadir.
    */
   constructor(initialAmount = 0) {
+    if (TokensManager.instance) {
+      return TokensManager.instance;
+    }
+
     this.#loadTokens();
-    if (this.#tokens === 0) {
+    if (this.#tokens === null) {
       this.#tokens = initialAmount;
       this.#saveTokens();
     }
+
+    TokensManager.instance = this;
   }
 
   /**
@@ -66,25 +78,22 @@ class TokensManager {
    * Guarda los tokens en el localStorage.
    */
   #saveTokens() {
-    localStorage.setItem("UserTokens", JSON.stringify(this.#tokens));
+    _.DOM.saveToLocalStorage("userTokens", this.#tokens);
   }
 
   /**
    * Carga los tokens del localStorage.
    */
   #loadTokens() {
-    const savedTokens = localStorage.getItem("UserTokens");
-    if (savedTokens) {
-      this.#tokens = JSON.parse(savedTokens);
-    }
+    this.#tokens = _.DOM.getFromLocalStorage("userTokens");
   }
 }
 
 //! Export Normal
-export default TokensManager;
+export default new TokensManager(300);
 
 //! Export Node.js
-// module.exports = { Tokens };
+// module.exports = { TokensManager };
 
 // //? Ejemplo de uso
 // console.log(Tokens.tokens); // 100

@@ -45,7 +45,7 @@ class _ {
     /**
      ** Guarda los datos en sessionStorage.
      * @param {string} key - La clave bajo la cual se almacenarán los datos.
-     * @param {object} value - El valor a almacenar.
+     * @param {any} value - El valor a almacenar.
      * @example
      * // Guarda un objeto en sessionStorage.
      * _.DOM.saveToSessionStorage('user', { name: 'Juan', age: 30 });
@@ -54,9 +54,9 @@ class _ {
       if (typeof key !== "string") {
         throw new Error("La clave debe ser una cadena de texto.");
       }
-      if (typeof value !== "object" || value === null) {
-        throw new Error("El valor debe ser un objeto.");
-      }
+      // if (typeof value !== "object" || value === null) {
+      //   throw new Error("El valor debe ser un objeto.");
+      // }
 
       sessionStorage.setItem(key, JSON.stringify(value));
       console.log(`'${key}' Guardado en el SessionStorage`);
@@ -83,7 +83,7 @@ class _ {
     /**
      ** Guarda los datos en localStorage.
      * @param {string} key - La clave bajo la cual se almacenarán los datos.
-     * @param {object} value - El valor a almacenar.
+     * @param {any} value - El valor a almacenar.
      * @example
      * // Guarda un objeto en localStorage.
      * _.DOM.saveToLocalStorage('settings', { theme: 'dark', language: 'es' });
@@ -92,9 +92,9 @@ class _ {
       if (typeof key !== "string") {
         throw new Error("La clave debe ser una cadena de texto.");
       }
-      if (typeof value !== "object" || value === null) {
-        throw new Error("El valor debe ser un objeto.");
-      }
+      // if (typeof value !== "object" || value === null) {
+      //   throw new Error("El valor debe ser un objeto.");
+      // }
 
       localStorage.setItem(key, JSON.stringify(value));
       console.log(`'${key}' Guardado en el LocalStorage`);

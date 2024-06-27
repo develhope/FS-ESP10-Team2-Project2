@@ -31,4 +31,5 @@ async function initializePokemonManager(count, reload) {
 // initializePokemonManager(1025);
 // initializePokemonManager(151, true);
 
+// Instanciar la clase
 console.log(T.tokens);
