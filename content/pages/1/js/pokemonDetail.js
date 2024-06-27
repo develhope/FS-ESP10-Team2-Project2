@@ -2,9 +2,11 @@ import { addToCart } from "./../../2/js/carrito.js";
 
 // Función principal para enlazar toda la lógica del código
 function pokemonMain(pokemon) {
+  console.log(pokemon[pokemon._])
   // Llama a las funciones para mostrar detalles y crear el botón Comprar
-  displayPokemonDetails(pokemon);
-  createBuyButton(pokemon);
+  const pokemonOrigin=pokemon[pokemon._]
+  displayPokemonDetails(pokemonOrigin);
+  createBuyButton(pokemonOrigin);
 }
 
 // Función para mostrar detalles de Pokémon
@@ -28,14 +30,16 @@ function displayPokemonDetails(pokemon) {
   container2.className = "pokemon-container-img"
   let h1 = document.createElement("h1")
   h1.id = "h1"
-  h1.innerText = `${pokemon.name} No: ${pokemon.pokeId}`
+  h1.innerText = `${pokemon.name} No: ${pokemon.pokeId.toString().padStart(4, "0")}`
+
+
   // let table = document.createElement("section")
   // table.className = "puntos-de-base"
   container.appendChild(h1)
   container.appendChild(container1)
   // container.appendChild(table)
   container1.appendChild(container2);
-  container.appendChild(table)
+ 
 
 
   // isLegendary: false, // Si es legendario
@@ -66,21 +70,10 @@ function displayPokemonDetails(pokemon) {
    <ul class=ul>
    <li>Hp: ${pokemon.statistics.hp}%</li>
    <li>Attack: ${pokemon.statistics.attack}% </li>
-   <li>Attack_percent: ${pokemon.statistics.attack_percent}%</li>
    <li>Defense: ${pokemon.statistics.defense}%</li>
-   <li>Defense_percent: ${pokemon.statistics.defense_percent}%</li>
-   <li>Height: ${pokemon.statistics.height}%</li>
-   <li>Hp: ${pokemon.statistics.hp}%</li>
-   <li>Hp percent: ${pokemon.statistics.hp_percent}%</li>
-   <li>Power: ${pokemon.statistics.power}%</li>
-   <li>Power porcent: ${pokemon.statistics.power_percent}%</li>
    <li>Special_attack: ${pokemon.statistics.special_attack}%</li>
-   <li>Special_attack_percent: ${pokemon.statistics.special_attack_percent}%</li>
    <li>Special_defense: ${pokemon.statistics.special_defense}%</li>
-   <li>Special_defense_percent: ${pokemon.statistics.special_defense_percent}%</li>
    <li>Speed:${pokemon.statistics.speed}%</li>
-   <li>Speed_percent:${pokemon.statistics.speed_percent}%</li>
-   <li>Weight:${pokemon.statistics.weight}%</li>
    </ul>
      `;
 
@@ -100,7 +93,18 @@ function displayPokemonDetails(pokemon) {
   let container3 = document.createElement("section");
   container3.className = "pokemon-text-container";
 
+//   capture_rate_percent: 45, // Porcentaje de tasa de captura
+// cuantas evoluciones tiene o si es un pkemon que se encuentra en su ultima evolución
+// cantidad de  movements:
+// statistics.power
+// statistics.power_percent leer propiedad
+
   container3.innerHTML = `
+  <div class="text-description">
+  <p>${pokemon.name} can achieve a total of  ${pokemon.value.movements} movements.
+Its percentage of power is ${pokemon.statistics.power_percent} % and its percentage capture rate is ${pokemon.value.capture_rate_percent}%. 
+  ${evoluData(pokemon)}   </p>
+  </div>
 <div class=pokemon-container-text>
  <div class="text-div-details-pokemon-container">
   <p class="p-details-pokemon-container-text">Height:<span class="span-details-pokemon-container-text">${pokemon.statistics.height.meters
@@ -115,6 +119,11 @@ function displayPokemonDetails(pokemon) {
   </div>
 
   `;
+  function evoluData(pokemon){
+    if(pokemon.evolutions.length>=1){return `Has ${pokemon.evolutions.length} evolutions`}
+    else if(pokemon.value.isFinalEvolution===true){return `Is in its last evolution`}
+    else{ return " "}
+  }
   function metersFnc(pokemon) {
     if (pokemon.statistics.height.meters === 1) {
       return "meter";
@@ -170,30 +179,10 @@ function displayPokemonDetails(pokemon) {
 <div id="map-evoltions"></div>
 `;
   container.appendChild(container4);
+ 
 
-
-  
-
-  // let mapEvo = document.getElementById("map-evoltions")
-
-  // mapEvo.innerHTML = trying
-  // function pokeImages(pokemon) {
-
-  //   let evolutionsPoke = pokemon.evolutions
-  //   console.log(evolutionsPoke);
-
-  // }
-
-  // const evolutionChain = getAllEvolutions("bulbasaur", evolutions);
-  // console.log(evolutionChain);
-  // // ["bulbasaur", "ivysaur", "venusaur"]
-  // // pokeImages(pokemon)
-  // getAllEvolutions(pokemon.name, pokemon.evolutions)
-  // // let trying = `<img id="img-evolutions">${a.images.illustration.default}</img>`.join("");
-  // // mapEvo.innerHTML = trying
-
-  // <p class="p-type">Type: ${pokemon.type.join(", ")}</p>
 }
+
 // Función para crear el Botón Comprar
 function createBuyButton(pokemon) {
   // Crear un elemento de botón
@@ -215,7 +204,6 @@ function createBuyButton(pokemon) {
 
 // Obtener el objeto Pokémon de sessionStorage y llamar a la función principal
 const storedPokemon = sessionStorage.getItem("pokemonPreview");
-
 if (storedPokemon) {
   // Parsear el JSON almacenado en sessionStorage para obtener el objeto Pokémon
   const pokemon = JSON.parse(storedPokemon);
@@ -223,9 +211,9 @@ if (storedPokemon) {
   //! (IMPORTANTE) El objeto `pokemon` contiene los objetos Pokémon de las evoluciones disponibles
   //* El objeto `pokemon` tiene una propiedad `_` que guarda el nombre del Pokémon original
   console.log(
-    `Hay '${pokemon[pokemon._].evolutions.length}' evoluciones disponibles:`
+    `  Hay '${pokemon[pokemon._].evolutions.length}' evoluciones disponibles: `
   );
-  console.log(pokemon[pokemon._].evolutions);
+
 
   //* Imprimir el objeto `pokemon` completo, que incluye las evoluciones
   console.log(pokemon);
@@ -240,8 +228,8 @@ if (storedPokemon) {
 
   //! (IMPORTANTE) Mandar el objeto completo `pokemon` a la función principal
   //* Más adelante, deberás establecer el elemento original `pokemon[pokemon._]` para manipularlo adecuadamente
-  pokemonMain(pokemon[pokemon._]); //? Aquí envío el objeto Pokémon original
-  // pokemonMain(pokemon); //! Pero tú deberás enviar el objeto entero y manipular sus datos para obtener todas las propiedades necesarias de los demás Pokémon como sus imágenes
+  // pokemonMain(pokemon[pokemon._]); //? Aquí envío el objeto Pokémon original
+  pokemonMain(pokemon); //! Pero tú deberás enviar el objeto entero y manipular sus datos para obtener todas las propiedades necesarias de los demás Pokémon como sus imágenes
 } else {
   // Si no se encuentra ningún Pokémon seleccionado en sessionStorage, mostrar un error
   console.error(
