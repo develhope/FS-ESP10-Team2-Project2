@@ -35,6 +35,7 @@
 
 .carrito-items img {
   width: 30%;
+  margin-bottom: 10px;
 }
 
 .carrito-items img:hover {

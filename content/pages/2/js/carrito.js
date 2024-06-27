@@ -148,7 +148,7 @@ export function addToCart(pokemon) {
   const carritoItem = {
     name: pokemon.name,
     price: pokemon.market.price,
-    image: pokemon.images.illustration.default,
+    image: pokemon.images.rendering.default,
     quantity: 1, // Agregar una propiedad de cantidad
     variablePrice: pokemon.market.price,
   };
