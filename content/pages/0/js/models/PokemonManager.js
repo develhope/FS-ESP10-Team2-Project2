@@ -90,11 +90,20 @@ export function addEventListenersPokemonCards(
     // console.log("");
 
     // Añadir un event listener de tipo 'click' al elemento seleccionado
-    pokemonElement.addEventListener("click", () => {
-      handleSessionStorage(data, pokemon, loadedCards);
-      // Redirigir a la página de detalles del Pokémon
-      window.location.href = `../1/pokemonDetail.html`;
-    });
+    pokemonElement.addEventListener(
+      "click",
+      (event) => {
+        // Verificar el objetivo del evento para asegurarse de que no es el divAddCart
+        if (event.target.closest(".div-addCart")) {
+          return;
+        }
+        event.stopPropagation(); // Evita la propagación del evento
+        handleSessionStorage(data, pokemon, loadedCards);
+        // Redirigir a la página de detalles del Pokémon
+        window.location.href = `../1/pokemonDetail.html`;
+      },
+      { capture: true } // Usa el modo de captura para dar prioridad
+    );
   });
 }
 
@@ -238,52 +247,23 @@ const P_Inventory = new PokemonInventory(true);
 P_Inventory.showInventory();
 
 export default class PokemonManager {
-  /**
-   * Constructor de la clase PokemonManager.
-   * @throws {Error} - Si ocurre algún error durante la inicialización.
-   */
-  constructor() {
-    // Inicializar las instancias de las clases manejadoras
-    this.PokemonDataHandler = new P_DH();
-    this.PokemonFilter = new P_F();
+  //!# Crear una comprobacion si PokemonManager a terminado de cargar todos los datos necesarios para funcionar correctamente.
+  static load = false;
 
-    // Obtener referencias a elementos del DOM
-    this.#getDOMElements();
-    this.#listenerAutoSavedSessionStorage();
+  /**
+   * @param {boolean} isLoad
+   */
+  static set isLoad(isLoad) {
+    PokemonManager.load = isLoad;
+    if (isLoad) {
+      _.DOM.saveToSessionStorage("isLoad_PokemonManager", isLoad);
+    } else {
+      _.DOM.saveToSessionStorage("isLoad_PokemonManager", isLoad);
+    }
   }
 
-  /**
-   * Añade event listeners a los elementos especificados una vez que estén disponibles en el DOM.
-   */
-  async #listenerAutoSavedSessionStorage() {
-    // Espera hasta que el documento esté completamente cargado
-    document.addEventListener("DOMContentLoaded", async () => {
-      // Elementos a los que se les añadirá un event listener
-      const elements = [".logo-navbar img", ".home-nav-btn", "#carritoButton"];
-
-      // Itera sobre cada elemento y espera hasta que esté disponible en el DOM
-      for (const element of elements) {
-        try {
-          const domElement = await _.DOM.waitForElement(element);
-          domElement.addEventListener(
-            "click",
-            () => {
-              handleSessionStorage(this.#data);
-            },
-            { capture: true } // Usa el modo de captura para dar prioridad
-          );
-        } catch (error) {
-          console.error(error.message);
-        }
-      }
-    });
-
-    // Añadir el event listener
-    window.addEventListener("beforeunload", clearSessionStorage);
-
-    // window.addEventListener("beforeunload", (e) => {
-    //   this.#handleSessionStorage();
-    // });
+  static get isLoad() {
+    return PokemonManager.load;
   }
 
   // Datos y configuraciones internas del Pokémon Manager
@@ -305,6 +285,101 @@ export default class PokemonManager {
     originalPokemonDataList: [],
     numPokemonDownloaded: 1025,
   };
+
+  /**
+   * Constructor de la clase PokemonManager.
+   * @throws {Error} - Si ocurre algún error durante la inicialización.
+   */
+  constructor() {
+    PokemonManager.isLoad = false;
+    // Inicializar las instancias de las clases manejadoras
+    this.PokemonDataHandler = new P_DH();
+    this.PokemonFilter = new P_F();
+
+    // Obtener referencias a elementos del DOM
+    this.#getDOMElements();
+
+    this.#listenerAutoSavedSessionStorage();
+  }
+
+  /**
+   * Añade event listeners a los elementos especificados una vez que estén disponibles en el DOM.
+   */
+  async #listenerAutoSavedSessionStorage() {
+    const INTERVAL_MS = 1000; // Intervalo de verificación en milisegundos (1 segundo)
+    const TIMEOUT_SECONDS = 60; // Tiempo máximo de espera en segundos (1 minuto)
+
+    for (let i = 0; i < TIMEOUT_SECONDS; i++) {
+      // Si el valor es verdadero, salir del bucle
+      if (PokemonManager.isLoad) break;
+
+      // console.warn(PokemonManager.isLoad);
+      // console.warn("Esperar 1 segundo");
+
+      // Esperar 1 segundo antes de la próxima verificación
+      await new Promise((resolve) => setTimeout(resolve, INTERVAL_MS));
+    }
+
+    // Verificar el valor de PokemonManager.isLoad
+    if (PokemonManager.isLoad) {
+      // console.warn("Completado");
+      // Elementos a los que se les añadirá un event listener
+      const elements = [".logo-navbar img", ".home-nav-btn", "#carritoButton"];
+
+      // Itera sobre cada elemento y espera hasta que esté disponible en el DOM
+      for (const element of elements) {
+        try {
+          const domElement = await _.DOM.waitForElement(element);
+          domElement.addEventListener(
+            "click",
+            () => {
+              handleSessionStorage(this.#data);
+            },
+            { capture: true } // Usa el modo de captura para dar prioridad
+          );
+        } catch (error) {
+          console.error(error.message);
+        }
+      }
+
+      // Añadir el event listener
+      window.addEventListener("beforeunload", clearSessionStorage);
+    } else {
+      // Lanzar un error si el valor es falso
+      throw new Error(
+        "PokemonManager No se ha cargado correctamente, reinicia la página y vuelva a intentarlo"
+      );
+    }
+
+    // // Espera hasta que el documento esté completamente cargado
+    // document.addEventListener("DOMContentLoaded", async () => {
+    //   // Elementos a los que se les añadirá un event listener
+    //   const elements = [".logo-navbar img", ".home-nav-btn", "#carritoButton"];
+
+    //   // Itera sobre cada elemento y espera hasta que esté disponible en el DOM
+    //   for (const element of elements) {
+    //     try {
+    //       const domElement = await _.DOM.waitForElement(element);
+    //       domElement.addEventListener(
+    //         "click",
+    //         () => {
+    //           handleSessionStorage(this.#data);
+    //         },
+    //         { capture: true } // Usa el modo de captura para dar prioridad
+    //       );
+    //     } catch (error) {
+    //       console.error(error.message);
+    //     }
+    //   }
+    // });
+
+    // // Añadir el event listener
+    // window.addEventListener("beforeunload", clearSessionStorage);
+
+    // // window.addEventListener("beforeunload", (e) => {
+    // //   this.#handleSessionStorage();
+    // // });
+  }
 
   /**
    * Obtiene la lista completa de Pokémon cargada en el manager.
@@ -547,6 +622,8 @@ export default class PokemonManager {
 
       // Añadir los event listeners
       this.#addEventListeners();
+
+      PokemonManager.isLoad = true;
     } catch (error) {
       // Lanza un error si ocurre algún problema durante la carga de los datos
       console.error("Error al inicializar la lista de Pokémon:", error);

@@ -454,23 +454,72 @@ export default class PokemonDOMHandler {
       divAddCart.style.zIndex = null;
     });
 
-    divAddCart.addEventListener("click", (event) => {
-      event.stopPropagation(); // Evita la propagación del evento
-      //? Llama a la función externa "addToCart" para guardar el pokemon en el carrito
+    // Variable para almacenar el temporizador y la bandera de clic sostenido
+    let holdTimer;
+    let isHolding = false;
 
-      //! Prueba de Batalla Pokemon
-      //* Codigo original
-      console.log(`${poke.name.toUpperCase()} Añadido al Carrito`);
-      addToCart(poke);
-      //* Codigo temporal de prueba
-      // startBattle(poke, PokemonInventory);
+    // Agregar evento 'mousedown' para detectar cuando el usuario mantiene presionado el divAddCart
+    divAddCart.addEventListener(
+      "mousedown",
+      (event) => {
+        event.preventDefault(); // Prevenir la acción por defecto
+        event.stopPropagation(); // Evita la propagación del evento
 
-      divAddCart.classList.add("adding-to-cart");
-      // Remover la clase después de la animación
-      setTimeout(() => {
-        divAddCart.classList.remove("adding-to-cart");
-      }, 400); // Duración de la animación en milisegundos
-    });
+        isHolding = true; // Establecer la bandera de clic sostenido
+
+        // Iniciar un temporizador para detectar una pulsación prolongada
+        holdTimer = setTimeout(() => {
+          // Ejecutar el código temporal de prueba si se mantiene pulsado
+          startBattle(poke, PokemonInventory);
+          isHolding = false; // Restablecer la bandera después de la pulsación prolongada
+        }, 500); // Tiempo en milisegundos para considerar una pulsación prolongada
+      },
+      { capture: true } // Usa el modo de captura para dar prioridad
+    );
+
+    // Agregar evento 'mouseup' para detectar cuando el usuario suelta el divAddCart
+    divAddCart.addEventListener(
+      "mouseup",
+      (event) => {
+        event.preventDefault(); // Prevenir la acción por defecto
+        event.stopPropagation(); // Evita la propagación del evento
+
+        // Si el temporizador aún está activo, significa que no fue una pulsación prolongada
+        if (holdTimer) {
+          clearTimeout(holdTimer);
+
+          if (isHolding) {
+            // Ejecutar el código original para un simple clic
+            console.log(`${poke.name.toUpperCase()} Añadido al Carrito`);
+            addToCart(poke);
+
+            divAddCart.classList.add("adding-to-cart");
+            // Remover la clase después de la animación
+            setTimeout(() => {
+              divAddCart.classList.remove("adding-to-cart");
+            }, 400); // Duración de la animación en milisegundos
+          }
+          isHolding = false; // Restablecer la bandera después del clic
+        }
+      },
+      { capture: true } // Usa el modo de captura para dar prioridad
+    );
+
+    // Agregar evento 'mouseleave' para limpiar el temporizador si el usuario se mueve fuera del divAddCart
+    divAddCart.addEventListener(
+      "mouseleave",
+      (event) => {
+        event.preventDefault(); // Prevenir la acción por defecto
+        event.stopPropagation(); // Evita la propagación del evento
+
+        if (holdTimer) {
+          clearTimeout(holdTimer);
+        }
+        isHolding = false; // Restablecer la bandera cuando el ratón se mueve fuera
+      },
+      { capture: true } // Usa el modo de captura para dar prioridad
+    );
+
     return div;
   }
 
