@@ -1,10 +1,4 @@
 
-// ! Boton de pasarela de pago
-// ! sólo valores numericos naturales
-// ! Transiciones hover
-// ! Animaciones al eliminarse (como final)
-
-
 // localStorage.clear();
 // sessionStorage.clear();
 

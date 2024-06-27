@@ -120,3 +120,55 @@
 .deleteButton:hover {
   transform: scale(1.1);
 }
+
+@media (max-width: 440px) {
+  .carritoTitle {
+    font-size: 120%;
+  }
+  
+  .carrito-items {
+    display: flex;
+    width: 90vw;
+    justify-content: center;
+  }
+
+  
+.totalCarrito {
+  display: flex;
+  flex-direction: row;
+  padding: 1.2vw;
+  margin-top: 30px;
+  border: 3px solid rgba(187, 184, 184, 0.955);
+  border-radius: 10px;
+  background-color: rgba(187, 184, 184, 0.758);
+  width: 90vw;
+  gap: 2vw;
+  text-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.pasarelaCheck {
+  display: flex;
+  flex-direction: row;
+  padding: 7px;
+  margin-top: 30px;
+  border: 3px solid rgba(187, 184, 184, 0.955);
+  border-radius: 10px;
+  background-color: rgba(252, 233, 124, 0.874);
+  color: black;
+  width: 93vw;
+  gap: 2vw;
+  text-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.pasarelaCheck:hover {
+  transform: none;
+  transition: none;
+  width: 80vw;
+}
+
+}
