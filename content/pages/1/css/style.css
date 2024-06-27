@@ -195,6 +195,7 @@ width: min-content;
     align-items: center;
     justify-content: center;
     justify-content: space-evenly;
+    padding: 1vw;
 }
 .imgs-evolutions{
     width: 7vw;
