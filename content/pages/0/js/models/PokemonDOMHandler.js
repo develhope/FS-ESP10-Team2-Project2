@@ -144,10 +144,7 @@ export default class PokemonDOMHandler {
     }
 
     if (inventory) {
-      addEventListenersPokemonEquippedButton(
-        nextPageData,
-        this.PokemonInventory
-      );
+      addEventListenersPokemonEquippedButton(nextPageData);
     } else {
       // Añadir los event listeners para la nueva página cargada, incluyendo el número de tarjetas cargadas
       const loadedCards = this.currentPage * this.show;
@@ -734,7 +731,7 @@ export default class PokemonDOMHandler {
 
     const filterLabel = document.createElement("label");
     filterLabel.className = "filter-label";
-    filterLabel.innerText = "Filtrar por Precio:";
+    filterLabel.innerText = "Filtrar por Precio Máximo:";
 
     const filterSlider = document.createElement("input");
     filterSlider.type = "range";

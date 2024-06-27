@@ -1,6 +1,9 @@
 //? Libreria personal de utilidades
 import _ from "../../assets/general/js/lib/utilities.js";
 
+//? Manejador de Tokens (Tokens Manager)
+import T from "../../assets/general/js/models/TokensManager.js";
+
 //? Manejador de Pokémon (Pokemon Manager )
 import P_M from "./models/PokemonManager.js";
 
@@ -25,5 +28,7 @@ async function initializePokemonManager(count, reload) {
 }
 
 //! Inicia la carga de los Pokémon (puedes cambiar el número por el numero de Pokémon que desees cargar en el DOM)
-initializePokemonManager(1025);
+// initializePokemonManager(1025);
 // initializePokemonManager(151, true);
+
+console.log(T.tokens);
