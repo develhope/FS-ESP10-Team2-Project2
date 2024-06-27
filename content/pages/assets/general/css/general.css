@@ -8,6 +8,11 @@
 
 /*? Podeis añadir mas colores en la clase "root" y en "dark-mode" */
 :root {
+
+    --clr-primary: rgb(251, 227, 45);
+    /* --clr-secondary: rgb(255, 17, 0); */
+
+
     /* Define los colores para el modo claro */
     --clr-black: #1c1c1c;
     --clr-gray: #ececec;

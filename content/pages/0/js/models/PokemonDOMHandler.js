@@ -8,6 +8,8 @@ import { addToCart } from "./../../../2/js/carrito.js";
 import { addEventListenersPokemonCards } from "./PokemonManager.js";
 import { addEventListenersPokemonEquippedButton } from "./PokemonManager.js";
 
+import { startBattle } from "./PokemonManager.js";
+
 export default class PokemonDOMHandler {
   /**
    * Constructor de la clase PokemonDOMHandler.
@@ -142,10 +144,7 @@ export default class PokemonDOMHandler {
     }
 
     if (inventory) {
-      addEventListenersPokemonEquippedButton(
-        nextPageData,
-        this.PokemonInventory
-      );
+      addEventListenersPokemonEquippedButton(nextPageData);
     } else {
       // Añadir los event listeners para la nueva página cargada, incluyendo el número de tarjetas cargadas
       const loadedCards = this.currentPage * this.show;
@@ -310,8 +309,10 @@ export default class PokemonDOMHandler {
    * @private
    */
   async #createPokemonElementNormal(poke) {
+    const PokemonInventory = this.PokemonInventory;
     // Formatear el ID del Pokémon con ceros a la izquierda
     const pokeId = poke.pokeId.toString().padStart(3, "0");
+
     // Convertir el nombre del Pokémon a mayúsculas
     const name = poke.name.toUpperCase();
 
@@ -435,8 +436,13 @@ export default class PokemonDOMHandler {
     divAddCart.addEventListener("click", (event) => {
       event.stopPropagation(); // Evita la propagación del evento
       //? Llama a la función externa "addToCart" para guardar el pokemon en el carrito
+
+      //! Prueba de Batalla Pokemon
+      //* Codigo original
       console.log(`${poke.name.toUpperCase()} Añadido al Carrito`);
       addToCart(poke);
+      //* Codigo temporal de prueba
+      // startBattle(poke, PokemonInventory);
 
       divAddCart.classList.add("adding-to-cart");
       // Remover la clase después de la animación
@@ -725,7 +731,7 @@ export default class PokemonDOMHandler {
 
     const filterLabel = document.createElement("label");
     filterLabel.className = "filter-label";
-    filterLabel.innerText = "Filtrar por Precio:";
+    filterLabel.innerText = "Filtrar por Precio Máximo:";
 
     const filterSlider = document.createElement("input");
     filterSlider.type = "range";

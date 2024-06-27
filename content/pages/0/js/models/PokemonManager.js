@@ -13,6 +13,9 @@ import P_F from "./PokemonFilter.js";
 //? Modulos de (PokemonBattle.js)
 import { Pokemon, PokemonBattle, PokemonInventory } from "./PokemonBattle.js";
 
+//? Manejador de Tokens (Tokens Manager)
+import T from "../../../assets/general/js/models/TokensManager.js";
+
 /**
  * Maneja el evento 'beforeunload' para limpiar el sessionStorage.
  * @param {Event} event - El evento 'beforeunload'.
@@ -99,12 +102,8 @@ export function addEventListenersPokemonCards(
  * Añade event listeners a los botones de equipamiento de los Pokémon en el DOM.
  * Cuando se hace clic en uno de estos botones, se actualizan todos los elementos relacionados con el estado de equipamiento del Pokémon correspondiente.
  * @param {object[]} pokemonDivDataList - Lista de objetos Pokémon.
- * @param {PokemonInventory} PokemonInventory - Instancia de la clase PokemonInventory.
  */
-export function addEventListenersPokemonEquippedButton(
-  pokemonDivDataList,
-  PokemonInventory
-) {
+export function addEventListenersPokemonEquippedButton(pokemonDivDataList) {
   // Itera sobre cada objeto Pokémon en la lista proporcionada
   pokemonDivDataList.forEach((poke) => {
     const inventoryID = poke.inventoryID;
@@ -122,18 +121,20 @@ export function addEventListenersPokemonEquippedButton(
         event.stopPropagation(); // Evitar que el evento se propague y se ejecute varias veces
 
         // Actualizar el estado de equipamiento del Pokémon en el inventario
-        PokemonInventory.equipPokemon(inventoryID);
-        PokemonInventory.saveToLocalStorage();
-        PokemonInventory.getPokemon(inventoryID).stats();
+        P_Inventory.equipPokemon(inventoryID);
+        P_Inventory.saveToLocalStorage();
+
+        if (P_Inventory.getEquippedPokemon())
+          P_Inventory.getPokemon(inventoryID).stats();
+
         // // Obtener todos los Pokémon del inventario
-        // const allPokemon = PokemonInventory.getPokemon("*");
+        // const allPokemon = P_Inventory.getPokemon("*");
 
         // Iterar sobre todos los Pokémon y actualizar sus elementos del DOM
         pokemonDivDataList.forEach((poke) => {
           const currentInventoryID = poke.inventoryID;
           const isEquipped =
-            PokemonInventory.getPokemon(currentInventoryID).inInventory
-              .isEquipped;
+            P_Inventory.getPokemon(currentInventoryID).inInventory.isEquipped;
 
           // Seleccionar todos los botones de equipamiento relacionados con el Pokémon
           const allEquippedButtons = document.querySelectorAll(
@@ -164,6 +165,78 @@ export function addEventListenersPokemonEquippedButton(
   });
 }
 
+//! importar en la confirmacion de pago de la pasarela para guardar los Pokemon comprados en el inventario.
+/**
+ * Añade una lista de Pokémon al inventario.
+ * @param {Array} pokemonList - Lista de objetos Pokémon con sus datos.
+ */
+export function addListPokemonToInventory(pokemonList) {
+  // Transforma la lista de Pokémon en instancias de la clase Pokemon
+  const pokemonArr = pokemonList.map(
+    (poke) =>
+      new Pokemon(
+        poke.name,
+        poke.type,
+        poke.statistics.hp,
+        poke.statistics.attack,
+        poke.statistics.special_attack,
+        poke.statistics.defense,
+        poke.statistics.special_defense,
+        poke.statistics.speed
+      )
+  );
+
+  // Añadir los Pokémon al inventario
+  P_Inventory.addPokemon(pokemonArr);
+
+  // Guardar el inventario en el almacenamiento local y mostrarlo
+  P_Inventory.saveToLocalStorage();
+  P_Inventory.showInventory();
+}
+
+/**
+ * Inicia una batalla entre el Pokémon equipado y otro Pokémon especificado.
+ * @param {Object} pokemon - Objeto con los datos del Pokémon oponente.
+ * @param {string} pokemon.name - Nombre del Pokémon.
+ * @param {string[]} pokemon.type - Tipos del Pokémon.
+ * @param {Object} pokemon.statistics - Estadísticas del Pokémon.
+ * @param {number} pokemon.statistics.hp - Puntos de salud del Pokémon.
+ * @param {number} pokemon.statistics.attack - Ataque del Pokémon.
+ * @param {number} pokemon.statistics.special_attack - Ataque especial del Pokémon.
+ * @param {number} pokemon.statistics.defense - Defensa del Pokémon.
+ * @param {number} pokemon.statistics.special_defense - Defensa especial del Pokémon.
+ * @param {number} pokemon.statistics.speed - Velocidad del Pokémon.
+ */
+export function startBattle(pokemon) {
+  const equippedPokemon = P_Inventory.getEquippedPokemon();
+
+  if (!equippedPokemon) {
+    console.warn("No hay ningún Pokémon equipado");
+    return;
+  }
+
+  const opponentPokemon = new Pokemon(
+    pokemon.name,
+    pokemon.type,
+    pokemon.statistics.hp,
+    pokemon.statistics.attack,
+    pokemon.statistics.special_attack,
+    pokemon.statistics.defense,
+    pokemon.statistics.special_defense,
+    pokemon.statistics.speed
+  );
+
+  const battle = new PokemonBattle(equippedPokemon, opponentPokemon);
+
+  console.log("\n\n### BATALLA:\n");
+  console.log(`'${equippedPokemon.nameFull}' VS '${opponentPokemon.nameFull}'`);
+
+  battle.startBattle();
+}
+
+const P_Inventory = new PokemonInventory(true);
+P_Inventory.showInventory();
+
 export default class PokemonManager {
   /**
    * Constructor de la clase PokemonManager.
@@ -173,14 +246,6 @@ export default class PokemonManager {
     // Inicializar las instancias de las clases manejadoras
     this.PokemonDataHandler = new P_DH();
     this.PokemonFilter = new P_F();
-
-    const myInventory = new PokemonInventory(true);
-
-    myInventory.showInventory();
-
-    this.PokemonInventory = myInventory;
-
-    // this.#data.pokemonDataListInventory = myInventory.getPokemon("*");
 
     // Obtener referencias a elementos del DOM
     this.#getDOMElements();
@@ -350,8 +415,8 @@ export default class PokemonManager {
    * @param {number[]} pokemonIDsList - Lista de IDs de los Pokémon a añadir al inventario.
    * @param {boolean} [clean=false] - Si es verdadero, limpia el inventario antes de añadir los nuevos Pokémon.
    */
-  #addListToInventory(pokemonIDsList, clean = false) {
-    const myInventory = this.PokemonInventory;
+  #addListToInventoryByPokeID(pokemonIDsList, clean = false) {
+    const myInventory = P_Inventory;
 
     // Limpiar el inventario si se especifica el parámetro `clean`
     if (clean) {
@@ -438,10 +503,10 @@ export default class PokemonManager {
       }
 
       // this.#addRandomPokemonToInventory();
-      this.#addListToInventory(
-        [4, 7, 10, 13, 15, 28, 123, 149, 150, 237, 456, 746, 890],
-        true
-      );
+      // this.#addListToInventoryByPokeID(
+      //   [4, 7, 10, 13, 15, 28, 123, 149, 150, 237, 456, 746, 890],
+      //   true
+      // );
 
       // Configurar el slider del filtro de precios
       this.PokemonDOMHandler.setFilterSliderValue(
@@ -624,7 +689,7 @@ export default class PokemonManager {
   #transformFromArrayDefaultToInventory() {
     const faultArr = this.#data.originalPokemonDataList;
     // Obtener todos los Pokemon de PokemonInventory
-    const inventoryArr = this.PokemonInventory.getPokemon("*");
+    const inventoryArr = P_Inventory.getPokemon("*");
 
     // Filtrar los elementos de faultArr que coinciden con los nombres en inventoryArr
     const cleanArr = faultArr.filter((faultPokemon) => {
@@ -791,18 +856,13 @@ export default class PokemonManager {
     this.#data.dom.pokemonDivDataList = _.obj.shallowCopy(pokemonData);
     // this.#data.dom.pokemonDivDataList = [...pokemonData];
 
-    if (this.#data.dom.filters.isInventory) {
-      // Mostrar los Pokémon en el DOM usando el manejador de datos de Pokémon
-      this.PokemonDOMHandler.displayPokemon(this.#data, this.PokemonInventory);
-    } else {
-      this.PokemonDOMHandler.displayPokemon(this.#data);
-    }
+    this.PokemonDOMHandler.displayPokemon(this.#data, P_Inventory);
 
     this.#data.dom.loadedCards = undefined;
 
     // Log para depuración
     // console.clear();
-    // this.logDataDebug();
+    this.logDataDebug();
   }
 
   /**

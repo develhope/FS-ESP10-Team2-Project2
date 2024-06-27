@@ -1,21 +1,30 @@
+/* Estilos para la barra de navegación */
 .navbar-complete {
     user-select: none;
     display: grid;
     grid-template-columns: repeat(20, 1fr);
-    justify-content: center;
+    justify-content: space-between;
+    /* Ajuste para espaciar elementos a los extremos */
     align-items: center;
     background-color: rgb(251, 227, 45);
     width: 100%;
     height: 60px;
-    border: 1px solid rgb(251, 227, 45);
-    /* border-radius: 10px; */
-    box-shadow: 0rem 0.2rem 0.3rem -0.1rem rgba(0, 0, 0, 0.25);
+    border: 1px solid var(clr-gray2);
+    box-shadow: 0 0.2rem 0.3rem -0.1rem var(clr-gray2);
+}
+
+/* Estilos para el contenido a la izquierda */
+.div-content {
+    grid-column: 1 / span 10;
+    /* Ocupa desde la columna 1 hasta la columna 10 */
+    display: flex;
+    align-items: center;
 }
 
 .logo-navbar {
-    grid-column: 1;
     cursor: pointer;
     margin-left: 20px;
+    transition: transform 0.3s;
 }
 
 .logo-navbar img {
@@ -27,62 +36,38 @@
 }
 
 .home-navbar {
-    grid-column: 3;
+    margin-left: 30px;
 }
 
 .home-nav-btn {
-    border: 0px;
+    border: none;
     background-color: transparent;
     font-size: 17px;
     font-weight: bold;
     cursor: pointer;
     color: rgb(104, 103, 103);
     font-family: 'Aldrich';
+    transition: transform 0.3s;
 }
 
 .home-nav-btn:hover {
     transform: scale(1.1);
 }
 
-.carritoImage {
-    grid-column: 20;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 20px;
-}
-
-.carritoButton {
-    background-color: transparent;
-    border: 0px;
-    cursor: pointer;
-}
-
-.carritoButton:hover {
-    transform: scale(1.2);
-}
-
-.carritoButton>img {
-    width: 30px;
-}
-
-/*? CSS del boton, Modo Claro/Oscuro */
 .btn-darkModeToggle {
-    background-color: transparent;
-    border: 0;
-    border-radius: 0;
-
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    border: none;
     margin-left: 10px;
     display: flex;
+    justify-content: center;
     align-items: center;
-    background-color: white;
-    padding: .2rem;
     border-radius: 100vmax;
     cursor: pointer;
-    text-transform: uppercase;
-    font-weight: 600;
-    box-shadow: 0 0 1rem rgba(0, 0, 0, .25);
+    box-shadow: 0 0 1rem var(--shadow-color);
     transition: .2s;
+    margin-left: 20px;
 }
 
 .btn-darkModeToggle img {
@@ -90,56 +75,35 @@
     height: 24px;
 }
 
+/* Estilos para el mercado a la derecha */
+.div-market {
+    grid-column: 12 / span 9;
+    /* Ocupa desde la columna 12 hasta la columna 20 */
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-right: 20px;
+}
 
-/*? CSS del Switch importado, Modo Claro/Oscuro */
-/* The switch - the box around the slider */
-/* .switch {
-    font-size: 17px;
-    position: relative;
-    display: inline-block;
-    width: 3.5em;
-    height: 2em;
-} */
+.div-tokens {
+    margin-right: 20px;
+}
 
-/* Hide default HTML checkbox */
-/* .switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-} */
+.div-tokens p {
+    color: rgb(104, 103, 103);
+}
 
-/* The slider */
-/* .slider {
-    --background: #28096b;
-    position: absolute;
+.carritoButton {
+    background-color: transparent;
+    border: none;
     cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--background);
-    transition: .5s;
-    border-radius: 30px;
+    transition: transform 0.3s;
 }
 
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 1.4em;
-    width: 1.4em;
-    border-radius: 50%;
-    left: 10%;
-    bottom: 15%;
-    box-shadow: inset 8px -4px 0px 0px #fff000;
-    background: var(--background);
-    transition: .5s;
+.carritoButton:hover {
+    transform: scale(1.2);
 }
 
-input:checked+.slider {
-    background-color: #522ba7;
+.carritoButton img {
+    width: 30px;
 }
-
-input:checked+.slider:before {
-    transform: translateX(100%);
-    box-shadow: inset 15px -4px 0px 15px #fff000;
-} */

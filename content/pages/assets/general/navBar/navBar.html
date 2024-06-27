@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Load NavBar</title>
     <!--! ERROR  MIME type ('text/html') is not a supported stylesheet -->
     <!-- <link rel="stylesheet" type="text/css" href="../css/general.css"> -->
     <!-- <link rel="stylesheet" href="./navBar.css"> -->
@@ -12,35 +12,37 @@
 </head>
 
 <body>
-    <div class="navbar-complete" id="navbar-complete">
-        <div class="logo-navbar">
-            <img src="../assets/general/images/logo-pokedex.png" alt="Logo Pokedex">
-        </div>
-        <div class="home-navbar" id="home-navbar">
-            <button class="home-nav-btn">Home</button>
-        </div>
+    <nav class="navbar-complete" id="navbar-complete">
 
-        <!--? HTML del boton, Modo Claro/Oscuro -->
-        <button class="btn-darkModeToggle" id="darkModeToggle">
-            <img src="../assets/general/images/dark-theme.svg" alt="Toggle Dark Mode">
-        </button>
+        <!-- División de contenido a la izquierda -->
+        <div class="div-content">
+            <div class="logo-navbar">
+                <img src="../assets/general/images/logo-pokedex.png" alt="Logo Pokedex">
+            </div>
+            <div class="home-navbar" id="home-navbar">
+                <button class="home-nav-btn" aria-label="Inicio">Home</button>
+            </div>
 
-        <!--? HTML del Switch importado, Modo Claro/Oscuro -->
-        <!-- <label class="switch">
-            <input type="checkbox">
-            <span class="slider"></span>
-        </label> -->
-
-        <div class="carritoImage" id="carritoImage">
-            <button class="carritoButton" id="carritoButton">
-                <img src="../assets/general/images/shopping_cart_24dp_FILL0_wght400_GRAD0_opsz24.png"
-                    alt="carrito de compra">
+            <!-- Botón de Modo Claro/Oscuro -->
+            <button class="btn-darkModeToggle" id="darkModeToggle" aria-label="Cambiar a modo oscuro">
+                <img src="../assets/general/images/dark-theme.svg" alt="Toggle Dark Mode">
             </button>
         </div>
 
-    </div>
+        <!-- División de mercado a la derecha -->
+        <div class="div-market">
+            <div class="div-tokens">
+                <p></p>
+            </div>
 
-
+            <div class="carritoImage" id="carritoImage">
+                <button class="carritoButton" id="carritoButton" aria-label="Carrito de compra">
+                    <img src="../assets/general/images/shopping_cart_24dp_FILL0_wght400_GRAD0_opsz24.png"
+                        alt="Carrito de compra">
+                </button>
+            </div>
+        </div>
+    </nav>
 </body>
 
 </html>
