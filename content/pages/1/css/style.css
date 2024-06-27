@@ -1,4 +1,8 @@
 #buy-button {
+    grid-column-start: 1 ;
+    grid-column-end:3 ;
+    grid-row-start:4 ;
+    grid-row-end:5 ;
     border: 1px rgb(224, 224, 87) solid;
     border-radius: 2vw;
     padding: 0.6vw;
@@ -12,19 +16,23 @@
 }
 
 .pokemon-container {
-    width: 100%;
-    display: flex;
+    width: 70%;
+    display: grid;
+    grid-template-columns:1fr 1fr ;
+    grid-template-rows:10% 1fr 40% 15%;
     flex-direction: column;
     justify-content: center;
     margin-top: 2vw;
     gap: 20px;
     align-items: center;
 box-sizing: border-box;
-border: 1px solid transparent;
+border: 1vw solid transparent;
+margin:0 15% ;
 
 }
 
 .pokemon-container-img {
+align-items: center;
 margin-top: 1vw;
     width: 25%;
     height: 15%;
@@ -51,7 +59,7 @@ margin-top: 1vw;
 #img-shiny {
     display: flex;
 justify-content: center;
-    width: 8vw;
+    width: 10vw;
 }
 
 #gif {
@@ -64,6 +72,10 @@ height: 2.7vw;
 }
 
 #h1 {
+    grid-column-start: 1 ;
+    grid-column-end:3 ;
+    grid-row-start:1 ;
+    grid-row-end:2 ;
     display: flex;
     margin-right: 5vw;
     justify-content: center;
@@ -72,9 +84,10 @@ height: 2.7vw;
 }
 
 .pokemon-container-text {
+   
     display: flex;
     flex-direction: column;
-    align-items: normal;
+    align-items: flex-start;
     width:15vw;
     height: 1vw;
  margin-top: 0.2vw;
@@ -88,13 +101,21 @@ justify-content: center;
 }
 
 .pokemon-container-img-text {
+    grid-column-start: 1 ;
+    grid-column-end:3 ;
+    grid-row-start:2 ;
+    grid-row-end:3 ;
     margin-top: 2vw;
-    width: 60%;
+    width: 100%;
     display: flex;
     gap: 3vw;
     justify-content: center;
 margin-bottom: 1.5vw;
+align-items: center;
+justify-content: space-evenly;
+margin-left: 6vw;
 }
+
 
 .p-type{
     margin-top: 1vw;
@@ -125,9 +146,10 @@ margin-bottom: 1.5vw;
 }
 
 .pokemon-text-container{
+   
     width: 40%;
 height: min-content;
-    padding: 1vw 3vw;
+ gap:2w;
  
     display: flex;
     flex-direction: column;
@@ -181,10 +203,14 @@ width: min-content;
 }
 
 .evolutions-pokemon-container{
+    grid-column-start: 1 ;
+    grid-column-end:3 ;
+    grid-row-start:3 ;
+    grid-row-end:4 ;
     box-sizing: border-box;
-    margin: 3vw 0 1.5vw 0;
-    width: 40%;
-    height: 30%;
+
+    width: 70%;
+ 
     text-align: center;
     background-color: gray;
     border: 2px solid transparent;
@@ -197,6 +223,7 @@ width: min-content;
     justify-content: center;
     justify-content: space-evenly;
     padding: 1vw;
+    margin: 0 15%;
 }
 .imgs-evolutions{
     width: 7vw;
