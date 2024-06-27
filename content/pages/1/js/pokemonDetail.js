@@ -116,10 +116,10 @@ Its percentage of power is ${pokemonOrigin.statistics.power_percent} and its per
   <p class="p-details-pokemon-container-text">Weight:<span class="span-details-pokemon-container-text">${pokemonOrigin.statistics.weight.kilograms
     } ${gramsFnc(pokemonOrigin)}</span></p></div>
     <p class=gender-text>Possible genders:<span class="gender-result"> ${genderFnc(pokemonOrigin)}</span></p>
-   <div class="text-div-details-pokemon-container-text">
+ 
    <p id="hability-p-details-pokemon-container-tex"class="p-details-pokemon-container-text"><span class="habilitiy-span-details-pokemon-container-text"> ${habilitiesPokemon(
       pokemonOrigin
-    )} </span> </p> <div>
+    )} </span> </p>
 
   </div>
 
