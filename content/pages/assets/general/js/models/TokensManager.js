@@ -93,6 +93,9 @@ class TokensManager {
     this.#tokens = _.DOM.getFromLocalStorage("userTokens");
   }
 
+  /**
+   * Crea un evento personalizado que se activa cada vez que `this.tokens` cambia de valor.
+   */
   #emitTokenChange() {
     const event = new CustomEvent("tokensChanged", {
       detail: { tokens: this.tokens },

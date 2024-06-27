@@ -1,3 +1,6 @@
+//? Libreria personal de utilidades
+import _ from "../js/lib/utilities.js";
+
 //? Manejador de Tokens (Tokens Manager)
 import T from "../js/models/TokensManager.js";
 
@@ -41,6 +44,9 @@ async function loadNavbar() {
     // Inicializar los eventos relacionados con los Tokens
     initSetTokens();
 
+    // Inicializar el elemento contador del carrito
+    initCartCounter();
+
     // Inicializar los eventos de navegación
     initNavEvents();
   } catch (error) {
@@ -49,7 +55,7 @@ async function loadNavbar() {
 }
 
 /**
- * Inicializa la funcionalidad del modo oscuro.
+ ** Inicializa la funcionalidad del modo oscuro.
  */
 function initDarkMode() {
   const darkModeToggle = document.querySelector("#darkModeToggle");
@@ -74,7 +80,7 @@ function initDarkMode() {
 }
 
 /**
- *! Inicializa los eventos relacionados con los Tokens y establece un observador para cambios en T.tokens.
+ ** Inicializa los eventos relacionados con los Tokens y establece un observador para cambios en T.tokens.
  */
 function initSetTokens() {
   const nbTokens = document.querySelector(".div-tokens p");
@@ -89,7 +95,42 @@ function initSetTokens() {
 }
 
 /**
- * Inicializa los eventos de navegación.
+ ** Inicializa el contador del carrito y configura el evento para actualizar el contador cuando cambie el carrito.
+ */
+function initCartCounter() {
+  const nbCartCount = document.querySelector(".cart-count");
+
+  if (nbCartCount) {
+    updateCartCounter(nbCartCount);
+
+    // Escuchar el evento cartChanged para actualizar el contador del carrito
+    window.addEventListener("cartChanged", () => {
+      updateCartCounter(nbCartCount);
+    });
+  }
+}
+
+/**
+ * Actualiza el contador del carrito en el DOM.
+ * @param {HTMLElement} nbCartCount - El elemento del DOM que muestra el contador del carrito.
+ */
+function updateCartCounter(nbCartCount) {
+  const cart = _.DOM.getFromLocalStorage("carrito");
+  const cartLeng = cart
+    ? _.DOM.getFromLocalStorage("carrito").length
+    : [].length;
+
+  if (cartLeng > 0) {
+    nbCartCount.style.display = "block";
+    nbCartCount.textContent = cartLeng;
+  } else {
+    nbCartCount.style.display = "none";
+    nbCartCount.textContent = 0;
+  }
+}
+
+/**
+ ** Inicializa los eventos de navegación.
  */
 function initNavEvents() {
   const nbLogo = document.querySelector(".logo-navbar img");
