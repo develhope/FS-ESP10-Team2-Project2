@@ -1,7 +1,7 @@
 import { addToCart } from "./../../2/js/carrito.js";
 
 // Función principal para enlazar toda la lógica del código
-function pokemonMain(pokemon) {
+function pokemonMain() {
   console.log(pokemon[pokemon._])
   // Llama a las funciones para mostrar detalles y crear el botón Comprar
   const pokemonOrigin = pokemon[pokemon._]
@@ -39,8 +39,6 @@ function displayPokemonDetails(pokemonOrigins) {
   container.appendChild(container1)
   // container.appendChild(table)
   container1.appendChild(container2);
-
-
 
   // isLegendary: false, // Si es legendario
   // isMythical: false, // Si es mítico
@@ -203,15 +201,48 @@ Its percentage of power is ${pokemonOrigins.statistics.power_percent} and its pe
   // }
   let container4 = document.createElement("section");
   container4.className = "evolutions-pokemon-container";
-  container4.innerHTML = `
-<div class=imgs-evolutions>
-<img class="img-evolutions-pokemon" src="${pokemonOrigins.images.illustration.default}" alt="${pokemonOrigins.name} front">
-<span class="class=arrow-span-evolutions-pokemon"> > </span> 
-
-</div>
-<div id="map-evoltions"></div>
-`;
   container.appendChild(container4);
+  
+  const arrImgEvoluPoke = pokemonOrigins.evolutions.map((evolu) =>
+    pokemon[evolu].images.illustration.default
+  )
+  arrImgEvoluPoke.map((imgs)=>{
+    let img=document.createElement("img")
+    img.className="imgs-evolutions"
+    img.src=imgs
+    container4.appendChild(img)
+  })
+  console.log(arrImgEvoluPoke)
+ 
+ let pokemonName=pokemon[pokemon._].evolutions
+ pokemonName.map((name)=>{
+  let nameEvoluPok=document.createElement("p")
+  nameEvoluPok.textContent=name
+  nameEvoluPok.className="name-evolu-poke";
+ 
+  container4.appendChild(nameEvoluPok)
+ })
+ console.log(pokemonName)
+
+ const arrTypeEvoluPoke =
+  pokemonOrigins.evolutions.map((type) =>
+  pokemon[type].type
+)
+arrTypeEvoluPoke.map((types)=>{
+let textType =document.createElement("P")
+textType.className="type-evolutions"
+textType.innerHTML=`Type: <span class="span-type">${types}</span>`
+container4.appendChild(textType)
+})
+//   container4.innerHTML = `
+// <div class=imgs-evolutions>
+// <img class="img-evolutions-pokemon" src="${pokemonOrigins.images.illustration.default}" alt="${pokemonOrigins.name} front">
+// <span class="class=arrow-span-evolutions-pokemon"> > </span> 
+
+// </div>
+// <div id="map-evoltions"></div>
+// `;
+
 
 
 }
@@ -237,9 +268,10 @@ function createBuyButton(pokemon) {
 
 // Obtener el objeto Pokémon de sessionStorage y llamar a la función principal
 const storedPokemon = sessionStorage.getItem("pokemonPreview");
-if (storedPokemon) {
+const pokemon = JSON.parse(storedPokemon);
+
+if (pokemon) {
   // Parsear el JSON almacenado en sessionStorage para obtener el objeto Pokémon
-  const pokemon = JSON.parse(storedPokemon);
 
   //! (IMPORTANTE) El objeto `pokemon` contiene los objetos Pokémon de las evoluciones disponibles
   //* El objeto `pokemon` tiene una propiedad `_` que guarda el nombre del Pokémon original
@@ -262,7 +294,7 @@ if (storedPokemon) {
   //! (IMPORTANTE) Mandar el objeto completo `pokemon` a la función principal
   //* Más adelante, deberás establecer el elemento original `pokemon[pokemon._]` para manipularlo adecuadamente
   // pokemonMain(pokemon[pokemon._]); //? Aquí envío el objeto Pokémon original
-  pokemonMain(pokemon); //! Pero tú deberás enviar el objeto entero y manipular sus datos para obtener todas las propiedades necesarias de los demás Pokémon como sus imágenes
+  pokemonMain(); //! Pero tú deberás enviar el objeto entero y manipular sus datos para obtener todas las propiedades necesarias de los demás Pokémon como sus imágenes
 } else {
   // Si no se encuentra ningún Pokémon seleccionado en sessionStorage, mostrar un error
   console.error(
