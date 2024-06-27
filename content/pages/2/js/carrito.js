@@ -1,13 +1,10 @@
-
 // localStorage.clear();
 // sessionStorage.clear();
-
 
 let carrito = getCarritoStorage();
 
 // Encapsulamos toda la lógica funcional del carrito en una función principal que ejecutará toda la lógica.
 export function initCarrito() {
-
   let importeTotal = 0;
   const carritoStorageJs = carrito;
 
@@ -15,6 +12,8 @@ export function initCarrito() {
   const containerCarritoId = document.getElementById("carritoDeCompraId");
 
   carritoStorageJs.forEach((itemCarrito, index) => {
+    console.warn(itemCarrito);
+
     const divCarrito = document.createElement("div");
     divCarrito.innerHTML = `
     <div class= carrito-items>
@@ -26,8 +25,12 @@ export function initCarrito() {
         <p>${itemCarrito.price}€</p>
         <div class="contador">
           <label for="quantity-${index}">Cantidad:</label>
-          <input type="number" id="quantity-${index}" name="quantity-${index}" value="${itemCarrito.quantity}" min="1" max="100">
-          <p id=precio-${index}> Total: ${itemCarrito.variablePrice.toFixed(2)}€</p>
+          <input type="number" id="quantity-${index}" name="quantity-${index}" value="${
+      itemCarrito.quantity
+    }" min="1" max="100">
+          <p id=precio-${index}> Total: ${itemCarrito.variablePrice.toFixed(
+      2
+    )}€</p>
         </div>
       </div>
       <div class= deleteButton>
@@ -44,32 +47,30 @@ export function initCarrito() {
     importeTotal += itemCarrito.variablePrice;
 
     const inputCantidad = divCarrito.querySelector(`#quantity-${index}`);
-      inputCantidad.addEventListener('change', (event) => {
-        const nuevaCantidad = event.target.value;
+    inputCantidad.addEventListener("change", (event) => {
+      const nuevaCantidad = event.target.value;
 
-        //Validar que la cantidad sea un numero natural entre 1-100 
-        if(validarCantidad(nuevaCantidad)){
+      //Validar que la cantidad sea un numero natural entre 1-100
+      if (validarCantidad(nuevaCantidad)) {
         actualizarCantidadCarrito(index, nuevaCantidad);
-        } else {
-          alert("Cantidad inválida. Debe ser un número natural 1-100")
-          event.target.value = carrito[index].quantity;
-        }
+      } else {
+        alert("Cantidad inválida. Debe ser un número natural 1-100");
+        event.target.value = carrito[index].quantity;
       }
-      ) 
-    
+    });
+
     const removeButton = divCarrito.querySelector(`#remove-${index}`);
-    removeButton.addEventListener('click', () => {
-      divCarrito.classList.add('fade-out');
+    removeButton.addEventListener("click", () => {
+      divCarrito.classList.add("fade-out");
       setTimeout(() => {
         eliminarPokemonCard(index); // Llamar a la función de eliminación después de la animación
       }, 500);
-      
     });
 
     containerCarritoId.appendChild(divCarrito);
   });
 
-  const totalCarrito = document.createElement('div');
+  const totalCarrito = document.createElement("div");
   totalCarrito.className = "totalCarrito";
   totalCarrito.innerHTML = `
   <p > IMPORTE TOTAL: <p>
@@ -77,31 +78,36 @@ export function initCarrito() {
   `;
   containerCarritoId.appendChild(totalCarrito);
 
-  const checkoutButton = document.createElement('button');
+  const checkoutButton = document.createElement("button");
   checkoutButton.className = "pasarelaCheck";
   checkoutButton.textContent = "Proceder al pago";
   containerCarritoId.appendChild(checkoutButton);
 
-  checkoutButton.addEventListener('click', () =>{
-    alert("Redirigiendo a la pasarela de pago...")
+  checkoutButton.addEventListener("click", () => {
+    alert("Redirigiendo a la pasarela de pago...");
   });
 
-// Restringir input a 0, no negativos, no por encima de 100, no separaciones entre números
+  // Restringir input a 0, no negativos, no por encima de 100, no separaciones entre números
 
-  function validarCantidad (cantidad){
+  function validarCantidad(cantidad) {
     const importeTotalCarrito = parseInt(cantidad, 10);
-    return !isNaN(importeTotalCarrito) && importeTotalCarrito > 0 && importeTotalCarrito <= 100;
+    return (
+      !isNaN(importeTotalCarrito) &&
+      importeTotalCarrito > 0 &&
+      importeTotalCarrito <= 100
+    );
   }
 
   function actualizarImporteTotal() {
     let nuevoImporteTotal = 0;
-    carrito.forEach(item => {
+    carrito.forEach((item) => {
       nuevoImporteTotal += item.variablePrice;
     });
 
-    const totalCarritoElement = document.querySelector('.totalCarrito p:last-child');
+    const totalCarritoElement = document.querySelector(
+      ".totalCarrito p:last-child"
+    );
     totalCarritoElement.textContent = `${nuevoImporteTotal.toFixed(2)}€`;
-
   }
 
   function actualizarCantidadCarrito(index, nuevaCantidad) {
@@ -121,8 +127,8 @@ export function initCarrito() {
     carrito[index].variablePrice = nuevoPrecio;
     setCarritoStorage(carrito);
     actualizarImporteTotal();
-  } 
-  
+  }
+
   function eliminarPokemonCard(index) {
     carrito.splice(index, 1);
     setCarritoStorage(carrito);
@@ -130,13 +136,10 @@ export function initCarrito() {
   }
 
   function renderCarrito() {
-    containerCarritoId.innerHTML = ''; // Limpiar el contenido anterior
+    containerCarritoId.innerHTML = ""; // Limpiar el contenido anterior
     initCarrito(); // Vuelve a inicializar el carrito
   }
-
 }
-
- 
 
 export function addToCart(pokemon) {
   if (!pokemon) {
@@ -154,7 +157,7 @@ export function addToCart(pokemon) {
   };
 
   // Buscar si el Pokémon ya está en el carrito
-  const existingPokemon = carrito.find(item => item.name === pokemon.name);
+  const existingPokemon = carrito.find((item) => item.name === pokemon.name);
 
   if (existingPokemon) {
     // Si ya está, suma uno
@@ -172,14 +175,16 @@ export function addToCart(pokemon) {
 }
 
 /**
- *! (Codio Añadido)
  ** Guarda el carrito en localStorage y emite un evento para notificar el cambio.
  * @param {Array} carrito - El carrito a guardar.
  */
 function setCarritoStorage(carrito) {
+  // Convierte el carrito en una cadena JSON
   const carritoStorageJSON = JSON.stringify(carrito);
+  // Guarda la cadena JSON en localStorage bajo la clave "carrito"
   localStorage.setItem("carrito", carritoStorageJSON);
-  emitCartChanged(carrito); //! (Codio Añadido)
+  // Llama a la función para emitir el evento personalizado de cambio de carrito
+  emitCartChanged(carrito);
 }
 
 // Función para obtener el carrito del localStorage
@@ -197,18 +202,18 @@ function getCarritoStorage() {
 }
 
 /**
- *! (Codio Añadido)
- *? He creado esto para poder mandar una señal cuando se altera el resultado del carrito, asi poder captarla para cambiar el contador del NavBar en el carrito, si necesitas mas informacion puedes ver el archivo `navBar.js` o preguntar
- * Emite un evento personalizado indicando que el carrito ha cambiado.
+ *! Función para emitir un evento personalizado cuando el carrito cambia.
+ *? Esto permite notificar otras partes de la aplicación sobre el cambio en el carrito.
  * @param {Array} carrito - El carrito actualizado.
  */
 function emitCartChanged(carrito) {
+  // Crea un nuevo evento personalizado llamado "cartChanged"
   const event = new CustomEvent("cartChanged", {
-    detail: { carrito },
+    detail: { carrito }, // Pasa el carrito actualizado como detalle del evento
   });
+  // Despacha el evento globalmente para que otros componentes puedan escucharlo
   window.dispatchEvent(event);
 }
-
 
 //  * Añade un Pokémon al carrito de compras.
 //  *

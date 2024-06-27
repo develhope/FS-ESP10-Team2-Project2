@@ -230,25 +230,30 @@ Its percentage of power is ${pokemonOrigin.statistics.power_percent} and its per
   })
   console.log(pokemonName)
 
-  const arrTypeEvoluPoke =
-    pokemonOrigin.evolutions.map((type) =>
-      pokemon[type].type
+
+
+
+  // Generar el HTML para los tipos del Pokémon
+  const typesHTML = pokemonOrigin.type
+    .map(
+      (type) =>
+        //? Usar la función de la librería personalizada para capitalizar el tipo
+        `<p class="${type} type">${_.str.capitalize(type)}</p>`
     )
-  arrTypeEvoluPoke.map((types) => {
-    let textType = document.createElement("P")
-    textType.className = "type-evolutions"
-    textType.innerHTML = `Type: <span class="span-type">${types}</span>`
-    container4.appendChild(textType)
-  })
-  //   container4.innerHTML = `
-  // <div class=imgs-evolutions>
-  // <img class="img-evolutions-pokemon" src="${pokemonOrigin.images.illustration.default}" alt="${pokemonOriginName} front">
-  // <span class="class=arrow-span-evolutions-pokemon"> > </span> 
+    .join("");
 
-  // </div>
-  // <div id="map-evoltions"></div>
-  // `;
+  // Obtener los tipos de evolución del Pokémon
+  const arrTypeEvoluPoke = pokemonOrigin.evolutions.map(
+    (evolution) => pokemon[evolution].type
+  );
 
+  // Generar y agregar el HTML para los tipos de evolución del Pokémon
+  arrTypeEvoluPoke.forEach(() => {
+    let textType = document.createElement("P");
+    textType.className = "type-evolutions";
+    textType.innerHTML = `Type: <span class="span-type">${typesHTML}</span>`;
+    container4.appendChild(textType);
+  });
 
 
 }
