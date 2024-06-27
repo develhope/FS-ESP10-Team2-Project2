@@ -1,10 +1,14 @@
-export class PokemonDataHandler {
+//? Libreria personal de utilidades
+import _ from "../../../assets/general/js/lib/utilities.js";
+
+export default class PokemonDataHandler {
   static API_URLS = {
     POKEMON: "https://pokeapi.co/api/v2/pokemon/",
     SPECIES: "https://pokeapi.co/api/v2/pokemon-species/",
     HABITAT: "https://pokeapi.co/api/v2/pokemon-habitat/",
     EVOLUTION_SPECIES: "https://pokeapi.co/api/v2/evolution-species/",
     EVOLUTION_CHAIN: "https://pokeapi.co/api/v2/evolution-chain/",
+    GENDERS: "https://pokeapi.co/api/v2/gender/",
   };
 
   /**
@@ -48,8 +52,27 @@ export class PokemonDataHandler {
       );
     }
 
+    const [femaleResponse, maleResponse, genderlessResponse] =
+      await Promise.all([
+        fetch(`${PokemonDataHandler.API_URLS.GENDERS}1`),
+        fetch(`${PokemonDataHandler.API_URLS.GENDERS}2`),
+        fetch(`${PokemonDataHandler.API_URLS.GENDERS}3`),
+      ]);
+
+    if (!femaleResponse.ok || !maleResponse.ok || !genderlessResponse.ok) {
+      throw new Error(`Error al obtener los datos de los generos Pokémon}`);
+    }
+
+    const [femaleData, maleData, genderlessData] = await Promise.all([
+      femaleResponse.json(),
+      maleResponse.json(),
+      genderlessResponse.json(),
+    ]);
+
+    this.#addGendersPokemon(results, [femaleData, maleData, genderlessData]);
+
     // Calcular el 5% de count y generar un número aleatorio entre 1 y ese valor
-    const offerCount = this.getRandomInt(1, Math.floor(count * 0.05));
+    const offerCount = _.num.getRandomNum(1, Math.floor(count * 0.05));
 
     // Añadir ofertas aleatorias a algunos Pokémon
     this.#addRandomOffers(results, offerCount, 60);
@@ -155,7 +178,7 @@ export class PokemonDataHandler {
   #transformPokemon(poke, species, evolution) {
     return {
       pokeId: poke.id,
-      name: poke.name,
+      name: poke.species.name,
       type: poke.types.map((type) => type.type.name),
       images: {
         illustration: {
@@ -201,20 +224,18 @@ export class PokemonDataHandler {
         isFinalEvolution: this.#isFinalEvolution(poke.name, evolution.chain),
       },
       evolutions: this.#getEvolutions(evolution.chain),
+      gender: [undefined],
       market: { price: undefined, discount: undefined },
     };
   }
 
   /**
-   * Método privado para obtener las evoluciones de un Pokémon a partir de la cadena evolutiva.
-   * Este método recorre la cadena evolutiva proporcionada y construye una lista de evoluciones.
-   *
-   * @param {object} chain - La cadena evolutiva del Pokémon, obtenida de la API.
-   * @returns {Array} - Una lista de objetos que representan las evoluciones del Pokémon.
-   *                    Cada objeto contiene el nombre del Pokémon y una lista de nombres de los Pokémon
-   *                    a los que puede evolucionar.
+   * Obtiene todos los nombres de las evoluciones de un Pokémon a partir de una cadena evolutiva.
+   * @param {object} chain - La cadena evolutiva del Pokémon.
+   * @returns {Array} - Una lista de nombres de todas las evoluciones a partir del Pokémon inicial.
    */
   #getEvolutions(chain) {
+    // Extrae la lista de evoluciones desde la cadena evolutiva proporcionada
     const evolutions = [];
     let currentEvolution = chain;
 
@@ -229,7 +250,29 @@ export class PokemonDataHandler {
       currentEvolution = currentEvolution.evolves_to[0];
     } while (currentEvolution && currentEvolution.evolves_to);
 
-    return evolutions;
+    // Función para obtener todos los nombres de las evoluciones
+    function getAllEvolutions(startName, evolutions) {
+      const evolutionNames = [];
+
+      function findEvolutions(name) {
+        const pokemon = evolutions.find((p) => p.name === name);
+        if (pokemon) {
+          evolutionNames.push(pokemon.name);
+          pokemon.evolves_to.forEach((evoName) => findEvolutions(evoName));
+        }
+      }
+
+      findEvolutions(startName);
+      return evolutionNames;
+    }
+
+    // Obtener el nombre del Pokémon inicial de la cadena evolutiva
+    const startName = chain.species.name;
+
+    const out = getAllEvolutions(startName, evolutions);
+
+    // Devolver todos los nombres de las evoluciones
+    return out;
   }
 
   /**
@@ -350,6 +393,46 @@ export class PokemonDataHandler {
   }
 
   /**
+   * Añade la propiedad `gender` a cada objeto Pokémon en `results` basándose en los datos de género proporcionados.
+   * @param {Array} results - La lista de objetos Pokémon a actualizar.
+   * @param {Array} genderData - Una lista con tres elementos: [femaleData, maleData, genderlessData].
+   * @private
+   */
+  #addGendersPokemon(results, genderData) {
+    const [femaleData, maleData, genderlessData] = genderData;
+
+    // Crear mapas para acceso rápido por nombre de Pokémon
+    const femaleSet = new Set(
+      femaleData.pokemon_species_details.map(
+        (detail) => detail.pokemon_species.name
+      )
+    );
+    const maleSet = new Set(
+      maleData.pokemon_species_details.map(
+        (detail) => detail.pokemon_species.name
+      )
+    );
+    const genderlessSet = new Set(
+      genderlessData.pokemon_species_details.map(
+        (detail) => detail.pokemon_species.name
+      )
+    );
+
+    results.forEach((pokemon) => {
+      const { name } = pokemon;
+
+      if (genderlessSet.has(name)) {
+        pokemon.gender = null;
+      } else {
+        const genders = [];
+        if (femaleSet.has(name)) genders.push("female");
+        if (maleSet.has(name)) genders.push("male");
+        pokemon.gender = genders.length ? genders : undefined;
+      }
+    });
+  }
+
+  /**
    * Método privado para añadir ofertas a una cantidad específica de Pokémon de forma aleatoria.
    * @param {object[]} pokemonArray - El array de Pokémon.
    * @param {number} quantity - La cantidad de Pokémon a los que se les añadirá una oferta.
@@ -429,18 +512,6 @@ export class PokemonDataHandler {
     const roundedOffer = Math.round(offerPrice * 100) / 100;
 
     return roundedOffer;
-  }
-
-  /**
-   * Genera un número entero aleatorio entre min (incluido) y max (incluido).
-   * @param {number} min - El valor mínimo.
-   * @param {number} max - El valor máximo.
-   * @returns {number} - Un número entero aleatorio entre min y max.
-   */
-  getRandomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
   /**

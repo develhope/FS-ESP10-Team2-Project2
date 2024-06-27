@@ -75,7 +75,7 @@
   border-radius: 10px;
   background-color: rgba(252, 233, 124, 0.874);
   color: black;
-  width: 400px;
+  width: 430px;
   gap: 2vw;
   text-wrap: wrap;
   align-items: center;
@@ -86,7 +86,7 @@
 .pasarelaCheck:hover {
   transform: scale(1.1);
   transition: 0.1s;
-  width: 380px;
+  width: 400px;
 }
 
 /* Papelera */
@@ -111,7 +111,10 @@
 }
 
 .deleteButton > button {
-  cursor: pointer;
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    cursor: pointer;
 }
 
 .deleteButton:hover {

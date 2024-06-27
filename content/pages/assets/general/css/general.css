@@ -8,6 +8,11 @@
 
 /*? Podeis añadir mas colores en la clase "root" y en "dark-mode" */
 :root {
+
+    --clr-primary: rgb(251, 227, 45);
+    /* --clr-secondary: rgb(255, 17, 0); */
+
+
     /* Define los colores para el modo claro */
     --clr-black: #1c1c1c;
     --clr-gray: #ececec;
@@ -70,24 +75,12 @@
 * {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
     color: var(--clr-black);
     /* font-family: 'Rubik', sans-serif; */
     font-family: 'Aldrich';
 }
 
-ul {
-    list-style-type: none;
-}
-
-button {
-    background-color: transparent;
-    border: 0;
-    border-radius: 0;
-}
-
 body {
-    min-height: 100vh;
     background-color: var(--clr-gray);
     transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
 }
