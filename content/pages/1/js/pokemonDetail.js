@@ -143,7 +143,7 @@ Its percentage of power is ${pokemonOrigin.statistics.power_percent} and its per
     ];
 
     if (indice >= 0 && indice < evolutions.length) {
-      return `${pokemon.name} is in its ${evolutions[indice]} evolution`;
+      return `${pokemonOriginName} is in its ${evolutions[indice]} evolution`;
     }
 
     return "";
