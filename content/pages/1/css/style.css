@@ -230,3 +230,12 @@ width: min-content;
     flex-direction: column;
     color:red
  }
+ .gender-text{
+    display: flex;
+    flex-direction: column;
+ }
+ .gender-result{
+    color:yellow;
+    justify-content: center;}
+ 
+ 

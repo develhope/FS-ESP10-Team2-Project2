@@ -4,23 +4,23 @@ import { addToCart } from "./../../2/js/carrito.js";
 function pokemonMain(pokemon) {
   console.log(pokemon[pokemon._])
   // Llama a las funciones para mostrar detalles y crear el botón Comprar
-  const pokemonOrigin=pokemon[pokemon._]
+  const pokemonOrigin = pokemon[pokemon._]
   displayPokemonDetails(pokemonOrigin);
   createBuyButton(pokemonOrigin);
 }
 
 // Función para mostrar detalles de Pokémon
-function displayPokemonDetails(pokemon) {
+function displayPokemonDetails(pokemonOrigins) {
   const container = document.getElementById("pokemon-container");
 
   // Comprobamos si el Pokemon tiene un descuento
   let price;
-  if (pokemon.market.discount) {
+  if (pokemonOrigins.market.discount) {
     // Si tiene un descuento guardamos su descuento como precio (price)
-    price = pokemon.market.discount;
+    price = pokemonOrigins.market.discount;
   } else {
     // Si no tiene un descuento guardamos su precio base
-    price = pokemon.market.price;
+    price = pokemonOrigins.market.price;
   }
 
   let container1 = document.createElement("section");
@@ -30,7 +30,7 @@ function displayPokemonDetails(pokemon) {
   container2.className = "pokemon-container-img"
   let h1 = document.createElement("h1")
   h1.id = "h1"
-  h1.innerText = `${pokemon.name} No: ${pokemon.pokeId.toString().padStart(4, "0")}`
+  h1.innerText = `${pokemonOrigins.name} No: ${pokemonOrigins.pokeId.toString().padStart(4, "0")}`
 
 
   // let table = document.createElement("section")
@@ -39,7 +39,7 @@ function displayPokemonDetails(pokemon) {
   container.appendChild(container1)
   // container.appendChild(table)
   container1.appendChild(container2);
- 
+
 
 
   // isLegendary: false, // Si es legendario
@@ -60,20 +60,20 @@ function displayPokemonDetails(pokemon) {
 
   container2.innerHTML = `
    <div class=imgs> 
-   <div class=image><img src="${pokemon.images.illustration.shiny}" alt="${pokemon.name} front" id="img-shiny">
-   <img src="${pokemon.images.gif.front_shiny}" alt="${pokemon.name} front" id="gif">
+   <div class=image><img src="${pokemonOrigins.images.illustration.shiny}" alt="${pokemonOrigins.name} front" id="img-shiny">
+   <img src="${pokemonOrigins.images.gif.front_shiny}" alt="${pokemonOrigins.name} front" id="gif">
    </div>
    <span id="price-span-imgs"class="span-details-pokemon-container-text">${price}€ </span>
    </div>
    <div class="table">
-   <h2>Puntos de base</h2>
+   <h2>Base Points</h2>
    <ul class=ul>
-   <li>Hp: ${pokemon.statistics.hp}%</li>
-   <li>Attack: ${pokemon.statistics.attack}% </li>
-   <li>Defense: ${pokemon.statistics.defense}%</li>
-   <li>Special_attack: ${pokemon.statistics.special_attack}%</li>
-   <li>Special_defense: ${pokemon.statistics.special_defense}%</li>
-   <li>Speed:${pokemon.statistics.speed}%</li>
+   <li>Hp: ${pokemonOrigins.statistics.hp}</li>
+   <li>Attack: ${pokemonOrigins.statistics.attack} </li>
+   <li>Defense: ${pokemonOrigins.statistics.defense}</li>
+   <li>Special_attack: ${pokemonOrigins.statistics.special_attack}</li>
+   <li>Special_defense: ${pokemonOrigins.statistics.special_defense}</li>
+   <li>Speed:${pokemonOrigins.statistics.speed}</li>
    </ul>
      `;
 
@@ -84,7 +84,7 @@ function displayPokemonDetails(pokemon) {
   // table.appendChild(ul)
   // ul.appendChild(li)
 
-  let statisticsAll = pokemon.statistics
+  let statisticsAll = pokemonOrigins.statistics
   console.log(statisticsAll)
 
   // let chaos=pokemon.statistics.forEach((a)=>{return`<li>${a.attack}</li>`})
@@ -93,36 +93,64 @@ function displayPokemonDetails(pokemon) {
   let container3 = document.createElement("section");
   container3.className = "pokemon-text-container";
 
-//   capture_rate_percent: 45, // Porcentaje de tasa de captura
-// cuantas evoluciones tiene o si es un pkemon que se encuentra en su ultima evolución
-// cantidad de  movements:
-// statistics.power
-// statistics.power_percent leer propiedad
+  //   capture_rate_percent: 45, // Porcentaje de tasa de captura
+  // cuantas evoluciones tiene o si es un pkemon que se encuentra en su ultima evolución
+  // cantidad de  movements:
+  // statistics.power
+  // statistics.power_percent leer propiedad
 
   container3.innerHTML = `
   <div class="text-description">
-  <p>${pokemon.name} can achieve a total of  ${pokemon.value.movements} movements.
-Its percentage of power is ${pokemon.statistics.power_percent} % and its percentage capture rate is ${pokemon.value.capture_rate_percent}%. 
-  ${evoluData(pokemon)}   </p>
+  <p>${pokemonOrigins.name} can achieve a total of  ${pokemonOrigins.value.movements} movements.
+Its percentage of power is ${pokemonOrigins.statistics.power_percent} and its percentage capture rate is ${pokemonOrigins.value.capture_rate_percent}. 
+ ${indexEvolu(pokemonOrigins)} ${finalEvolution(pokemonOrigins)}  </p>
   </div>
 <div class=pokemon-container-text>
  <div class="text-div-details-pokemon-container">
-  <p class="p-details-pokemon-container-text">Height:<span class="span-details-pokemon-container-text">${pokemon.statistics.height.meters
-    } ${metersFnc(pokemon)} </span></p>
-  <p class="p-details-pokemon-container-text">Weight:<span class="span-details-pokemon-container-text">${pokemon.statistics.weight.kilograms
-    } ${gramsFnc(pokemon)}</span></p></div>
+  <p class="p-details-pokemon-container-text">Height:<span class="span-details-pokemon-container-text">${pokemonOrigins.statistics.height.meters
+    } ${metersFnc(pokemonOrigins)} </span></p>
+  <p class="p-details-pokemon-container-text">Weight:<span class="span-details-pokemon-container-text">${pokemonOrigins.statistics.weight.kilograms
+    } ${gramsFnc(pokemonOrigins)}</span></p></div>
+    <p class=gender-text>Possible genders:<span class="gender-result"> ${genderFnc(pokemonOrigins)}</span></p>
    <div class="text-div-details-pokemon-container-text">
    <p id="hability-p-details-pokemon-container-tex"class="p-details-pokemon-container-text"><span class="habilitiy-span-details-pokemon-container-text"> ${habilitiesPokemon(
-      pokemon
+      pokemonOrigins
     )} </span> </p> <div>
 
   </div>
 
   `;
-  function evoluData(pokemon){
-    if(pokemon.evolutions.length>=1){return `Has ${pokemon.evolutions.length} evolutions`}
-    else if(pokemon.value.isFinalEvolution===true){return `Is in its last evolution`}
-    else{ return " "}
+  /**
+ * Determina la etapa de evolución de un Pokémon dado.
+ * 
+ * @param {Object} pokemonOrigins - Objeto que representa un Pokémon.
+ * @param {string} pokemonOrigins.name - Nombre del Pokémon.
+ * @param {string[]} pokemonOrigins.evolutions - Lista de nombres de las evoluciones del Pokémon en orden.
+ * @returns {string} - Mensaje indicando la etapa de evolución del Pokémon.
+ */
+  function indexEvolu(pokemon) {
+    const indice = pokemon.evolutions.indexOf(pokemon.name);
+    const evolutions = [
+      "first",
+      "second",
+      "third",
+      "fourth ",
+      "fifth"
+    ];
+
+    if (indice >= 0 && indice < evolutions.length) {
+      return `${pokemon.name} is in its ${evolutions[indice]} evolution`;
+    }
+
+    return "";
+  }
+
+  indexEvolu(pokemonOrigins)
+  console.log(pokemonOrigins)
+  function finalEvolution(pokemon) {
+    if (pokemon.value.isFinalEvolution === true) { return `and this is its last evolution!!` }
+
+    return " "
   }
   function metersFnc(pokemon) {
     if (pokemon.statistics.height.meters === 1) {
@@ -138,9 +166,14 @@ Its percentage of power is ${pokemon.statistics.power_percent} % and its percent
       return "grams";
     }
   }
+  function genderFnc(pokemon) {
+    if (pokemon.gender === null) { return " " }
+    else if (pokemon.gender === undefined) { return "" }
+    else { return pokemon.gender }
+  }
   container1.appendChild(container3);
 
-  let typeSection = document.createElement("section");
+  let typeSection = document.createElement("div");
   typeSection.className = "type-section-container3-pokemon";
   container3.appendChild(typeSection);
   let typeText = document.createElement("p");
@@ -150,7 +183,7 @@ Its percentage of power is ${pokemon.statistics.power_percent} % and its percent
   buttonType.className += " button-type-section-container3-pokemon";
   // buttonType.className +=  ` ${type}`;
 
-  const types = pokemon.type
+  const types = pokemonOrigins.type
     .map((t) => `<p id="types-container3-pokemon" class="${t} t">${t} </p>`)
     .join("");
   console.log(types);
@@ -172,14 +205,14 @@ Its percentage of power is ${pokemon.statistics.power_percent} % and its percent
   container4.className = "evolutions-pokemon-container";
   container4.innerHTML = `
 <div class=imgs-evolutions>
-<img class="img-evolutions-pokemon" src="${pokemon.images.illustration.default}" alt="${pokemon.name} front">
+<img class="img-evolutions-pokemon" src="${pokemonOrigins.images.illustration.default}" alt="${pokemonOrigins.name} front">
 <span class="class=arrow-span-evolutions-pokemon"> > </span> 
 
 </div>
 <div id="map-evoltions"></div>
 `;
   container.appendChild(container4);
- 
+
 
 }
 
@@ -187,14 +220,14 @@ Its percentage of power is ${pokemon.statistics.power_percent} % and its percent
 function createBuyButton(pokemon) {
   // Crear un elemento de botón
   const button = document.createElement("button");
-  button.innerText = "Añadir al carrito";
+  button.innerText = "Add to cart";
   button.id = "buy-button";
 
   // Agregar un detector de eventos al botón
   button.addEventListener("click", function () {
     // Llama a la función externa para guardar el pokemon en el carrito
     addToCart(pokemon);
-    alert(`${pokemon.name} se añadió al carrito correctamente.`);
+    alert(`${pokemon.name} has been added to cart successfully.`);
   });
 
   // Añade el botón al contenedor de Pokémon.
@@ -211,7 +244,7 @@ if (storedPokemon) {
   //! (IMPORTANTE) El objeto `pokemon` contiene los objetos Pokémon de las evoluciones disponibles
   //* El objeto `pokemon` tiene una propiedad `_` que guarda el nombre del Pokémon original
   console.log(
-    `  Hay '${pokemon[pokemon._].evolutions.length}' evoluciones disponibles: `
+    `  There is '${pokemon[pokemon._].evolutions.length}' available evolutions: `
   );
 
 
