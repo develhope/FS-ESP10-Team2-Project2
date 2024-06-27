@@ -122,10 +122,15 @@ export function addToCart(pokemon) {
   setCarritoStorage(carrito);
 }
 
-// Función para guardar el carrito en localStorage
+/**
+ *! (Codio Añadido)
+ ** Guarda el carrito en localStorage y emite un evento para notificar el cambio.
+ * @param {Array} carrito - El carrito a guardar.
+ */
 function setCarritoStorage(carrito) {
   const carritoStorageJSON = JSON.stringify(carrito);
   localStorage.setItem("carrito", carritoStorageJSON);
+  emitCartChanged(carrito); //! (Codio Añadido)
 }
 
 // Función para obtener el carrito del localStorage
@@ -142,6 +147,18 @@ function getCarritoStorage() {
   return carritoStorageJs;
 }
 
+/**
+ *! (Codio Añadido)
+ *? He creado esto para poder mandar una señal cuando se altera el resultado del carrito, asi poder captarla para cambiar el contador del NavBar en el carrito, si necesitas mas informacion puedes ver el archivo `navBar.js` o preguntar
+ * Emite un evento personalizado indicando que el carrito ha cambiado.
+ * @param {Array} carrito - El carrito actualizado.
+ */
+function emitCartChanged(carrito) {
+  const event = new CustomEvent("cartChanged", {
+    detail: { carrito },
+  });
+  window.dispatchEvent(event);
+}
 
 
 //  * Añade un Pokémon al carrito de compras.

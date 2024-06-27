@@ -93,6 +93,8 @@
     background-color: transparent;
     border: none;
     cursor: pointer;
+    position: relative;
+    /* Añadido para posicionar el contador */
     transition: transform 0.3s;
 }
 
@@ -102,6 +104,19 @@
 
 .carritoButton img {
     width: 30px;
+}
+
+/* Estilo del contador de productos en el carrito */
+.cart-count {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: red;
+    color: white;
+    border-radius: 100vmax;
+
+    padding: 2px 3px;
+    font-size: 10px;
 }
 
 /* Estilos responsivos */

@@ -10,6 +10,27 @@ import { addEventListenersPokemonEquippedButton } from "./PokemonManager.js";
 
 import { startBattle } from "./PokemonManager.js";
 
+/**
+ * Función para obtener el color de fondo según el porcentaje.
+ * @param {number} percent - El porcentaje a evaluar.
+ * @returns {string} - El color de fondo correspondiente al porcentaje.
+ */
+
+export function getColorByPercentage(percent) {
+  // Retorna color gris oscuro si el porcentaje es menor o igual a 4% (Nefasto)
+  if (percent <= 4) return "#666666"; // 4%
+  // Retorna color rojo si el porcentaje está entre 5% y 25% (Malo)
+  if (percent <= 25) return "red"; // 20%
+  // Retorna color amarillo si el porcentaje está entre 26% y 50% (Normal)
+  if (percent <= 50) return "yellow"; // 24%
+  // Retorna color verde si el porcentaje está entre 51% y 75% (Bueno)
+  if (percent <= 75) return "green"; // 24%
+  // Retorna color azul si el porcentaje está entre 76% y 96% (Muy bueno)
+  if (percent <= 96) return "blue"; // 20%
+  // Retorna color violeta oscuro si el porcentaje es mayor o igual a 96% (Sublime)
+  return "darkviolet"; // 4%
+}
+
 export default class PokemonDOMHandler {
   /**
    * Constructor de la clase PokemonDOMHandler.
@@ -454,26 +475,6 @@ export default class PokemonDOMHandler {
   }
 
   /**
-   * Función para obtener el color de fondo según el porcentaje.
-   * @param {number} percent - El porcentaje a evaluar.
-   * @returns {string} - El color de fondo correspondiente al porcentaje.
-   */
-  #getColorByPercentage = (percent) => {
-    // Retorna color gris oscuro si el porcentaje es menor o igual a 4% (Nefasto)
-    if (percent <= 4) return "#666666"; // 4%
-    // Retorna color rojo si el porcentaje está entre 5% y 25% (Malo)
-    if (percent <= 25) return "red"; // 20%
-    // Retorna color amarillo si el porcentaje está entre 26% y 50% (Normal)
-    if (percent <= 50) return "yellow"; // 24%
-    // Retorna color verde si el porcentaje está entre 51% y 75% (Bueno)
-    if (percent <= 75) return "green"; // 24%
-    // Retorna color azul si el porcentaje está entre 76% y 96% (Muy bueno)
-    if (percent <= 96) return "blue"; // 20%
-    // Retorna color violeta oscuro si el porcentaje es mayor o igual a 96% (Sublime)
-    return "darkviolet"; // 4%
-  };
-
-  /**
    * Método privado para crear el elemento de PopUp de información de un Pokémon.
    * @param {object} poke - El objeto Pokémon.
    * @returns {HTMLElement} - El elemento div de PopUp creado.
@@ -508,7 +509,7 @@ export default class PokemonDOMHandler {
         
         
           <div class="div-stat-percent-power">
-            <div class="stat-percentage-power" style="background-color: ${this.#getColorByPercentage(
+            <div class="stat-percentage-power" style="background-color: ${getColorByPercentage(
               poke.statistics.power_percent
             )}">
             </div>
@@ -517,7 +518,7 @@ export default class PokemonDOMHandler {
           </div>
     
           <div class="div-stat-percent">
-            <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
+            <div class="stat-percentage" style="background-color: ${getColorByPercentage(
               poke.statistics.hp_percent
             )}">
             </div>
@@ -526,7 +527,7 @@ export default class PokemonDOMHandler {
           </div>
     
           <div class="div-stat-percent">
-            <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
+            <div class="stat-percentage" style="background-color: ${getColorByPercentage(
               poke.statistics.attack_percent
             )}">
             </div>
@@ -535,7 +536,7 @@ export default class PokemonDOMHandler {
           </div>
     
           <div class="div-stat-percent-special">
-            <div class="stat-percentage-special" style="background-color: ${this.#getColorByPercentage(
+            <div class="stat-percentage-special" style="background-color: ${getColorByPercentage(
               poke.statistics.special_attack_percent
             )}">
             </div>
@@ -544,7 +545,7 @@ export default class PokemonDOMHandler {
           </div>
     
           <div class="div-stat-percent">
-            <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
+            <div class="stat-percentage" style="background-color: ${getColorByPercentage(
               poke.statistics.defense_percent
             )}">
             </div>
@@ -553,7 +554,7 @@ export default class PokemonDOMHandler {
           </div>
     
           <div class="div-stat-percent-special">
-            <div class="stat-percentage-special" style="background-color: ${this.#getColorByPercentage(
+            <div class="stat-percentage-special" style="background-color: ${getColorByPercentage(
               poke.statistics.special_defense_percent
             )}">
             </div>
@@ -562,7 +563,7 @@ export default class PokemonDOMHandler {
           </div>
     
           <div class="div-stat-percent">
-            <div class="stat-percentage" style="background-color: ${this.#getColorByPercentage(
+            <div class="stat-percentage" style="background-color: ${getColorByPercentage(
               poke.statistics.speed_percent
             )}">
             </div>
