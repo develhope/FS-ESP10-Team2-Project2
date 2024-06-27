@@ -20,8 +20,8 @@
 justify-content: center;
     padding: 2vw;
     display: grid;
-    grid-template-columns:20vw 20vw ;
-    grid-template-rows:2vw  20vw 20vw 5vw;
+    grid-template-columns:20rem 20rem ;
+    grid-template-rows:4rem  20rem 20rem 8rem;
     flex-direction: column;
     gap: 4vw;
     align-items: center;
@@ -62,7 +62,7 @@ margin-top: 1vw;
 #img-shiny {
     display: flex;
 justify-content: center;
-    width: 10vw;
+    width: 12rem;
 }
 
 #gif {
@@ -226,14 +226,15 @@ width: min-content;
     justify-items: center;
     border-radius: 1vw;
     align-items: center;
-    justify-content: center;
-    justify-content: space-evenly;
+    justify-content: space-between;
+  
     padding: 0 1vw;
     margin: 0 15%;
 }
 .imgs-evolutions{
-    width: 7vw;
+    width: 8rem;
 border: 4px solid transparent;
+
 }
 
 #types-container3-pokemon{
