@@ -55,6 +55,10 @@ class TokensManager {
    * @param {number} amount - La cantidad de tokens a añadir.
    */
   addTokens(amount) {
+    if (amount < 0) {
+      console.warn("La cantidad de tokens no puede ser negativa.");
+      return;
+    }
     this.#tokens += amount;
     this.#saveTokens();
   }

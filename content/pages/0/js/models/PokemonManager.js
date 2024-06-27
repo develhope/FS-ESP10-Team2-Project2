@@ -13,6 +13,9 @@ import P_F from "./PokemonFilter.js";
 //? Modulos de (PokemonBattle.js)
 import { Pokemon, PokemonBattle, PokemonInventory } from "./PokemonBattle.js";
 
+//? Manejador de Tokens (Tokens Manager)
+import T from "../../../assets/general/js/models/TokensManager.js";
+
 /**
  * Maneja el evento 'beforeunload' para limpiar el sessionStorage.
  * @param {Event} event - El evento 'beforeunload'.
