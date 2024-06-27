@@ -79,6 +79,7 @@ class TokensManager {
    */
   #saveTokens() {
     _.DOM.saveToLocalStorage("userTokens", this.#tokens);
+    this.#emitTokenChange();
   }
 
   /**
@@ -86,6 +87,13 @@ class TokensManager {
    */
   #loadTokens() {
     this.#tokens = _.DOM.getFromLocalStorage("userTokens");
+  }
+
+  #emitTokenChange() {
+    const event = new CustomEvent("tokensChanged", {
+      detail: { tokens: this.tokens },
+    });
+    window.dispatchEvent(event); // Disparar evento global
   }
 }
 

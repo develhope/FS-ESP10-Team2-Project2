@@ -439,10 +439,10 @@ export default class PokemonDOMHandler {
 
       //! Prueba de Batalla Pokemon
       //* Codigo original
-      // console.log(`${poke.name.toUpperCase()} Añadido al Carrito`);
-      // addToCart(poke);
+      console.log(`${poke.name.toUpperCase()} Añadido al Carrito`);
+      addToCart(poke);
       //* Codigo temporal de prueba
-      startBattle(poke, PokemonInventory);
+      // startBattle(poke, PokemonInventory);
 
       divAddCart.classList.add("adding-to-cart");
       // Remover la clase después de la animación

@@ -859,7 +859,7 @@ export default class PokemonManager {
 
     // Log para depuración
     // console.clear();
-    // this.logDataDebug();
+    this.logDataDebug();
   }
 
   /**

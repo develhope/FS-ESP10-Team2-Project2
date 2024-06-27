@@ -31,20 +31,38 @@ async function initializePokemonManager(count, reload) {
 initializePokemonManager(1025);
 // initializePokemonManager(151, true);
 
-// T.tokens = 0;
-// console.log(T.tokens);
+// Función para simular las operaciones con Tokens
+function simulateTokenOperations() {
+  setTimeout(() => {
+    T.tokens = 0;
+    console.log(`T.tokens = ${T.tokens}`);
+  }, 1000);
 
-// T.tokens -= 5;
-// console.log(T.tokens);
+  setTimeout(() => {
+    T.tokens -= 5;
+    console.log(`T.tokens -= 5: ${T.tokens}`);
+  }, 2000);
 
-// T.tokens += 5;
-// console.log(T.tokens);
+  setTimeout(() => {
+    T.tokens += 5;
+    console.log(`T.tokens += 5: ${T.tokens}`);
+  }, 3000);
 
-// T.addTokens(5);
-// console.log(T.tokens);
+  setTimeout(() => {
+    T.addTokens(5);
+    console.log(`T.addTokens(5): ${T.tokens}`);
+  }, 4000);
 
-// console.log(T.subtractTokens(5));
-// console.log(T.tokens);
+  setTimeout(() => {
+    console.log(`T.subtractTokens(5): ${T.subtractTokens(5)}`);
+    console.log(`T.tokens: ${T.tokens}`);
+  }, 5000);
 
-// console.log(T.subtractTokens(6));
-// console.log(T.tokens);
+  setTimeout(() => {
+    console.log(`T.subtractTokens(6): ${T.subtractTokens(6)}`);
+    console.log(`T.tokens: ${T.tokens}`);
+  }, 6000);
+}
+
+// Llamar a la función para simular las operaciones
+// simulateTokenOperations();

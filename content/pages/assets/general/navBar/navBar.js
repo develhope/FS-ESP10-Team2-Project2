@@ -1,3 +1,6 @@
+//? Manejador de Tokens (Tokens Manager)
+import T from "../js/models/TokensManager.js";
+
 /**
  * @constant {string} navBarPath - Ruta al archivo HTML de la barra de navegación.
  * @constant {Object} pages - Rutas a las páginas del sitio web.
@@ -35,6 +38,9 @@ async function loadNavbar() {
     // Inicializar la funcionalidad del modo oscuro
     initDarkMode();
 
+    // Inicializar los eventos relacionados con los Tokens
+    initSetTokens();
+
     // Inicializar los eventos de navegación
     initNavEvents();
   } catch (error) {
@@ -64,6 +70,21 @@ function initDarkMode() {
   const darkModeStatus = localStorage.getItem("darkMode");
   if (darkModeStatus === "true") {
     body.classList.add("dark-mode");
+  }
+}
+
+/**
+ *! Inicializa los eventos relacionados con los Tokens y establece un observador para cambios en T.tokens.
+ */
+function initSetTokens() {
+  const nbTokens = document.querySelector(".div-tokens p");
+  if (nbTokens) {
+    nbTokens.textContent = `${T.tokens}€`;
+
+    // Escuchar el evento tokensChanged para actualizar nbTokens
+    window.addEventListener("tokensChanged", () => {
+      nbTokens.textContent = `${T.tokens}€`;
+    });
   }
 }
 
