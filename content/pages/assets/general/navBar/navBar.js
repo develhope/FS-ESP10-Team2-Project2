@@ -121,11 +121,11 @@ function initDarkMode() {
 function initSetTokens() {
   const nbTokens = document.querySelector(".div-tokens p");
   if (nbTokens) {
-    nbTokens.textContent = `${T.tokens}€`;
+    nbTokens.textContent = `Saldo: ${T.tokens}€`;
 
     // Escuchar el evento tokensChanged para actualizar nbTokens
     window.addEventListener("tokensChanged", () => {
-      nbTokens.textContent = `${T.tokens}€`;
+      nbTokens.textContent = `Saldo: ${T.tokens}€`;
     });
   }
 }

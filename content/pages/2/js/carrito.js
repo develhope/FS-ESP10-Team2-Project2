@@ -1,6 +1,3 @@
-// ! Suma de todas las cards
-// ! Función eliminar
-// ! Pasarela de pago
 
 // localStorage.clear();
 // sessionStorage.clear();
@@ -11,6 +8,7 @@ let carrito = getCarritoStorage();
 // Encapsulamos toda la lógica funcional del carrito en una función principal que ejecutará toda la lógica.
 export function initCarrito() {
 
+  let importeTotal = 0;
   const carritoStorageJs = carrito;
 
   // Contenedor del carrito
@@ -42,20 +40,69 @@ export function initCarrito() {
     </div>
     `;
 
+    // Suma de todas las cards
+    importeTotal += itemCarrito.variablePrice;
+
     const inputCantidad = divCarrito.querySelector(`#quantity-${index}`);
       inputCantidad.addEventListener('change', (event) => {
         const nuevaCantidad = event.target.value;
+
+        //Validar que la cantidad sea un numero natural entre 1-100 
+        if(validarCantidad(nuevaCantidad)){
         actualizarCantidadCarrito(index, nuevaCantidad);
+        } else {
+          alert("Cantidad inválida. Debe ser un número natural 1-100")
+          event.target.value = carrito[index].quantity;
         }
+      }
       ) 
     
     const removeButton = divCarrito.querySelector(`#remove-${index}`);
     removeButton.addEventListener('click', () => {
-      eliminarPokemonCard(index);
+      divCarrito.classList.add('fade-out');
+      setTimeout(() => {
+        eliminarPokemonCard(index); // Llamar a la función de eliminación después de la animación
+      }, 500);
+      
     });
 
     containerCarritoId.appendChild(divCarrito);
   });
+
+  const totalCarrito = document.createElement('div');
+  totalCarrito.className = "totalCarrito";
+  totalCarrito.innerHTML = `
+  <p > IMPORTE TOTAL: <p>
+  <p > ${importeTotal.toFixed(2)}€
+  `;
+  containerCarritoId.appendChild(totalCarrito);
+
+  const checkoutButton = document.createElement('button');
+  checkoutButton.className = "pasarelaCheck";
+  checkoutButton.textContent = "Proceder al pago";
+  containerCarritoId.appendChild(checkoutButton);
+
+  checkoutButton.addEventListener('click', () =>{
+    alert("Redirigiendo a la pasarela de pago...")
+  });
+
+// Restringir input a 0, no negativos, no por encima de 100, no separaciones entre números
+
+  function validarCantidad (cantidad){
+    const importeTotalCarrito = parseInt(cantidad, 10);
+    return !isNaN(importeTotalCarrito) && importeTotalCarrito > 0 && importeTotalCarrito <= 100;
+  }
+
+  function actualizarImporteTotal() {
+    let nuevoImporteTotal = 0;
+    carrito.forEach(item => {
+      nuevoImporteTotal += item.variablePrice;
+    });
+
+    const totalCarritoElement = document.querySelector('.totalCarrito p:last-child');
+    totalCarritoElement.textContent = `${nuevoImporteTotal.toFixed(2)}€`;
+
+  }
 
   function actualizarCantidadCarrito(index, nuevaCantidad) {
     const precioUnitario = carrito[index].price;
@@ -64,6 +111,7 @@ export function initCarrito() {
     // Calcular el nuevo precio basado en la nueva cantidad
     const nuevoPrecio = precioUnitario * carrito[index].quantity;
     actualizarPrecioCarrito(index, nuevoPrecio);
+    actualizarImporteTotal();
     setCarritoStorage(carrito);
   }
 
@@ -72,6 +120,7 @@ export function initCarrito() {
     precioElement.textContent = `Total: ${nuevoPrecio.toFixed(2)}€`;
     carrito[index].variablePrice = nuevoPrecio;
     setCarritoStorage(carrito);
+    actualizarImporteTotal();
   } 
   
   function eliminarPokemonCard(index) {

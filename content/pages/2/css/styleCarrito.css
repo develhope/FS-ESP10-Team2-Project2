@@ -1,68 +1,175 @@
 
-.carritoDeCompraClass{
-display: flex;
-flex-direction: column;
-gap:1rem;
-justify-content: center;
-align-items: center;
-padding-top: 50px;
+.carritoDeCompraClass {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+  padding: 40px;
 }
 
-.carritoTitle{
-    font-size: 150%;
+.carritoTitle {
+  font-size: 150%;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  padding-top: 50px;
 }
 
-.carrito-items{
-    display: flex;
-    flex-direction: row;
-    padding: 1.7vw;
-    border: 3px solid rgba(187, 184, 184, 0.955);
-    border-radius: 10px;
-    background-color: rgba(187, 184, 184, 0.758); 
-    width: 400px;
-    gap:4vw;
-    text-wrap: wrap;
-    align-items: center;
+.carrito-items {
+  display: flex;
+  flex-direction: row;
+  padding: 1.7vw;
+  border: 3px solid rgba(187, 184, 184, 0.955);
+  border-radius: 10px;
+  background-color: rgba(187, 184, 184, 0.758);
+  width: 400px;
+  gap: 2vw;
+  text-wrap: wrap;
+  align-items: center;
 }
 
 /* Arreglar números del input modo oscuro */
 
-.carrito-items img{
-    width: 30%;
+.carrito-items img {
+  width: 30%;
 }
 
-.carrito-items img:hover{
-    transform: scale(1.5);
+.carrito-items img:hover {
+  transform: scale(1.5);
+  transition: 0.1s;
 }
 
+.contador > input {
+  width: 50px;
+  height: 30px;
+  text-align: center;
+  border: 1px solid black;
+  border-radius: 5px;
+  background-color: rgba(252, 233, 124, 0.874);
+  color: black;
+}
 
-.contador > input{
-    width: 50px;
-    height: 30px;
-    text-align: center;
-    border: 1px solid black;
-    border-radius: 5px;
-    background-color: rgba(252, 233, 124, 0.874);
-    color: black;
+.totalCarrito {
+  display: flex;
+  flex-direction: row;
+  padding: 1.2vw;
+  margin-top: 30px;
+  border: 3px solid rgba(187, 184, 184, 0.955);
+  border-radius: 10px;
+  background-color: rgba(187, 184, 184, 0.758);
+  width: 400px;
+  gap: 2vw;
+  text-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.pasarelaCheck {
+  display: flex;
+  flex-direction: row;
+  padding: 7px;
+  margin-top: 15px;
+  border: 3px solid rgba(187, 184, 184, 0.955);
+  border-radius: 10px;
+  background-color: rgba(252, 233, 124, 0.874);
+  color: black;
+  width: 430px;
+  gap: 2vw;
+  text-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.pasarelaCheck:hover {
+  transform: scale(1.1);
+  transition: 0.1s;
+  width: 400px;
 }
 
 /* Papelera */
 
 .material-symbols-outlined {
-  font-variation-settings:
-  'FILL' 0,
-  'wght' 400,
-  'GRAD' 0,
-  'opsz' 24
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
 }
 
-.deleteButton > button{
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.5;
+    transform: scale(0.5);
+  }
+}
+
+.fade-out {
+  animation: fadeOut 0.6s forwards;
+}
+
+.deleteButton > button {
     background-color: transparent;
     border: 0;
     border-radius: 0;
     cursor: pointer;
 }
 
-.deleteButton:hover{
-    transform: scale(1.1);
+.deleteButton:hover {
+  transform: scale(1.1);
+}
+
+@media (max-width: 440px) {
+  .carritoTitle {
+    font-size: 120%;
+  }
+  
+  .carrito-items {
+    display: flex;
+    width: 90vw;
+    justify-content: center;
+  }
+
+  
+.totalCarrito {
+  display: flex;
+  flex-direction: row;
+  padding: 1.2vw;
+  margin-top: 30px;
+  border: 3px solid rgba(187, 184, 184, 0.955);
+  border-radius: 10px;
+  background-color: rgba(187, 184, 184, 0.758);
+  width: 90vw;
+  gap: 2vw;
+  text-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.pasarelaCheck {
+  display: flex;
+  flex-direction: row;
+  padding: 7px;
+  margin-top: 30px;
+  border: 3px solid rgba(187, 184, 184, 0.955);
+  border-radius: 10px;
+  background-color: rgba(252, 233, 124, 0.874);
+  color: black;
+  width: 93vw;
+  gap: 2vw;
+  text-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.pasarelaCheck:hover {
+  transform: none;
+  transition: none;
+  width: 80vw;
+}
+
 }
