@@ -94,7 +94,7 @@ class TokensManager {
   }
 
   /**
-   * Crea un evento personalizado que se activa cada vez que `this.tokens` cambia de valor.
+   * Emite un evento personalizado indicando que `this.tokens` han cambiado.
    */
   #emitTokenChange() {
     const event = new CustomEvent("tokensChanged", {

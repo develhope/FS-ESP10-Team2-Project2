@@ -47,10 +47,46 @@ async function loadNavbar() {
     // Inicializar el elemento contador del carrito
     initCartCounter();
 
-    // Inicializar los eventos de navegación
-    initNavEvents();
+    // Llamar a la función para verificar y inicializar los eventos de navegación
+    checkAndInitNavEvents();
   } catch (error) {
-    console.error("Error loading navbar: ", error);
+    console.error("Error loading NavBar: ", error);
+  }
+}
+
+/**
+ ** Función que espera hasta un minuto para obtener el valor de "isLoad_PokemonManager"
+ * desde sessionStorage y luego inicializa los eventos de navegación si el valor es verdadero.
+ * Si el valor es falso después de un minuto, lanza un error.
+ */
+async function checkAndInitNavEvents() {
+  let isLoadPokemonManager = false;
+  const TIMEOUT_SECONDS = 60; // Tiempo máximo de espera en segundos (1 minuto)
+  const INTERVAL_MS = 1000; // Intervalo de verificación en milisegundos (1 segundo)
+
+  for (let i = 0; i < TIMEOUT_SECONDS; i++) {
+    // Obtener el valor de "isLoad_PokemonManager" desde sessionStorage con un tiempo de espera de 1 segundo
+    isLoadPokemonManager = await _.DOM.getFromSessionStorage(
+      "isLoad_PokemonManager",
+      INTERVAL_MS
+    );
+
+    // Si el valor es verdadero, salir del bucle
+    if (isLoadPokemonManager) break;
+
+    // Esperar 1 segundo antes de la próxima verificación
+    await new Promise((resolve) => setTimeout(resolve, INTERVAL_MS));
+  }
+
+  // Verificar el valor de isLoadPokemonManager
+  if (isLoadPokemonManager) {
+    // Inicializar los eventos de navegación si el valor es verdadero
+    initNavEvents();
+  } else {
+    // Lanzar un error si el valor es falso
+    throw new Error(
+      "PokemonManager No se ha cargado, reinicia la página y vuelva a intentarlo"
+    );
   }
 }
 

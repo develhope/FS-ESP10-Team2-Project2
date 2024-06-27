@@ -65,19 +65,45 @@ class _ {
     /**
      ** Obtiene los datos de sessionStorage.
      * @param {string} key - La clave bajo la cual se almacenaron los datos.
-     * @returns {object|null} - El valor almacenado o null si no se encuentra.
+     * @param {number} [timeout] - El tiempo máximo de espera en milisegundos. Si no está definido, se obtiene el valor instantáneamente.
+     * @returns {object|null|Promise<object|null>} - El valor almacenado o null si no se encuentra, o una promesa si se define un tiempo de espera.
      * @example
      * // Obtiene un objeto de sessionStorage.
      * const user = _.DOM.getFromSessionStorage('user');
      * console.log(user); // { name: 'Juan', age: 30 } o null
+     *
+     * // Obtiene un objeto de sessionStorage con tiempo de espera.
+     * _.DOM.getFromSessionStorage('user', 3000).then(user => {
+     *   console.log(user); // { name: 'Juan', age: 30 } o null
+     * });
      */
-    getFromSessionStorage(key) {
+    getFromSessionStorage(key, timeout) {
       if (typeof key !== "string") {
         throw new Error("La clave debe ser una cadena de texto.");
       }
 
-      const value = sessionStorage.getItem(key);
-      return value ? JSON.parse(value) : null;
+      if (timeout === undefined) {
+        const value = sessionStorage.getItem(key);
+        return value ? JSON.parse(value) : null;
+      } else if (typeof timeout !== "number" || timeout < 0) {
+        throw new Error("El tiempo de espera debe ser un número positivo.");
+      }
+
+      return new Promise((resolve) => {
+        const interval = 100;
+        let elapsed = 0;
+        const checkInterval = setInterval(() => {
+          const value = sessionStorage.getItem(key);
+          if (value) {
+            clearInterval(checkInterval);
+            resolve(JSON.parse(value));
+          } else if (elapsed >= timeout) {
+            clearInterval(checkInterval);
+            resolve(null);
+          }
+          elapsed += interval;
+        }, interval);
+      });
     },
 
     /**
@@ -103,19 +129,45 @@ class _ {
     /**
      ** Obtiene los datos de localStorage.
      * @param {string} key - La clave bajo la cual se almacenaron los datos.
-     * @returns {object|null} - El valor almacenado o null si no se encuentra.
+     * @param {number} [timeout] - El tiempo máximo de espera en milisegundos. Si no está definido, se obtiene el valor instantáneamente.
+     * @returns {object|null|Promise<object|null>} - El valor almacenado o null si no se encuentra, o una promesa si se define un tiempo de espera.
      * @example
      * // Obtiene un objeto de localStorage.
      * const settings = _.DOM.getFromLocalStorage('settings');
      * console.log(settings); // { theme: 'dark', language: 'es' } o null
+     *
+     * // Obtiene un objeto de localStorage con tiempo de espera.
+     * _.DOM.getFromLocalStorage('settings', 3000).then(settings => {
+     *   console.log(settings); // { theme: 'dark', language: 'es' } o null
+     * });
      */
-    getFromLocalStorage(key) {
+    getFromLocalStorage(key, timeout) {
       if (typeof key !== "string") {
         throw new Error("La clave debe ser una cadena de texto.");
       }
 
-      const value = localStorage.getItem(key);
-      return value ? JSON.parse(value) : null;
+      if (timeout === undefined) {
+        const value = localStorage.getItem(key);
+        return value ? JSON.parse(value) : null;
+      } else if (typeof timeout !== "number" || timeout < 0) {
+        throw new Error("El tiempo de espera debe ser un número positivo.");
+      }
+
+      return new Promise((resolve) => {
+        const interval = 100;
+        let elapsed = 0;
+        const checkInterval = setInterval(() => {
+          const value = localStorage.getItem(key);
+          if (value) {
+            clearInterval(checkInterval);
+            resolve(JSON.parse(value));
+          } else if (elapsed >= timeout) {
+            clearInterval(checkInterval);
+            resolve(null);
+          }
+          elapsed += interval;
+        }, interval);
+      });
     },
   };
 
