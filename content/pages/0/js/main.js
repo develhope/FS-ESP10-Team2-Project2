@@ -28,8 +28,23 @@ async function initializePokemonManager(count, reload) {
 }
 
 //! Inicia la carga de los Pokémon (puedes cambiar el número por el numero de Pokémon que desees cargar en el DOM)
-// initializePokemonManager(1025);
+initializePokemonManager(1025);
 // initializePokemonManager(151, true);
 
-// Instanciar la clase
-console.log(T.tokens);
+// T.tokens = 0;
+// console.log(T.tokens);
+
+// T.tokens -= 5;
+// console.log(T.tokens);
+
+// T.tokens += 5;
+// console.log(T.tokens);
+
+// T.addTokens(5);
+// console.log(T.tokens);
+
+// console.log(T.subtractTokens(5));
+// console.log(T.tokens);
+
+// console.log(T.subtractTokens(6));
+// console.log(T.tokens);

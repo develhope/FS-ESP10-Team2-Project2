@@ -1,4 +1,4 @@
-//? Libreria personal de utilidades
+//? Librería personal de utilidades
 import _ from "../lib/utilities.js";
 
 /**
@@ -91,16 +91,3 @@ class TokensManager {
 
 //! Export Normal
 export default new TokensManager(300);
-
-//! Export Node.js
-// module.exports = { TokensManager };
-
-// //? Ejemplo de uso
-// console.log(Tokens.tokens); // 100
-// Tokens.addTokens(50);
-// console.log(Tokens.tokens); // 150
-// const result1 = Tokens.subtractTokens(30);
-// console.log(Tokens.tokens); // 120
-// console.log(result1); // true
-// const result2 = Tokens.subtractTokens(200); // Aviso: No se pueden restar más tokens de los que se tienen.
-// console.log(result2); // false
