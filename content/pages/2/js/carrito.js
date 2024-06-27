@@ -51,6 +51,7 @@ export function initCarrito() {
       const nuevaCantidad = event.target.value;
 
       //Validar que la cantidad sea un numero natural entre 1-100
+
       if (validarCantidad(nuevaCantidad)) {
         actualizarCantidadCarrito(index, nuevaCantidad);
       } else {
@@ -151,7 +152,7 @@ export function addToCart(pokemon) {
   const carritoItem = {
     name: pokemon.name,
     price: pokemon.market.price,
-    image: pokemon.images.illustration.default,
+    image: pokemon.images.rendering.default,
     quantity: 1, // Agregar una propiedad de cantidad
     variablePrice: pokemon.market.price,
   };
