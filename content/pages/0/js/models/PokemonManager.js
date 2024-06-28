@@ -208,14 +208,38 @@ export function addEventListenersPokemonEquippedButton(pokemonDivDataList) {
   });
 }
 
-//! importar en la confirmacion de pago de la pasarela para guardar los Pokemon comprados en el inventario.
+//! Importar en la confirmación de pago de la pasarela para guardar los Pokémon comprados en el inventario.
+
 /**
  * Añade una lista de Pokémon al inventario.
  * @param {Array} pokemonList - Lista de objetos Pokémon con sus datos.
  */
-export function addListPokemonToInventory(pokemonList) {
+export function addListPokemonToInventory(
+  pokemonList,
+  originalPokemonDataList = _.DOM.getFromSessionStorage("pokemonManager_data")
+) {
+  // Verificar si la lista de datos originales de Pokémon está cargada
+  if (!originalPokemonDataList) {
+    throw new Error(
+      "pokemonManager_data no se ha cargado correctamente. Reinicia la página y vuelve a intentarlo."
+    );
+  }
+
+  // Buscar y mapear cada Pokémon de la lista de datos originales
+  const pokemonOrigingArr = pokemonList.map((poke) => {
+    const originalPoke = originalPokemonDataList.find(
+      (p) => p.name.toLowerCase() === poke.name.toLowerCase()
+    );
+    if (!originalPoke) {
+      throw new Error(
+        `Pokémon ${poke.name} no encontrado en los datos originales.`
+      );
+    }
+    return originalPoke;
+  });
+
   // Transforma la lista de Pokémon en instancias de la clase Pokemon
-  const pokemonArr = pokemonList.map(
+  const pokemonArr = pokemonOrigingArr.map(
     (poke) =>
       new Pokemon(
         poke.name,
