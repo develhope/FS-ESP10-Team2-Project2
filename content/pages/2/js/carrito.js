@@ -148,13 +148,17 @@ export function addToCart(pokemon) {
     return;
   }
 
+  const realPrice = pokemon.market.discount
+    ? pokemon.market.discount
+    : pokemon.market.price;
+
   // Objeto sólo con las propiedades necesarias del pokemon para hacer carrito más ligero
   const carritoItem = {
     name: pokemon.name,
-    price: pokemon.market.price,
+    price: realPrice,
     image: pokemon.images.rendering.default,
     quantity: 1, // Agregar una propiedad de cantidad
-    variablePrice: pokemon.market.price,
+    variablePrice: realPrice,
   };
 
   // Buscar si el Pokémon ya está en el carrito
@@ -163,7 +167,7 @@ export function addToCart(pokemon) {
   if (existingPokemon) {
     // Si ya está, suma uno
     existingPokemon.quantity += 1;
-    existingPokemon.variablePrice += pokemon.market.price;
+    existingPokemon.variablePrice += realPrice;
   } else {
     // Si no está, agregar el nuevo objeto
     carrito.push(carritoItem);
