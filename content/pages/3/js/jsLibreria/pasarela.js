@@ -1,20 +1,38 @@
 //import { getCarritoStorage } from './carrito.js';
 //import Stripe from "stripe";
 
-import TokensManager from "../../assets/general/js/models/TokensManager.js";
-//import { addListPokemonToInventory } from "../../../0/js/models/PokemonManager.js";
+import TokensManager from "../../../assets/general/js/models/TokensManager.js";
+import { addListPokemonToInventory } from "../../../0/js/models/PokemonManager.js";
+
+// Crear una instancia de TokensManager para manejar el saldo de tokens
+
 const dinero = new TokensManager();
+let totalToPay = undefined;
+
+// Obtener el carrito de compras desde el localStorage, si no existe, inicializarlo como un array vacío
+
+const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+// Inicializar Stripe con la clave pública de prueba
 
 const stripe = Stripe('pk_test_51PWJAjKkZigXo74zEaZF9NVcLF7Fxks1wH2hoT9tQW7MJy2IlSCZhvIpRq9twM2wmauQKFLaOOtIcG2xB0LL9TxQ00G5kA3Nao');
-console.log(stripe)
+
+// Crear elementos de Stripe
+
+
 const elements = stripe.elements();
 
+// Añadir un listener para ejecutar el código cuando el DOM esté completamente cargado
+
+
 document.addEventListener('DOMContentLoaded', () => {
-    const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
     console.log('Carrito cargado:', carrito);
     mostrarPokemonCarrito(carrito);
     inicializarFormularioPago();
 });
+
+// Función para mostrar los Pokémon del carrito en la página
+
 
 function mostrarPokemonCarrito(carrito) {
     const pokemonList = document.getElementById('pokemon-list');
@@ -25,7 +43,10 @@ function mostrarPokemonCarrito(carrito) {
         return;
     }
 
-    let total = 0;
+    totalToPay = 0;
+
+    // Limpiar la lista antes de añadir nuevos elementos
+
 
     pokemonList.innerHTML = ''; // Limpiar la lista antes de añadir nuevos elementos
 
@@ -47,19 +68,21 @@ function mostrarPokemonCarrito(carrito) {
             </div>
         `;
         pokemonList.appendChild(pokemonElement);
-        total += item.variablePrice;
+        totalToPay += item.variablePrice; // Calcular el total a pagar
     });
 
-    cartTotal.innerHTML = `<h3>Total a pagar: ${total.toFixed(2)}€</h3>`;
+    cartTotal.innerHTML = `<h3>Total a pagar: ${totalToPay.toFixed(2)}€</h3>`;
 }
 
-console.log(200.308.toFixed(2))
+// Función para inicializar el formulario de pago
+
 function inicializarFormularioPago() {
     const paymentElement = document.getElementById('payment-element');
     if (!paymentElement) {
         console.error('Elemento payment-element no encontrado');
         return;
     }
+    // Crear y montar el elemento de tarjeta de Stripe
 
     const card = elements.create('card');
     card.mount('#payment-element');
@@ -69,6 +92,7 @@ function inicializarFormularioPago() {
         console.error('Formulario de pago no encontrado');
         return;
     }
+    // Añadir un listener para manejar el envío del formulario de pago
 
     form.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -78,17 +102,36 @@ function inicializarFormularioPago() {
         if (error) {
             const errorElement = document.getElementById('error-message');
             if (errorElement) {
-                errorElement.textContent = error.message;
+                errorElement.textContent = error.message; // Mostrar mensaje de error
             }
         } else {
-            dinero.subtractTokens()
-            enviarTokenAlServidor(token);
+            // Restar tokens y verificar si la transacción es exitosa
+            const isExito = dinero.subtractTokens(totalToPay)
+            if (isExito){
+                enviarTokenAlServidor(token) // Enviar el token al servidor si hay éxito
+            } else {
+                refusePaymen() // Rechazar el pago si no hay suficiente saldo
+            }
+            
         }
     });
 }
 
+
+// Función para enviar el token al servidor
+
 function enviarTokenAlServidor(token) {
     console.log('Token enviado al servidor:', token);
     alert('¡Pago procesado con éxito!');
-    // Aquí podrías redirigir a una página de confirmación o limpiar el carrito
+    const listPokemon = carrito.flatMap(item => Array(item.quantity).fill(item.name));
+    console.log('Nombres de Pokémon en el carrito:', listPokemon);
+    addListPokemonToInventory(listPokemon)
+
+}
+
+// Función para rechazar el pago si no hay suficiente saldo
+
+function refusePaymen() {
+    console.warn("El usuario no tiene el dinero suficiente para realizar el pago")
+    alert("No tiene saldo suficiente");
 }

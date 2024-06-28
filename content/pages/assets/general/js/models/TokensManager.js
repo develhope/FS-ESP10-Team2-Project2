@@ -105,4 +105,4 @@ class TokensManager {
 }
 
 //! Export Normal
-export default new TokensManager(1000);
+export default TokensManager;
