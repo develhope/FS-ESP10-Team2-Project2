@@ -50,6 +50,55 @@ function handleSessionStorage(data, pokemon = null, loadedCards = undefined) {
 }
 
 /**
+ * Transforma la información de un Pokémon para la vista previa, incluyendo sus evoluciones,
+ * y opcionalmente guarda el resultado en sessionStorage.
+ *
+ * @param {Object} pokemon - Objeto que representa al Pokémon actual.
+ * @param {Array} originalPokemonDataList - Lista de datos originales de Pokémon.
+ * @param {boolean} [saveToSessionStorage=true] - Indicador para guardar en sessionStorage.
+ * @returns {Object} - Objeto con la información del Pokémon transformada para la vista previa.
+ * @throws {Error} - Si no se puede cargar `originalPokemonDataList` desde sessionStorage.
+ */
+export function transformInformationForPokemonPreview(
+  pokemon,
+  originalPokemonDataList = _.DOM.getFromSessionStorage("pokemonManager_data"),
+  saveToSessionStorage = true
+) {
+  // Verificar si la lista de datos originales de Pokémon está cargada
+  if (!originalPokemonDataList) {
+    throw new Error(
+      "pokemonManager_data No se ha cargado correctamente, reinicia la página y vuelve a intentarlo"
+    );
+  }
+
+  // Crear el objeto con el nombre del Pokémon actual en la propiedad '_'
+  const newPokemon = { _: _.str.formatAsVariableName(pokemon.name) };
+
+  // Añadir las evoluciones como propiedades en el objeto
+  pokemon.evolutions.forEach((evoName) => {
+    // Formatear el nombre de la evolución para usarlo como clave
+    const evoNameClean = _.str.formatAsVariableName(evoName.toLowerCase());
+
+    // Buscar el objeto de la evolución en la lista de datos originales
+    const evolutionPokemon = originalPokemonDataList.find(
+      (p) => _.str.formatAsVariableName(p.name.toLowerCase()) === evoNameClean
+    );
+
+    // Si se encuentra el objeto de la evolución, añadirlo al objeto `newPokemon`
+    if (evolutionPokemon) {
+      newPokemon[evoNameClean] = evolutionPokemon;
+    }
+  });
+
+  // Guardar el objeto transformado en sessionStorage si se especifica
+  if (saveToSessionStorage) {
+    _.DOM.saveToSessionStorage("pokemonPreview", newPokemon);
+  }
+
+  return newPokemon;
+}
+
+/**
  * Añade event listeners a los elementos de la lista de Pokémon.
  * @param {Array} data - Datos generales.
  * @param {Array} pokemonDivDataList - Lista de objetos Pokémon para los que se añadirán event listeners.
@@ -65,26 +114,11 @@ export function addEventListenersPokemonCards(
     // Selecciona el elemento del DOM correspondiente al Pokémon actual
     const pokemonElement = document.querySelector(`#pokemon-${poke.pokeId}`);
 
-    // Crear el objeto con el nombre del Pokémon actual en la propiedad '_'
-    const pokemon = { _: _.str.formatAsVariableName(poke.name) };
-
-    // Añadir las evoluciones como propiedades en el objeto
-    poke.evolutions.forEach((evoName) => {
-      // Formatear el nombre de la evolución para usarlo como clave
-      const evoNameClean = _.str.formatAsVariableName(evoName.toLowerCase());
-      // console.log("# evoNameClean:", evoNameClean);
-
-      // Buscar el objeto de la evolución en la lista de datos originales
-      const evolutionPokemon = data.originalPokemonDataList.find(
-        (p) => _.str.formatAsVariableName(p.name.toLowerCase()) === evoNameClean
-      );
-      // console.log("## evolutionPokemon:", evolutionPokemon);
-
-      // Si se encuentra el objeto de la evolución, añadirlo al objeto `pokemon`
-      if (evolutionPokemon) {
-        pokemon[evoNameClean] = evolutionPokemon;
-      }
-    });
+    const pokemon = transformInformationForPokemonPreview(
+      poke,
+      data.originalPokemonDataList,
+      false
+    );
 
     // console.log("### pokemon:", pokemon);
     // console.log("");
@@ -174,14 +208,38 @@ export function addEventListenersPokemonEquippedButton(pokemonDivDataList) {
   });
 }
 
-//! importar en la confirmacion de pago de la pasarela para guardar los Pokemon comprados en el inventario.
+//! Importar en la confirmación de pago de la pasarela para guardar los Pokémon comprados en el inventario.
+
 /**
  * Añade una lista de Pokémon al inventario.
  * @param {Array} pokemonList - Lista de objetos Pokémon con sus datos.
  */
-export function addListPokemonToInventory(pokemonList) {
+export function addListPokemonToInventory(
+  pokemonList,
+  originalPokemonDataList = _.DOM.getFromSessionStorage("pokemonManager_data")
+) {
+  // Verificar si la lista de datos originales de Pokémon está cargada
+  if (!originalPokemonDataList) {
+    throw new Error(
+      "pokemonManager_data no se ha cargado correctamente. Reinicia la página y vuelve a intentarlo."
+    );
+  }
+
+  // Buscar y mapear cada Pokémon de la lista de datos originales
+  const pokemonOrigingArr = pokemonList.map((poke) => {
+    const originalPoke = originalPokemonDataList.find(
+      (p) => p.name.toLowerCase() === poke.name.toLowerCase()
+    );
+    if (!originalPoke) {
+      throw new Error(
+        `Pokémon ${poke.name} no encontrado en los datos originales.`
+      );
+    }
+    return originalPoke;
+  });
+
   // Transforma la lista de Pokémon en instancias de la clase Pokemon
-  const pokemonArr = pokemonList.map(
+  const pokemonArr = pokemonOrigingArr.map(
     (poke) =>
       new Pokemon(
         poke.name,
@@ -244,7 +302,7 @@ export function startBattle(pokemon) {
 }
 
 const P_Inventory = new PokemonInventory(true);
-P_Inventory.showInventory();
+// P_Inventory.showInventory();
 
 export default class PokemonManager {
   //!# Crear una comprobacion si PokemonManager a terminado de cargar todos los datos necesarios para funcionar correctamente.

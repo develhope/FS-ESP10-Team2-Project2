@@ -134,34 +134,36 @@ function initSetTokens() {
  ** Inicializa el contador del carrito y configura el evento para actualizar el contador cuando cambie el carrito.
  */
 function initCartCounter() {
+  // Selecciona el elemento del contador del carrito en el DOM
   const nbCartCount = document.querySelector(".cart-count");
 
   if (nbCartCount) {
+    // Actualiza el contador del carrito con el valor actual del carrito en localStorage
     updateCartCounter(nbCartCount);
 
-    // Escuchar el evento cartChanged para actualizar el contador del carrito
+    //? Escucha el evento "cartChanged" para actualizar el contador del carrito cuando cambie el carrito
     window.addEventListener("cartChanged", () => {
+      // Llama a la función para actualizar el contador del carrito
       updateCartCounter(nbCartCount);
     });
   }
 }
 
 /**
- * Actualiza el contador del carrito en el DOM.
- * @param {HTMLElement} nbCartCount - El elemento del DOM que muestra el contador del carrito.
+ ** Actualiza el contador del carrito basado en el contenido del carrito en localStorage.
+ * @param {HTMLElement} nbCartCount - El elemento HTML del contador del carrito.
  */
 function updateCartCounter(nbCartCount) {
-  const cart = _.DOM.getFromLocalStorage("carrito");
-  const cartLeng = cart
-    ? _.DOM.getFromLocalStorage("carrito").length
-    : [].length;
-
-  if (cartLeng > 0) {
-    nbCartCount.style.display = "block";
-    nbCartCount.textContent = cartLeng;
-  } else {
+  // Obtiene el carrito del localStorage y lo convierte de JSON a un array
+  const carrito = JSON.parse(localStorage.getItem("carrito") || "[]");
+  // Si el carrito está vacío, oculta el contador y establece el texto en 0
+  if (carrito.length === 0) {
     nbCartCount.style.display = "none";
     nbCartCount.textContent = 0;
+  } else {
+    // Si el carrito tiene elementos, muestra el contador y establece el texto en el número de elementos del carrito
+    nbCartCount.style.display = "block";
+    nbCartCount.textContent = carrito.length;
   }
 }
 

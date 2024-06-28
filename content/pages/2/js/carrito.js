@@ -12,6 +12,8 @@ export function initCarrito() {
   const containerCarritoId = document.getElementById("carritoDeCompraId");
 
   carritoStorageJs.forEach((itemCarrito, index) => {
+    console.warn(itemCarrito);
+
     const divCarrito = document.createElement("div");
     divCarrito.innerHTML = `
     <div class= carrito-items>
@@ -174,14 +176,16 @@ export function addToCart(pokemon) {
 }
 
 /**
- *! (Codio Añadido)
  ** Guarda el carrito en localStorage y emite un evento para notificar el cambio.
  * @param {Array} carrito - El carrito a guardar.
  */
 function setCarritoStorage(carrito) {
+  // Convierte el carrito en una cadena JSON
   const carritoStorageJSON = JSON.stringify(carrito);
+  // Guarda la cadena JSON en localStorage bajo la clave "carrito"
   localStorage.setItem("carrito", carritoStorageJSON);
-  emitCartChanged(carrito); //! (Codio Añadido)
+  // Llama a la función para emitir el evento personalizado de cambio de carrito
+  emitCartChanged(carrito);
 }
 
 // Función para obtener el carrito del localStorage
@@ -199,15 +203,16 @@ function getCarritoStorage() {
 }
 
 /**
- *! (Codio Añadido)
- *? He creado esto para poder mandar una señal cuando se altera el resultado del carrito, asi poder captarla para cambiar el contador del NavBar en el carrito, si necesitas mas informacion puedes ver el archivo `navBar.js` o preguntar
- * Emite un evento personalizado indicando que el carrito ha cambiado.
+ *! Función para emitir un evento personalizado cuando el carrito cambia.
+ *? Esto permite notificar otras partes de la aplicación sobre el cambio en el carrito.
  * @param {Array} carrito - El carrito actualizado.
  */
 function emitCartChanged(carrito) {
+  // Crea un nuevo evento personalizado llamado "cartChanged"
   const event = new CustomEvent("cartChanged", {
-    detail: { carrito },
+    detail: { carrito }, // Pasa el carrito actualizado como detalle del evento
   });
+  // Despacha el evento globalmente para que otros componentes puedan escucharlo
   window.dispatchEvent(event);
 }
 
