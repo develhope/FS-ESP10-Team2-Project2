@@ -82,7 +82,7 @@ class TokensManager {
    * Guarda los tokens en el localStorage.
    */
   #saveTokens() {
-    _.DOM.saveToLocalStorage("userTokens", this.#tokens);
+    _.DOM.saveToLocalStorage("userTokens", this.#tokens.toFixed(2));
     this.#emitTokenChange();
   }
 

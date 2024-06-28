@@ -73,23 +73,35 @@
   flex-direction: row;
   padding: 7px;
   margin-top: 15px;
-  border: 3px solid rgba(187, 184, 184, 0.955);
   border-radius: 10px;
-  background-color: rgba(252, 233, 124, 0.874);
   color: black;
   width: 430px;
   gap: 2vw;
   text-wrap: wrap;
   align-items: center;
   justify-content: center;
+}
+
+/* styles.css */
+
+.button-enabled {
+  background-color: rgba(252, 233, 124, 0.874);
+  border: 3px solid rgba(187, 184, 184, 0.955);
   cursor: pointer;
 }
 
-.pasarelaCheck:hover {
+.button-enabled:hover {
   transform: scale(1.1);
   transition: 0.1s;
   width: 400px;
 }
+
+.button-disabled {
+  background-color: rgba(187, 184, 184, 0.955);
+  border: 3px solid rgba(187, 184, 184, 0.955);
+  cursor: auto;
+}
+
 
 /* Papelera */
 

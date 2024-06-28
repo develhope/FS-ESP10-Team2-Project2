@@ -208,14 +208,14 @@ export function addEventListenersPokemonEquippedButton(pokemonDivDataList) {
 }
 
 //! Importar en la confirmación de pago de la pasarela para guardar los Pokémon comprados en el inventario.
-
 /**
  * Añade una lista de Pokémon al inventario.
- * @param {Array} pokemonList - Lista de objetos Pokémon con sus datos.
+ * @param {Array} pokemonNameList - Lista de objetos Pokémon con sus datos.
  */
 export function addListPokemonToInventory(
-  pokemonList,
+  pokemonNameList,
   originalPokemonDataList = _.DOM.getFromSessionStorage("pokemonManager_data")
+    .originalPokemonDataList
 ) {
   // Verificar si la lista de datos originales de Pokémon está cargada
   if (!originalPokemonDataList) {
@@ -226,16 +226,13 @@ export function addListPokemonToInventory(
 
   // Convertir el objeto de datos originales a un array para poder iterar sobre sus valores
   const originalPokemonDataArray = Object.values(originalPokemonDataList);
-
   // Buscar y mapear cada Pokémon de la lista de datos originales
-  const pokemonOrigingArr = pokemonList.map((poke) => {
+  const pokemonOrigingArr = pokemonNameList.map((name) => {
     const originalPoke = originalPokemonDataArray.find(
-      (p) => p.name.toLowerCase() === poke.name.toLowerCase()
+      (p) => p.name.toLowerCase() === name.toLowerCase()
     );
     if (!originalPoke) {
-      throw new Error(
-        `Pokémon ${poke.name} no encontrado en los datos originales.`
-      );
+      throw new Error(`Pokémon ${name} no encontrado en los datos originales.`);
     }
     return originalPoke;
   });
@@ -260,7 +257,7 @@ export function addListPokemonToInventory(
 
   // Guardar el inventario en el almacenamiento local y mostrarlo
   P_Inventory.saveToLocalStorage();
-  P_Inventory.showInventory();
+  // P_Inventory.showInventory();
 }
 
 /**
@@ -366,7 +363,7 @@ export default class PokemonManager {
    * Añade event listeners a los elementos especificados una vez que estén disponibles en el DOM.
    */
   async #listenerAutoSavedSessionStorage() {
-    const INTERVAL_MS = 1000; // Intervalo de verificación en milisegundos (1 segundo)
+    const INTERVAL_MS = 500; // Intervalo de verificación en milisegundos (1 segundo)
     const TIMEOUT_SECONDS = 60; // Tiempo máximo de espera en segundos (1 minuto)
 
     for (let i = 0; i < TIMEOUT_SECONDS; i++) {
@@ -825,33 +822,26 @@ export default class PokemonManager {
    */
   #transformFromArrayDefaultToInventory() {
     const faultArr = this.#data.originalPokemonDataList;
-    // Obtener todos los Pokemon de PokemonInventory
+    // Obtener todos los Pokémon de PokemonInventory
     const inventoryArr = P_Inventory.getPokemon("*");
 
-    // Filtrar los elementos de faultArr que coinciden con los nombres en inventoryArr
-    const cleanArr = faultArr.filter((faultPokemon) => {
-      return inventoryArr.some(
+    // Crear un nuevo array transformado
+    const arr = faultArr.flatMap((faultPokemon) => {
+      // Filtrar los Pokémon en inventoryArr que coinciden con el nombre del faultPokemon
+      const matchingInventoryPokemons = inventoryArr.filter(
         (inventoryPokemon) =>
           inventoryPokemon.p.i.name.toLowerCase() ===
           faultPokemon.name.toLowerCase()
       );
+
+      // Mapear cada Pokémon coincidente para crear el nuevo objeto sin 'market' y añadir 'inInventory'
+      return matchingInventoryPokemons.map((inventoryPokemon) => {
+        const { market, ...rest } = faultPokemon;
+        rest.inventoryID = inventoryPokemon.inInventory.id;
+        return rest;
+      });
     });
 
-    // Crear un nuevo array transformado
-    const arr = cleanArr.map((p) => {
-      // Encontrar el objeto correspondiente en inventoryArr
-      const inventoryPokemon = inventoryArr.find(
-        (inventory) => inventory.p.i.name.toLowerCase() === p.name.toLowerCase()
-      );
-
-      // Crear un nuevo objeto sin la propiedad 'market' y añadir 'inInventory'
-      const { market, ...rest } = p;
-      rest.inventoryID = inventoryPokemon.inInventory.id;
-
-      return rest; // Devolver el nuevo objeto modificado
-    });
-
-    // console.log(arr);
     return arr;
   }
 

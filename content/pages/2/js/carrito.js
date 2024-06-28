@@ -84,12 +84,9 @@ export function initCarrito() {
   checkoutButton.textContent = "Proceder al pago";
   containerCarritoId.appendChild(checkoutButton);
 
-  checkoutButton.addEventListener("click", () => {
-    window.location.href = '../3/pasarela.html';
-  });
+  updateButtonState(carrito);
 
   // Restringir input a 0, no negativos, no por encima de 100, no separaciones entre números
-
   function validarCantidad(cantidad) {
     const importeTotalCarrito = parseInt(cantidad, 10);
     return (
@@ -204,6 +201,47 @@ function getCarritoStorage() {
 
   const carritoStorageJs = JSON.parse(carritoStorageJSON);
   return carritoStorageJs;
+}
+
+/**
+ ** Establece el carrito a un array vacio.
+ */
+export function deleteCart() {
+  setCarritoStorage([]);
+  console.log("Carrito Eliminado");
+}
+
+/**
+ ** Actualiza el estado del botón de checkout basado en la longitud del carrito.
+ * Si el carrito está vacío, deshabilita el botón y remueve el evento de click.
+ * Si el carrito tiene elementos, habilita el botón y añade el evento de click.
+ *
+ * @param {Array} cart - Lista de objetos en el carrito.
+ */
+function updateButtonState(cart) {
+  const button = document.querySelector(".pasarelaCheck");
+  // button.classList.add("button-disabled");
+  // button.classList.add("button-enabled");
+
+  if (cart.length <= 0) {
+    button.classList.remove("button-enabled");
+    button.classList.add("button-disabled");
+    button.disabled = true; // Deshabilita el evento de click
+    button.removeEventListener("click", addEventCheckoutButton); // Remueve el evento click
+  } else {
+    button.classList.remove("button-disabled");
+    button.classList.add("button-enabled");
+    button.disabled = false; // Habilita el evento de click
+    button.addEventListener("click", addEventCheckoutButton); // Agrega el evento click
+  }
+}
+
+/**
+ ** Manejador del evento click para el botón de checkout.
+ * Redirige al usuario a la página de pasarela de pago.
+ */
+function addEventCheckoutButton() {
+  window.location.href = "../3/pasarela.html";
 }
 
 /**
