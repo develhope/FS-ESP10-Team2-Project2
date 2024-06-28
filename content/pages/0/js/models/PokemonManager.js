@@ -588,6 +588,9 @@ export default class PokemonManager {
   async init(count, reload = false) {
     // Muestra el div de carga mientras se procesan los datos
     this.PokemonDOMHandler.toggleLoading(true);
+    document.querySelector(
+      "#switchLabel"
+    ).innerHTML = `Inventario (${P_Inventory.lastID})`;
 
     if (reload) {
       // Eliminar los datos almacenados en sessionStorage
@@ -674,11 +677,11 @@ export default class PokemonManager {
         this.#data.dom.filters.isInventory
       );
 
-      if (!pokemonManager_data)
-        _.DOM.saveToSessionStorage("pokemonManager_data", this.#data);
-
       // Añadir los event listeners
       this.#addEventListeners();
+
+      if (!pokemonManager_data)
+        _.DOM.saveToSessionStorage("pokemonManager_data", this.#data);
 
       PokemonManager.isLoad = true;
     } catch (error) {
