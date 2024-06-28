@@ -3,7 +3,8 @@ import _ from "../js/lib/utilities.js";
 
 //? Manejador de Tokens (Tokens Manager)
 import Tokens from "../js/models/TokensManager.js";
-const T = new Tokens(1000)
+
+const T = new Tokens(3333);
 
 /**
  * @constant {string} navBarPath - Ruta al archivo HTML de la barra de navegación.
