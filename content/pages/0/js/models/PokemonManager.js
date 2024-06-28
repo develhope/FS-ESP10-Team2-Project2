@@ -224,9 +224,12 @@ export function addListPokemonToInventory(
     );
   }
 
+  // Convertir el objeto de datos originales a un array para poder iterar sobre sus valores
+  const originalPokemonDataArray = Object.values(originalPokemonDataList);
+
   // Buscar y mapear cada Pokémon de la lista de datos originales
   const pokemonOrigingArr = pokemonList.map((poke) => {
-    const originalPoke = originalPokemonDataList.find(
+    const originalPoke = originalPokemonDataArray.find(
       (p) => p.name.toLowerCase() === poke.name.toLowerCase()
     );
     if (!originalPoke) {
