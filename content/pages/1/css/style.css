@@ -1,10 +1,12 @@
-html,body{
+html,
+body {
     margin: 0%;
     padding: 0%;
     box-sizing: border-box;
     font-weight: 300;
-   
+
 }
+
 #buy-button {
     grid-column-start: 1;
     grid-column-end: 3;
@@ -17,7 +19,7 @@ html,body{
     box-shadow: 0rem 0.2rem 0.2rem -0.1rem rgba(122, 122, 30, 0.607);
     cursor: pointer;
     display: flex;
- box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 #buy-button:hover {
@@ -109,7 +111,7 @@ html,body{
     font-size: small;
     background-color: #f366b9;
     align-items: self-start;
-border: 2px solid grey;
+    border: 2px solid grey;
 
 }
 
@@ -118,7 +120,7 @@ border: 2px solid grey;
     grid-column-end: 3;
     grid-row-start: 2;
     grid-row-end: 3;
-  
+
     width: 100%;
     display: flex;
     border: 2px solid transparent;
@@ -245,7 +247,7 @@ border: 2px solid grey;
     justify-content: space-between;
 
     padding: 0.5rem 3rem;
-    
+
 }
 
 .imgs-evolutions {
@@ -263,8 +265,8 @@ border: 2px solid grey;
 #price-span-imgs {
     display: flex;
     font-size: 1.2vw;
-justify-content: flex-end;
-margin-right: 1rem ;
+    justify-content: flex-end;
+    margin-right: 1rem;
 }
 
 .arrow-span-evolutions-pokemon {
@@ -295,11 +297,13 @@ margin-right: 1rem ;
     color: red;
     list-style: none;
     gap: 1.4rem;
-   
+
 }
-.ul li{
+
+.ul li {
     list-style-image: url();
 }
+
 .gender-text {
     display: flex;
     flex-direction: column;
@@ -318,39 +322,43 @@ margin-right: 1rem ;
     line-height: 0.3rem;
     padding: 2rem;
     margin-bottom: 1.5rem;
-letter-spacing: 1.5rem;
-margin-bottom: 2rem;
+    letter-spacing: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .table {
     padding: 2rem;
-    margin-right:1rem ;
+    margin-right: 1rem;
     display: flex;
     flex-direction: column;
     width: 75%;
-  background-color: rgb(255, 192, 211);
-  
+    background-color: rgb(255, 192, 211);
 }
-table ul{
- margin-bottom: 2rem;
+
+table ul {
+    margin-bottom: 2rem;
 
 }
-.li-statistics-pokemon{
-  gap:2rem
+
+.li-statistics-pokemon {
+    gap: 2rem
 }
-.colors{
+
+.colors {
     margin: 0.3rem 0.4rem;
-    padding:0.2rem 0.5rem;
+    padding: 0.2rem 0.5rem;
     border: 0.2px solid transparent;
-   
+
 }
-.base-points{
+
+.base-points {
     margin-bottom: 1rem;
 }
-#types-container3-pokemon{
+
+#types-container3-pokemon {
     padding: 0.5rem;
 }
 
-.movements-numbers{
- color:var(--clr-type-bug)
+.movements-numbers {
+    color: var(--clr-type-bug)
 }
