@@ -1,7 +1,6 @@
 body {
 
     margin: 0;
-    background-color: var(--clr-grey1);
 }
 
 main {
@@ -59,7 +58,7 @@ h1, h2 {
 
 
 
-button {
+#submit {
     background-color: #4CAF50;
     color: white;
     padding: 10px 20px;
