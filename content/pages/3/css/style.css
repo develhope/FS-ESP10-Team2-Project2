@@ -1,0 +1,81 @@
+body {
+
+    margin: 0;
+    background-color: var(--clr-grey1);
+}
+
+main {
+    max-width: 100rem;
+    margin: 0 auto;
+    background-color: var(--clr-white);
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1, h2 {
+    
+    text-align: center;
+}
+
+#cart-summary {
+    margin-bottom: 20px;
+}
+
+.pokemon-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.pokemon-image {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    margin-right: 15px;
+}
+
+.pokemon-details {
+    flex-grow: 1;
+}
+
+#cart-total {
+    text-align: right;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+#payment-form {
+    margin-top: 20px;
+    
+}
+
+#card-element {
+    margin-bottom: 20px;
+}
+
+
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+
+
+#submit:hover {
+    background-color: #45a049;
+}
+
+#card-errors {
+    color: #ff0000;
+    margin-top: 10px;
+}

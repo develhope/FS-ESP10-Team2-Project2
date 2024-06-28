@@ -85,7 +85,7 @@ export function initCarrito() {
   containerCarritoId.appendChild(checkoutButton);
 
   checkoutButton.addEventListener("click", () => {
-    alert("Redirigiendo a la pasarela de pago...");
+    window.location.href = '../3/pasarela.html';
   });
 
   // Restringir input a 0, no negativos, no por encima de 100, no separaciones entre números
