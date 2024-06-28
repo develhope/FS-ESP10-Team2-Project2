@@ -209,7 +209,7 @@ html,body{
     flex-direction: row;
     align-items: flex-start;
     box-sizing: border-box;
-    gap: 3rem;
+    gap: 2rem;
 
 
 }

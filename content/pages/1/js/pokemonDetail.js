@@ -234,12 +234,13 @@ Its percentage of power is ${pokemonOrigin.statistics.power_percent} and its per
     pokemonOrigin.evolutions.map((type) =>
       pokemon[type].type
     )
-  arrTypeEvoluPoke.map((types) => {
+  arrTypeEvoluPoke.map((type) => {
     let textType = document.createElement("P")
     textType.className = "type-evolutions"
-    textType.innerHTML = `Type: <span class="span-type">${types}</span>`
+    textType.innerHTML = `Type: <span class=${type}class="span-type">${type}</span>`
     container4.appendChild(textType)
   })
+  
   //   container4.innerHTML = `
   // <div class=imgs-evolutions>
   // <img class="img-evolutions-pokemon" src="${pokemonOrigin.images.illustration.default}" alt="${pokemonOriginName} front">
