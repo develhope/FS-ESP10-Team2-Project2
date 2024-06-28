@@ -2,8 +2,8 @@ html,body{
     margin: 0%;
     padding: 0%;
     box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
     font-weight: 300;
+   
 }
 #buy-button {
     grid-column-start: 1;
@@ -16,6 +16,8 @@ html,body{
     background-color: rgb(251, 227, 45);
     box-shadow: 0rem 0.2rem 0.2rem -0.1rem rgba(122, 122, 30, 0.607);
     cursor: pointer;
+    display: flex;
+ 
 }
 
 #buy-button:hover {
@@ -23,13 +25,12 @@ html,body{
 }
 
 .pokemon-container {
-
     width: 70%;
     justify-content: center;
     padding: 2vw;
     display: grid;
     grid-template-columns: 20rem 20rem;
-    grid-template-rows: 4rem 28rem 20rem 8rem;
+    grid-template-rows: 4rem 28rem 20rem 2rem;
     flex-direction: column;
     gap: 4vw;
     align-items: center;
@@ -157,7 +158,7 @@ html,body{
 .pokemon-text-container {
     box-sizing: border-box;
     width: 45%;
-    gap: 2w;
+    gap: 4w;
 
     display: flex;
     flex-direction: column;
@@ -240,7 +241,7 @@ html,body{
     justify-content: space-between;
 
     padding: 0.5rem 3rem;
-    margin: 0 15%;
+    
 }
 
 .imgs-evolutions {
@@ -258,7 +259,8 @@ html,body{
 #price-span-imgs {
     display: flex;
     font-size: 1.2vw;
-
+justify-content: flex-end;
+margin-right: 1rem ;
 }
 
 .arrow-span-evolutions-pokemon {
@@ -283,13 +285,17 @@ html,body{
     box-sizing: border-box;
 }
 
-*/ #ul {
-
+.ul {
     display: flex;
     flex-direction: column;
-    color: red
+    color: red;
+    list-style: none;
+    gap: 1.4rem;
+   
 }
-
+.ul li{
+    list-style-image: url();
+}
 .gender-text {
     display: flex;
     flex-direction: column;
@@ -303,19 +309,35 @@ html,body{
 #text {
     box-sizing: border-box;
     width: 100%;
-    font-size: x-large;
+    padding: 2rem;
+    font-size: 2vw;
     line-height: 0.3rem;
     padding: 2rem;
     margin-bottom: 1.5rem;
-
+letter-spacing: 1.5rem;
+margin-bottom: 2rem;
 }
 
 .table {
+    margin-right:1rem ;
     display: flex;
     flex-direction: column;
     width: 75%;
+
 }
-table li{
+table ul{
  margin-bottom: 2rem;
- list-style-type: ;
+
+}
+.li-statistics-pokemon{
+  gap:2rem
+}
+.colors{
+    margin: 0.3rem 0.4rem;
+    padding:0.2rem 0.5rem;
+    border: 0.2px solid transparent;
+   
+}
+.base-points{
+    margin-bottom: 1rem;
 }
