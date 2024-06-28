@@ -74,7 +74,7 @@ function displayPokemonDetails(pokemonOrigin, pokemonOriginName) {
    <li><span class="colors" style="background-color:${getColorByPercentage( pokemonOrigin.statistics.attack_percent)}">   </span>Attack: ${pokemonOrigin.statistics.attack} </li>
    <li><span class="colors" style="background-color:${getColorByPercentage( pokemonOrigin.statistics.defense_percent)}">   </span>Defense: ${pokemonOrigin.statistics.defense}</li>
    <li><span class="colors" style="background-color:${getColorByPercentage( pokemonOrigin.statistics.special_attack_percent)}">   </span>Special_attack: ${pokemonOrigin.statistics.special_attack}</li>
-   <li><span class="colors" style="background-color:${getColorByPercentage( pokemonOrigin.statistics.special_defense)}">   </span>Special_defense: ${pokemonOrigin.statistics.special_defense}</li>
+   <li><span class="colors" style="background-color:${getColorByPercentage( pokemonOrigin.statistics.special_defense_percent)}">   </span>Special_defense: ${pokemonOrigin.statistics.special_defense}</li>
    <li><span class="colors" style="background-color:${getColorByPercentage( pokemonOrigin.statistics.speed_percent)}">   </span>Speed:${pokemonOrigin.statistics.speed}</li>
    </ul>
      `;
