@@ -68,20 +68,20 @@ function displayPokemonDetails(pokemonOrigin, pokemonOriginName) {
    <span id="price-span-imgs"class="span-details-pokemon-container-text">${price}€ </span>
    </div>
    <div class="table">
-   <h2>Base Points</h2>
+   <h2 class="base-points">Base Points</h2>
    <ul class=ul>
-   <li style="background-color: ${getColorByPercentage(
-    pokemonOrigin.statistics.hp_percent
-  )}">Hp: ${pokemonOrigin.statistics.hp}</li>
-   <li>Attack: ${pokemonOrigin.statistics.attack} </li>
-   <li>Defense: ${pokemonOrigin.statistics.defense}</li>
-   <li>Special_attack: ${pokemonOrigin.statistics.special_attack}</li>
-   <li>Special_defense: ${pokemonOrigin.statistics.special_defense}</li>
-   <li>Speed:${pokemonOrigin.statistics.speed}</li>
+   <li><span class="colors" style="background-color:${getColorByPercentage( pokemonOrigin.statistics.hp_percent)}">   </span>Hp: ${pokemonOrigin.statistics.hp}</li>
+   <li><span class="colors" style="background-color:${getColorByPercentage( pokemonOrigin.statistics.attack_percent)}">   </span>Attack: ${pokemonOrigin.statistics.attack} </li>
+   <li><span class="colors" style="background-color:${getColorByPercentage( pokemonOrigin.statistics.defense_percent)}">   </span>Defense: ${pokemonOrigin.statistics.defense}</li>
+   <li><span class="colors" style="background-color:${getColorByPercentage( pokemonOrigin.statistics.special_attack_percent)}">   </span>Special_attack: ${pokemonOrigin.statistics.special_attack}</li>
+   <li><span class="colors" style="background-color:${getColorByPercentage( pokemonOrigin.statistics.special_defense)}">   </span>Special_defense: ${pokemonOrigin.statistics.special_defense}</li>
+   <li><span class="colors" style="background-color:${getColorByPercentage( pokemonOrigin.statistics.speed_percent)}">   </span>Speed:${pokemonOrigin.statistics.speed}</li>
    </ul>
      `;
 
-
+  //  style="background-color: ${getColorByPercentage(
+  //   pokemonOrigin.statistics.hp_percent
+  // )}"
   // let li=document.createElement("li")
   // li.textContent=chaos
   // table.appendChild(h2Table)
