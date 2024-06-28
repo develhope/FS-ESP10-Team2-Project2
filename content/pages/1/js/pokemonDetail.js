@@ -79,33 +79,19 @@ function displayPokemonDetails(pokemonOrigin, pokemonOriginName) {
    </ul>
      `;
 
-  //  style="background-color: ${getColorByPercentage(
-  //   pokemonOrigin.statistics.hp_percent
-  // )}"
-  // let li=document.createElement("li")
-  // li.textContent=chaos
-  // table.appendChild(h2Table)
-  // table.appendChild(ul)
-  // ul.appendChild(li)
 
   let statisticsAll = pokemonOrigin.statistics
   console.log(statisticsAll)
-
-  // let chaos=pokemon.statistics.forEach((a)=>{return`<li>${a.attack}</li>`})
 
 
   let container3 = document.createElement("section");
   container3.className = "pokemon-text-container";
 
-  //   capture_rate_percent: 45, // Porcentaje de tasa de captura
-  // cuantas evoluciones tiene o si es un pkemon que se encuentra en su ultima evolución
-  // cantidad de  movements:
-  // statistics.power
-  // statistics.power_percent leer propiedad
+
 
   container3.innerHTML = `
   <div class="text-description">
-  <p>${pokemonOriginName} can achieve a total of  ${pokemonOrigin.value.movements} movements.
+  <p>${pokemonOriginName} can achieve a total of  <span class=movements-numbers>${pokemonOrigin.value.movements} movements</span>.
 Its percentage of power is ${pokemonOrigin.statistics.power_percent} and its percentage capture rate is ${pokemonOrigin.value.capture_rate_percent}. 
  ${indexEvolu(pokemonOrigin)} ${finalEvolution(pokemonOrigin)}  </p>
   </div>
@@ -115,7 +101,7 @@ Its percentage of power is ${pokemonOrigin.statistics.power_percent} and its per
     } ${metersFnc(pokemonOrigin)} </span></p>
   <p class="p-details-pokemon-container-text">Weight:<span class="span-details-pokemon-container-text">${pokemonOrigin.statistics.weight.kilograms
     } ${gramsFnc(pokemonOrigin)}</span></p></div>
-    <p class=gender-text>Possible genders:<span class="gender-result"> ${genderFnc(pokemonOrigin)}</span></p>
+    <p class=gender-text> ${genderFnc(pokemonOrigin)}</p>
  
    <p id="hability-p-details-pokemon-container-tex"class="p-details-pokemon-container-text"><span class="habilitiy-span-details-pokemon-container-text"> ${habilitiesPokemon(
       pokemonOrigin
@@ -173,7 +159,8 @@ Its percentage of power is ${pokemonOrigin.statistics.power_percent} and its per
   function genderFnc(pokemon) {
     if (pokemon.gender === null) { return " " }
     else if (pokemon.gender === undefined) { return "" }
-    else { return pokemon.gender }
+    else { return `Possible genders:<span class="gender-result"> ${pokemon.gender}</span>
+      `}
   }
   container1.appendChild(container3);
 
@@ -185,7 +172,7 @@ Its percentage of power is ${pokemonOrigin.statistics.power_percent} and its per
   typeText.innerText = "Type";
   let buttonType = document.createElement("button");
   buttonType.className += " button-type-section-container3-pokemon";
-  // buttonType.className +=  ` ${type}`;
+ 
 
   const types = pokemonOrigin.type
     .map((t) => `<p id="types-container3-pokemon" class="${t} t">${t} </p>`)
@@ -197,26 +184,20 @@ Its percentage of power is ${pokemonOrigin.statistics.power_percent} and its per
   typeSection.appendChild(typeText);
   typeSection.appendChild(buttonType);
 
-  // function obtenerImagenDeEvolucion(pokemon) {
-  //   const objetoRelacionado = pokemon.find(a => a.evolutions === pokemon);
-  //   if (objetoRelacionado) {
-  //     return objetoRelacionado.imagen;
-  //   } else {
-  //     return 'No se encontró una imagen para esta evolución.';
-  //   }
-  // }
+
   let container4 = document.createElement("section");
   container4.className = "evolutions-pokemon-container";
   container.appendChild(container4);
 
   const arrImgEvoluPoke = pokemonOrigin.evolutions.map((evolu) =>
-    pokemon[evolu].images.illustration.default
+    pokemon[_.str.formatAsVariableName(evolu)].images.illustration.default
   )
   arrImgEvoluPoke.map((imgs) => {
     let img = document.createElement("img")
     img.className = "imgs-evolutions"
     img.src = imgs
     container4.appendChild(img)
+   
   })
   console.log(arrImgEvoluPoke)
 
@@ -240,21 +221,7 @@ Its percentage of power is ${pokemonOrigin.statistics.power_percent} and its per
         //? Usar la función de la librería personalizada para capitalizar el tipo
         `<p class="${type} type">${_.str.capitalize(type)}</p>`
     )
-<<<<<<< HEAD
-  arrTypeEvoluPoke.map((type) => {
-    let textType = document.createElement("P")
-    textType.className = "type-evolutions"
-    textType.innerHTML = `Type: <span class=${type}class="span-type">${type}</span>`
-    container4.appendChild(textType)
-  })
-  
-  //   container4.innerHTML = `
-  // <div class=imgs-evolutions>
-  // <img class="img-evolutions-pokemon" src="${pokemonOrigin.images.illustration.default}" alt="${pokemonOriginName} front">
-  // <span class="class=arrow-span-evolutions-pokemon"> > </span> 
-=======
     .join("");
->>>>>>> 496344856899fb64588a5f4761e258e153a7dd5b
 
   // Obtener los tipos de evolución del Pokémon
   const arrTypeEvoluPoke = pokemonOrigin.evolutions.map(
@@ -263,6 +230,7 @@ Its percentage of power is ${pokemonOrigin.statistics.power_percent} and its per
 
   // Generar y agregar el HTML para los tipos de evolución del Pokémon
   arrTypeEvoluPoke.forEach(() => {
+    
     let textType = document.createElement("P");
     textType.className = "type-evolutions";
     textType.innerHTML = `Type: <span class="span-type">${typesHTML}</span>`;
@@ -316,10 +284,8 @@ if (pokemon) {
   console.log(pokemon[pokemon._]);
   console.log("\n\n\n");
 
-  //! (IMPORTANTE) Mandar el objeto completo `pokemon` a la función principal
-  //* Más adelante, deberás establecer el elemento original `pokemon[pokemon._]` para manipularlo adecuadamente
-  // pokemonMain(pokemon[pokemon._]); //? Aquí envío el objeto Pokémon original
-  pokemonMain(); //! Pero tú deberás enviar el objeto entero y manipular sus datos para obtener todas las propiedades necesarias de los demás Pokémon como sus imágenes
+  
+  pokemonMain(); 
 } else {
   // Si no se encuentra ningún Pokémon seleccionado en sessionStorage, mostrar un error
   console.error(
